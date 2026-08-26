@@ -320,7 +320,10 @@ async function send(){
         messages = messages.concat([{role:'assistant', content: data.content}]);
         const results = [];
         for(const block of data.content.filter(b => b.type === 'tool_use')){
-          const out = await lookupZoning(block.input && block.input.address);
+          // Only the keyless GIS tool runs in the browser; anything else is handled server-side by the worker.
+          const out = block.name === 'lookup_zoning'
+            ? await lookupZoning(block.input && block.input.address)
+            : { error: 'handled server-side' };
           results.push({type:'tool_result', tool_use_id: block.id, content: JSON.stringify(out)});
         }
         messages = messages.concat([{role:'user', content: results}]);
