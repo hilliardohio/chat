@@ -56,6 +56,8 @@
       <button onclick="ask('What is the city income tax rate and how do I file?')">Income tax</button>
       <button onclick="ask('How do I contact the police for a non-emergency?')">Police</button>
       <button onclick="ask('What is the zoning for 3800 Municipal Way?')">Zoning by address</button>
+      <button onclick="ask('How big is the property at 3993 Cosgray Rd and who owns it?')">Property info</button>
+      <button onclick="ask('How do I see the permits that have been issued for my property?')">Permit history</button>
     </div>
     <div id="inputRow">
       <textarea id="chatInput" rows="1" placeholder="Ask a question about City of Hilliard services, rules, or contacts…"></textarea>
@@ -142,7 +144,7 @@ async function lookupZoning(address){
     for(const pat of patterns){
       const d = await gisQuery(GIS.parcels, {
         where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
-        outFields: 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP',
+        outFields: 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,Shape__Area',
         returnCentroid: 'true', returnGeometry: 'false', resultRecordCount: '5'
       });
       feats = d.features || [];
@@ -163,14 +165,29 @@ async function lookupZoning(address){
       pud_text_url: f.attributes.file1url || undefined,
       rezoning_ordinance: f.attributes.post_2014 || undefined
     }));
+    const at = p.attributes;
+    const PCLASS_MAP = {R:'Residential', C:'Commercial', I:'Industrial', A:'Agricultural', E:'Exempt (government/institutional)', M:'Mineral', U:'Utility'};
     return {
-      matched_address: p.attributes.SITEADDRESS,
-      parcel_id: p.attributes.PARCELID,
-      tax_district: p.attributes.CVTTXDSCRP,
-      school_district: p.attributes.SCHLDSCRP,
+      matched_address: at.SITEADDRESS,
+      parcel_id: at.PARCELID,
+      tax_district: at.CVTTXDSCRP,
+      school_district: at.SCHLDSCRP,
       zoning: zones.length ? zones : 'No Hilliard zoning polygon at this location — if tax_district is not CITY OF HILLIARD, the property is outside city zoning jurisdiction (contact Franklin County or the township).',
+      property_details_from_county_auditor_data: {
+        owner: [at.OWNERNME1, at.OWNERNME2].filter(Boolean).join(' & ') || undefined,
+        parcel_size_acres: at.Shape__Area ? +(at.Shape__Area / 43560).toFixed(3) : undefined,
+        legal_description_note: at.PRPRTYDSCRP3 || undefined,
+        residence_year_built: at.RESYRBLT || undefined,
+        last_transfer_date: at.SALEDATE ? new Date(at.SALEDATE).toISOString().slice(0,10) : undefined,
+        last_transfer_price: (at.SALEPRICE || at.SALEPRICE === 0) ? at.SALEPRICE : undefined,
+        property_class: PCLASS_MAP[at.PCLASS] || at.PCLASS || undefined,
+        subdivision_or_condo: at.CNVYNAME || undefined,
+        homestead_exemption: at.HOMSTD === 'Y' ? 'Yes' : (at.HOMSTD === 'N' ? 'No' : undefined),
+        full_records_link: 'https://property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address'
+      },
+      permit_history_link: 'https://hilliardoh.portal.opengov.com/search — resident can type the address under "Locations" to see every active and historical permit for this property',
       other_address_matches: feats.slice(1).map(f => f.attributes.SITEADDRESS),
-      source: 'City of Hilliard GIS "Zoning Districts and PUDs" layer (maps.hilliardohio.gov) + Franklin County parcel data'
+      source: 'City of Hilliard GIS "Zoning Districts and PUDs" layer (maps.hilliardohio.gov) + Franklin County Auditor parcel data'
     };
   }catch(e){
     return {error:'GIS lookup failed: ' + e.message};
@@ -293,7 +310,7 @@ document.getElementById('chatInput').addEventListener('keydown', e => {
 });
 
 /* ---------- boot ---------- */
-addMsg('bot', "Hi! I'm the Hilliard Assistant. I can answer questions about City of Hilliard services, rules, and contacts — trash pickup, permits, parks, taxes, city code, and more. I can also look up the zoning for any Hilliard address on the city's official map. What can I help you with?");
+addMsg('bot', "Hi! I'm the Hilliard Assistant. I can answer questions about City of Hilliard services, rules, and contacts — trash pickup, permits, parks, taxes, city code, and more. For any Hilliard address I can also look up its zoning district and property details like lot size, owner, and year built from official city and county records. What can I help you with?");
 loadTopics();
 if(BACKEND.includes('YOUR-WORKER-NAME')){
   addMsg('bot', 'Setup note: the BACKEND constant at the top of this file has not been set to your Cloudflare Worker URL yet. Residents will not be able to get answers until it is.');
