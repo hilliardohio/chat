@@ -8,7 +8,6 @@
   :root{
     --navy:#1b3a5c; --navy-dark:#12293f; --green:#2e7d4f; --gold:#e8b84b;
     --bg:#f4f6f8; --card:#ffffff; --text:#1d2b36; --muted:#5c6b78; --border:#dde4ea;
-    --danger:#b3423c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
@@ -16,21 +15,14 @@
   header .seal{width:38px;height:38px;border-radius:50%;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
   header h1{font-size:17px;font-weight:700}
   header .sub{font-size:12px;opacity:.8}
-  nav{display:flex;gap:4px;margin-left:auto}
-  nav button{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px}
-  nav button.active{background:#fff;color:var(--navy);font-weight:600;border-color:#fff}
   main{flex:1;overflow:hidden;display:flex;justify-content:center}
-  .pane{display:none;width:100%;max-width:900px;height:100%;flex-direction:column;padding:16px}
-  .pane.visible{display:flex}
-
-  /* Chat */
+  .pane{width:100%;max-width:820px;height:100%;display:flex;flex-direction:column;padding:16px}
   #chatScroll{flex:1;overflow-y:auto;padding:8px 4px}
   .msg{max-width:78%;margin:8px 0;padding:11px 15px;border-radius:14px;line-height:1.5;font-size:14.5px;white-space:pre-wrap;word-wrap:break-word}
-  .msg.user{background:var(--user-bubble,#1b3a5c);background:var(--navy);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+  .msg.user{background:var(--navy);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
   .msg.bot{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
   .msg.bot a{color:var(--navy);font-weight:600}
   .msg .tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--green);margin-bottom:5px}
-  .msg .tag.custom{color:#a06a00}
   .disclaimer{text-align:center;font-size:11.5px;color:var(--muted);padding:6px 0 2px}
   #inputRow{display:flex;gap:8px;padding-top:10px}
   #chatInput{flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:14.5px;outline:none;resize:none;font-family:inherit;background:#fff}
@@ -41,39 +33,7 @@
   .chips button{background:#fff;border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12.5px;cursor:pointer;color:var(--navy)}
   .chips button:hover{border-color:var(--navy)}
   .typing{color:var(--muted);font-style:italic;font-size:13px;padding:6px 4px}
-
-  /* Shared cards/tables */
-  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px}
-  .card h2{font-size:15.5px;margin-bottom:6px;color:var(--navy)}
-  .card p.help{font-size:13px;color:var(--muted);margin-bottom:12px}
-  .scrollwrap{overflow:auto;flex:1}
-  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
-  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
-  th{background:#eef2f5;color:var(--navy);position:sticky;top:0}
-  td.ans{max-width:340px}
-  .btn{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;cursor:pointer}
-  .btn.green{background:var(--green)}
-  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--border)}
-  .btn.danger{background:var(--danger)}
-  .btn.small{padding:5px 10px;font-size:12px}
-  .rowbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-  .rowbar .spacer{flex:1}
-  label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:10px 0 4px}
-  input[type=text],input[type=password],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;background:#fff}
-  textarea{resize:vertical}
-  .topic-item{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff}
-  .topic-item .t-head{display:flex;align-items:center;gap:8px}
-  .topic-item .t-name{font-weight:700;font-size:14px;color:var(--navy)}
-  .topic-item .t-mode{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:10px}
-  .t-mode.guide{background:#e3efe8;color:var(--green)}
-  .t-mode.fixed{background:#fdf3dc;color:#a06a00}
-  .t-mode.off{background:#eee;color:#888}
-  .topic-item .t-kw{font-size:12px;color:var(--muted);margin-top:4px}
-  .topic-item .t-body{font-size:13px;margin-top:6px;white-space:pre-wrap;color:#333}
-  .statline{font-size:12.5px;color:var(--muted)}
-  .warn{background:#fdf3dc;border:1px solid #ecd9a0;border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:14px}
-  .ok{background:#e3efe8;border:1px solid #bcd8c7;border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:14px}
-  @media (max-width:640px){ .msg{max-width:92%} header h1{font-size:14px} nav button{padding:6px 9px;font-size:12px} }
+  @media (max-width:640px){ .msg{max-width:92%} header h1{font-size:14px} }
 </style>
 </head>
 <body>
@@ -82,19 +42,12 @@
   <div class="seal">H</div>
   <div>
     <h1>Hilliard Assistant</h1>
-    <div class="sub">City of Hilliard, Ohio — resident information (prototype)</div>
+    <div class="sub">City of Hilliard, Ohio — resident information</div>
   </div>
-  <nav>
-    <button id="tab-chat" class="active" onclick="showPane('chat')">Chat</button>
-    <button id="tab-log" onclick="showPane('log')">Q&amp;A Log</button>
-    <button id="tab-topics" onclick="showPane('topics')">Topics</button>
-    <button id="tab-settings" onclick="showPane('settings')">Settings</button>
-  </nav>
 </header>
 
 <main>
-  <!-- CHAT -->
-  <section id="pane-chat" class="pane visible">
+  <section class="pane">
     <div id="chatScroll"></div>
     <div class="chips" id="chips">
       <button onclick="ask('When is my trash picked up?')">Trash pickup</button>
@@ -102,256 +55,41 @@
       <button onclick="ask('What are the noise ordinance quiet hours?')">Noise rules</button>
       <button onclick="ask('What is the city income tax rate and how do I file?')">Income tax</button>
       <button onclick="ask('How do I contact the police for a non-emergency?')">Police</button>
-      <button onclick="ask('Can I have chickens in my backyard?')">Chickens</button>
       <button onclick="ask('What is the zoning for 3800 Municipal Way?')">Zoning by address</button>
     </div>
     <div id="inputRow">
       <textarea id="chatInput" rows="1" placeholder="Ask a question about City of Hilliard services, rules, or contacts…"></textarea>
       <button id="sendBtn" onclick="send()">Send</button>
     </div>
-    <div class="disclaimer">Informational prototype — not legal advice. Verify with the City at (614) 876-7361 or hilliardohio.gov.</div>
-  </section>
-
-  <!-- LOG -->
-  <section id="pane-log" class="pane">
-    <div class="rowbar">
-      <span class="statline" id="logStats"></span>
-      <div class="spacer"></div>
-      <button class="btn green" onclick="downloadCSV()">Download spreadsheet (CSV)</button>
-      <button class="btn ghost" onclick="downloadLogJSON()">Export JSON</button>
-      <button class="btn danger" onclick="clearLog()">Clear log</button>
-    </div>
-    <div class="scrollwrap card" style="padding:0">
-      <table>
-        <thead><tr><th style="width:130px">Time</th><th>Question</th><th class="ans">Answer</th><th style="width:110px">Topic</th><th style="width:80px">Source</th></tr></thead>
-        <tbody id="logBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- TOPICS -->
-  <section id="pane-topics" class="pane" style="overflow-y:auto">
-    <div class="card">
-      <h2>Customize responses by topic</h2>
-      <p class="help">When a resident's question matches a topic's keywords, your customization kicks in. <b>Guide the AI</b> adds your instructions to the AI's answer (it still writes naturally). <b>Fixed answer</b> returns your exact text instantly, without calling the AI. Topics can be turned off without deleting them.</p>
-      <label>Topic name</label>
-      <input type="text" id="tName" placeholder="e.g., Pool passes">
-      <label>Keywords (comma-separated — matches anywhere in the question)</label>
-      <input type="text" id="tKeywords" placeholder="e.g., pool, swim, aquatic, pass">
-      <label>Mode</label>
-      <select id="tMode">
-        <option value="guide">Guide the AI (add instructions/facts to its answer)</option>
-        <option value="fixed">Fixed answer (return this exact text, no AI call)</option>
-      </select>
-      <label>Instructions or answer text</label>
-      <textarea id="tBody" rows="4" placeholder="e.g., 2026 pool passes go on sale January 5. Always mention that one pass covers both pools and link to hilliardohio.gov/pools-passes/."></textarea>
-      <div class="rowbar" style="margin-top:12px;margin-bottom:0">
-        <button class="btn green" id="tSaveBtn" onclick="saveTopic()">Add topic</button>
-        <button class="btn ghost" id="tCancelBtn" onclick="cancelEdit()" style="display:none">Cancel edit</button>
-        <div class="spacer"></div>
-        <button class="btn ghost" onclick="exportTopics()">Export topics</button>
-        <button class="btn ghost" onclick="document.getElementById('importFile').click()">Import topics</button>
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importTopics(event)">
-      </div>
-    </div>
-    <div id="topicList"></div>
-  </section>
-
-  <!-- SETTINGS -->
-  <section id="pane-settings" class="pane" style="overflow-y:auto">
-    <div id="keyStatus"></div>
-    <div class="card">
-      <h2>Claude API connection</h2>
-      <p class="help">This prototype calls the Claude API directly from the browser. Get a key at <b>console.anthropic.com</b> → API Keys. The key is stored only in this browser (localStorage) — for a public deployment, move the API call behind a small server so the key is never exposed.</p>
-      <label>API key</label>
-      <input type="password" id="apiKey" placeholder="sk-ant-…">
-      <label>Model</label>
-      <select id="modelSel">
-        <option value="claude-sonnet-5">Claude Sonnet 5 (recommended)</option>
-        <option value="claude-haiku-4-5">Claude Haiku 4.5 (faster, cheaper)</option>
-        <option value="claude-opus-5">Claude Opus 5 (most capable)</option>
-      </select>
-      <div class="rowbar" style="margin-top:12px;margin-bottom:0">
-        <button class="btn green" onclick="saveSettings()">Save settings</button>
-        <button class="btn ghost" onclick="testKey()">Test connection</button>
-        <span class="statline" id="testResult"></span>
-      </div>
-    </div>
-    <div class="card">
-      <h2>Knowledge base</h2>
-      <p class="help">The assistant answers from a built-in knowledge base compiled on <b>Aug 25, 2026</b> from hilliardohio.gov and the Hilliard Code of Ordinances (Municode, Supp. 10, through Ord. 25-28). Edit it below if something changes — your edits are saved in this browser.</p>
-      <textarea id="kbEdit" rows="14" style="font-size:12px;font-family:ui-monospace,Menlo,monospace"></textarea>
-      <div class="rowbar" style="margin-top:12px;margin-bottom:0">
-        <button class="btn green" onclick="saveKB()">Save knowledge base</button>
-        <button class="btn ghost" onclick="resetKB()">Reset to original</button>
-        <span class="statline" id="kbStat"></span>
-      </div>
-    </div>
+    <div class="disclaimer">Automated informational assistant — not legal advice. Verify with the City at (614) 876-7361 or hilliardohio.gov.</div>
   </section>
 </main>
-
-<!-- ============ KNOWLEDGE BASE ============ -->
-<script type="text/plain" id="kbDefault">
-CITY OF HILLIARD, OHIO — KNOWLEDGE BASE (compiled Aug 25, 2026 from hilliardohio.gov and the Hilliard Code of Ordinances on Municode, Supplement 10, codified through Ord. 25-28, Oct 27, 2025)
-
-== CONTACT & BASICS ==
-City Hall/Administration: 3800 Municipal Way, Hilliard, OH 43026 — (614) 876-7361. Business hours approx. 8am–5pm weekdays.
-Website: hilliardohio.gov. General questions: "Ask Us" form at hilliardohio.gov/contact-the-city/ (~48-hr response).
-Service requests (potholes, chipper, signs, etc.): Hilliard Helps / Hilliard 311 — hilliardohio.gov/hilliardhelps/, (614) 876-7361 ext. 311.
-Police: 5171 Northwest Parkway. Emergency 911; NON-EMERGENCY (614) 876-7321 (24/7). Records: (614) 876-2429, hpdrecordsunit@hilliardohio.gov.
-Fire: provided by NORWICH TOWNSHIP (not the City) — 5181 Northwest Parkway, (614) 876-7694.
-Mayor's Court: 5171 Northwest Parkway, Wednesdays 8am; Clerk (614) 334-2348; pay tickets at ohioticketpayments.com/Hilliard/DocketSearch.php.
-The Well (rec & wellness campus): 3993 Cosgray Rd, (614) 876-5200.
-City Code: library.municode.com/oh/hilliard/codes/code_of_ordinances.
-
-== GOVERNMENT ==
-Hilliard has a COUNCIL–MANAGER government — NO elected mayor. Seven at-large council members appoint a City Manager.
-City Manager: Joshua Rauch (sworn in April 20, 2026).
-Council: Emily Cole (President), Tina Cottone (VP), Greg Betts, Kathy Parker-Jones, Nadia Atway Rasul, Andy Teater, Cynthia Vermillion. Contact: CityCouncil@hilliardohio.gov. Clerk of Council: Diane Werbrich, (614) 334-2365.
-Regular Council meetings: 6pm, 2nd & 4th Mondays, Council Chambers, 3800 Municipal Way (time changed from 7pm effective Aug 25, 2026). Agendas/minutes: hilliardohio.civicweb.net/Portal/. Speakers sign in with the Clerk; 3 minutes each.
-Boards/commissions: Planning & Zoning Commission, Board of Zoning Appeals, Environmental Sustainability, Public Arts, Shade Tree, Records Commission, and others.
-
-== TRASH, RECYCLING & YARD WASTE ==
-Provider: Local Waste Services (LWS) under city contract. Trash, recycling AND yard waste all collected EVERY TUESDAY citywide.
-Holiday rule: holiday on Sun/Mon/Tue pushes pickup to Wednesday; Saturday holidays cause no delay.
-Containers out by 7am at end of driveway (not in the street), max 50 lbs. By code (Ch. 975): set out no earlier than 5pm the day before; bring in by 9am the morning after; store containers behind the house or not forward of the front face of the dwelling.
-Bins: blue recycling + green/gray trash (65-gal standard). Larger 90-gal recycling bin FREE from LWS (614-409-9375); larger trash bin $65 via City (614-334-1209).
-Billing: quarterly by LWS; pay at localwasteservices.com; unpaid bills can become a property lien. Senior (65+) discount: 10% (Ch. 975.06) — apply through LWS, info@localwasteservices.com.
-Missed pickup: LWS (614) 409-9375 option 2, within 24 hours. City trash line: (614) 334-1209.
-Bulk items: with regular trash at curb; upholstered items (mattresses/box springs/furniture) MUST be wrapped in plastic. Large pickups scheduled via LWS.
-Recyclables loose, never bagged. Guidance: recycleright.org, swaco.org.
-Yard waste: Tuesdays Mar 1–Nov 30, in brown paper bags or rigid containers with free yard-waste stickers (get at 3800 Municipal Way). Bundles max 4ft x 2ft, branches ≤2in diameter, ≤50 lbs. Christmas trees collected bare.
-Chipper (City, on-demand): limbs over 4 ft long/4 in diameter; Mondays mid-April–late Sept; request via Hilliard Helps by 2:30pm the prior Friday.
-Composting: GoZero program. Styrofoam recycling available — see hilliardohio.gov.
-
-== WATER, SEWER & UTILITIES ==
-The City does NOT provide water/sewer. COLUMBUS Division of Water serves Hilliard: start/stop service & billing (614) 645-3111 or columbus.gov utilities pages.
-Storm/sanitary sewer infrastructure inside the city: Hilliard Engineering; issues → Hilliard 311.
-Electric: AEP Ohio (lines/outages); city electric aggregation supplied by Dynegy (hilliardohio.gov/aggregation/). Gas: Columbia Gas of Ohio.
-Call OUPS (oups.org) at least 48 hrs before digging.
-
-== INCOME TAX ==
-Rate: 2.5% (since Jan 1, 2022). ALL residents 18+ must file a city return every year by April 15 — even if nothing is owed — EXCEPT seniors with no earned income. Filed through RITA (ritaohio.com); checks payable to RITA.
-Full credit for tax paid to a work city, up to 2.5%. Retirement income, unemployment not taxed.
-City Income Tax Division: (614) 876-7361 ext. 778, Tax1@hilliardohio.gov.
-PROPERTY taxes: Franklin County Auditor (614) 525-4663 — not the City.
-
-== PERMITS, BUILDING & CONTRACTORS ==
-Apply and pay ONLINE via the OpenGov portal: hilliardoh.viewpointcloud.com (a.k.a. hilliardoh.portal.opengov.com). An application is NOT a permit — wait for issuance before building.
-Permits required for (examples): decks, sheds, fences, basement finishes, additions, roofs, driveways, patios, pools, hot tubs, electrical, plumbing, furnace replacement, siding.
-Review: about 2 weeks typical; most permits valid 1 year. Contact: Building@hilliardohio.gov.
-All contractors must be REGISTERED with the Building Department. Homeowners may do their own work on their own residence (not rentals) — permits/inspections still required.
-Zoning applications (zoning certificate, sign permit, fence permit, BZA, zoning verification letter): Planning Division, Planning1@hilliardohio.gov, OpenGov portal.
-Report a code/zoning violation: hilliardohio.gov/report-a-code-violation/.
-Sidewalk repair: adjacent property owner's responsibility (City repairs curb ramps and damage from city-tree roots).
-
-== CITY CODE HIGHLIGHTS (cite section numbers) ==
-PARKING: No vehicle parked on any street more than 72 continuous hours (§351.14). Commercial vehicles max 1 hr on street; RVs/trailers max 2 hrs on street (§351.22), delivery/loading excepted. No general citywide overnight parking ban — but obey posted signs and permit districts (§§351.23–.24). Snow emergency (declared when 3+ inches forecast): no parking on designated snow-emergency streets, vehicles may be towed (Ch. 352).
-NOISE: Quiet hours 10pm–7am (§531.02) — no loudspeakers, loading, or powered lawn/garden equipment that disturbs neighbors (snow-removal equipment exempt). Residential sound limits roughly 60 dBA day / 50 dBA night (§531.03). CONSTRUCTION: no exterior construction work on Sundays or between 7pm and 7:30am (§509.08).
-ANIMALS: Max 4 dogs/cats total per household (excl. under 4 months) (§505.06). Dogs must be confined/leashed or under reasonable control (§505.02); annual dog license via Franklin County (§505.09). CHICKENS (§1121.08): only in R-R, R-1, R-2, PUD, HCD districts; lots UNDER 0.5 acre → NOT allowed; 0.5–2.99 acres → up to 6; coop rear yard only, 15 ft from property lines; zoning certificate + fence permit required. Roosters/ducks only on 1+ acre. Beekeeping per §1121.09 (flyway barrier rules). Livestock only in R-R on 3+ acres (§1121.07).
-GRASS/WEEDS: max 6 inches (§1303.02, Ch. 917). 5-day notice to cut; City may mow and assess costs as a tax lien; min $250 fine (§917.99).
-JUNK VEHICLES: inoperable vehicles/equipment may not sit outside an enclosed building more than 48 hours (§1121.05).
-FENCES (§1121.02(d)): PERMIT REQUIRED. No front-yard fences (invisible fences excepted; limited corner-lot exception). Max 6 ft side/rear; chain-link max 4 ft in residential. Neutral colors; finished side out; no barbed wire/stockade/electric/scrap materials. Pools must be fenced (4–6 ft, self-latching gate) or have a locking safety cover.
-SHEDS/ACCESSORY BUILDINGS (§1121.02(b)): rear yard only; ≥6 ft from rear and ≥3 ft from side lot lines; max 14 ft tall; max 50% of the home's floor area or 900 sq ft, whichever is less; ≤30% of required rear yard.
-SIGNS (Ch. 1129): NO signs in any public right-of-way, on utility poles, street signs, trees, or public property. Garage/yard-sale signs allowed without permit on private property only. Real-estate signs: one, max 8 sq ft, 4 ft high, removed within 7 days of closing. No separate political-sign rules — same content-neutral rules apply (keep on private property, out of right-of-way).
-GARAGE SALES (Ch. 727): max 2 per residence per 12 months, max 3 consecutive days; hours 9am–8pm (Apr–Sep) / 9am–6pm (Oct–Mar).
-FIREWORKS (Ch. 1519): discharge of consumer fireworks is PROHIBITED citywide (Hilliard opted out of Ohio's holiday-discharge default). Licensed public exhibitions only. First-degree misdemeanor, fine up to $1,000.
-CURFEW (Ch. 539): under 12 — darkness to dawn; under 18 — midnight to 6am. Exceptions: with parent/guardian, parent-directed errand, work travel, newspaper delivery.
-HOME OCCUPATIONS (§1121.06(e)): permit from Planning Director required; business entirely inside the dwelling; residents only; max 25% of floor area or 250 sq ft; no on-site retail sales; no exterior evidence except one 2-sq-ft non-illuminated sign.
-SIDEWALK SNOW: abutting property owners are responsible for clearing snow and ice from sidewalks/paths next to their property (§909.02(i)).
-TRASH STORAGE: solid waste kept max 14 days (§975.02); container set-out/bring-in rules in §975.05 (see trash section).
-ZONING DISTRICTS (§1104.01): 16 districts — R-R, R-1, R-2, R-3, R-4 residential; B-1–B-4 business; M-1, M-2 industrial; S-1, HCD, OH-MD, OH-RD special; PUD planned.
-
-== ZONING DISTRICT STANDARDS (Chs. 1109–1117; use with the lookup_zoning tool for address questions) ==
-Every district is also subject to Ch. 1121 general provisions (accessory buildings, fences, home occupations, chickens), Ch. 1123 conditional uses, Ch. 1127 parking, Ch. 1129 signs. "P"=permitted, "C"=conditional use (needs approval).
-R-R Rural Residential: large-lot single-family without public utilities; farms/stables C. Min lot 100,000 sq ft / 150 ft wide; height 35 ft; setbacks front 40 / side 15 (35 total) / rear 40; coverage 25%. Only district allowing agricultural animal uses broadly.
-R-1 Low Density: single-family P; schools/worship/B&B C. Min lot 13,500 sq ft / 90 ft (30,000 sq ft if no public water/sewer); height 35; front 35 / side 12 (30 total) / rear 40; coverage 30%.
-R-2 Low/Medium Density: single-family P. Min lot 11,200 sq ft / 80 ft; height 35; front 25 for the dwelling BUT garages must sit back 35 ft (unique to R-2); side 10 (20 total) / rear 35; coverage 30%.
-R-3 Moderate Density: single-family P; two-family, townhouses, CCRC, day care center C. Min lot 10,000 sq ft / 70 ft (two-family 6,000 sq ft/unit); height 35; front 30 / side 10 (20 total) / rear 30; coverage 35%.
-R-4 High Density: detached/attached/multi-family P. Min lot 6,000 sq ft / 60 ft; multi-family max 14 units/acre; height 35 (up to 70 with extra setbacks); front 30 / side 8 (16 total) / rear 30; coverage 35%.
-B-1 Neighborhood Business: small-scale convenience retail/services, small restaurants (<2,000 sq ft, no drive-thru), offices, banks P; bars, general retail, drive-thrus C. Min lot 7,500 sq ft / 60 ft; height 35; front 30 / side 0 / rear 20.
-B-2 Community Business: general retail, restaurants, bars, hotels, offices P; vehicle sales/repair, drive-thru restaurants, outdoor storage C. Min lot 1 acre / 200 ft; height 35; parking 20 / building 50 front; side 20 / rear 30.
-B-3 Office/Institutional: offices, medical, labs, data centers, restaurants P; hospitals, colleges C; most retail excluded. Min lot 1 acre / 200 ft; height 45; building front 50; side 20 / rear 30.
-B-4 I-270 Corridor: offices, hotels, restaurants, retail <15,000 sq ft P; residential, grocery, drive-thrus C. Min lot 1 acre / 200 ft; height 70; building front 60 / side 30 / rear 30 (+1 ft setback per ft above 45 ft height).
-M-1 Restricted Industrial: light manufacturing, offices, research, data centers P; breweries, warehouses, self-storage, outdoor storage C. Min lot 1 acre / 100 ft; height 45; building front 50 / side 20 / rear 40; coverage 30%.
-M-2 General Industrial: manufacturing, warehouses/distribution P; chemical plants, truck repair, recycling C. Min lot 2 acres / 200 ft; height 45; building front 50 / side 30 / rear 40; coverage 50%.
-S-1 Support Facilities: parks, schools, worship, government, libraries (mostly C); no dwellings. Min lot 3 acres / 250 ft; height 45; building front 60 / side 50 (100 total) / rear 60; coverage 20%.
-HCD Hilliard Conservation District (Big Darby watershed): conservation development; min tract 20 acres, no min lot size, 70% permanent open space; standards set by development-plan review; height 35.
-OH-MD Old Hilliard Mixed Use (downtown): retail, restaurants, bars, offices, dwellings P. No min lot; height 52 ft; build-to zone 0–10 ft front; parking behind buildings. Exterior changes need P&Z design review (§1115.05); fences max 30 inches downtown.
-OH-RD Old Hilliard Residential: small-lot housing near downtown; all dwelling types P. Min lot 7,000 sq ft / 50 ft; height 35; front build-to 0–25 ft; side 5 (12 total) / rear 25. Exterior modifications need P&Z review.
-PUD Planned Unit Development: NEGOTIATED district — no fixed standards table. Each PUD is governed by its own Council-approved development text/plan (deviations from baseline district standards allowed). Pre-2014 PUDs keep their original approved plans. For any property in a PUD: the resident must check that PUD's approved text — the GIS lookup often returns a link to it; otherwise contact Planning (Planning1@hilliardohio.gov).
-
-== SNOW, STREETS & LEAVES ==
-Snowplow priority: 1) major arteries 2) minor arterials 3) residential streets (usually unsalted) 4) cul-de-sacs 5) lots/paths. Track plows live: SnowPaths — portal.snowpaths.com/public/983278/983279.
-Don't shovel snow into streets or around hydrants. Potholes/street lights: report via Hilliard 311.
-Leaf collection (curbside vacuum): Oct–Dec by color-coded quadrant (2026: Oct 20–Dec 19). Rake to the TREE LAWN (never the street) by 7am Monday of your zone's week. Bagged leaves also OK with Tuesday yard waste through Nov 30. Street sweeping roughly monthly (not winter).
-
-== PARKS & RECREATION ==
-The Well: 3993 Cosgray Rd — fitness floor, indoor aquatics, gyms, indoor track, teaching kitchen, The Depot teen space; memberships & day passes; partner OSU Wexner Medical Center. (614) 876-5200.
-Two outdoor pools: Hilliard Family Aquatic Center and Clyde "Butch" Seidle Community Pool — one pass valid at both; passes go on sale each January; prices at hilliardohio.gov/pools-passes/.
-Nearly 27 parks incl. Roger A. Reynolds Municipal Park (shelter rentals $100/day, $50 nonprofit), Hilliard's Station Park (7-mile Heritage Trail trailhead), First Responders Park, Weaver Park.
-Program registration: webtrac.hilliardohio.gov (also mobile app). Rentals: rentals@hilliardohio.gov, (614) 334-2580. 55+ programs (HSC 55+) at The Well; Hilliard Express senior transportation.
-
-== EVENTS ==
-Annual: Independence Day Parade & Freedom Fest (July 4), Fall Festival (Sept 13, 2026), Heritage Day, Pumpkin Float, Beggar's Night/Trick-or-Treat (Oct 31 if Mon–Thu, else preceding Thursday; 2026: Oct 29, 6–8pm), Tree Lighting (Dec 6, 2026), Cram the Cruiser. Calendar: hilliardohio.gov/events/.
-DORA (outdoor drinks, Old Hilliard): 21+, daily noon–9pm (last call 8:30pm), designated cups from participating vendors only.
-
-== PUBLIC RECORDS ==
-No ID, writing, or reason required. Email publicrecords@hilliardohio.gov or Clerk of Council (614) 334-2365. Police records: hpdrecordsunit@hilliardohio.gov, (614) 876-2429, online form, or in person 24/7.
-Copies 5¢/page; emailed records free; no charge if under $20.
-
-== JOBS ==
-Apply ONLY online: governmentjobs.com/careers/cityofhilliard. No residency requirement. Seasonal jobs (lifeguards, camps) via Rec & Parks. HR: (614) 334-1397. Police hiring: hilliardohio.gov/join-the-hpd-team/.
-
-== KNOWN LIMITS (be transparent about these) ==
-Current prices/fees (pool passes, Well memberships, permit fees, program fees) change — direct people to the live page or phone number instead of quoting numbers. Leaf-zone quadrant boundaries are on a PDF map on the leaf page. Fire/EMS is Norwich Township. Property tax is Franklin County. School questions → Hilliard City Schools district (separate from City).
-</script>
-
-<!-- ============ DEFAULT TOPIC CUSTOMIZATIONS ============ -->
-<script type="text/plain" id="topicsDefault">
-[
-  {"id":"t1","name":"Emergencies","keywords":"emergency, house fire, ambulance, heart attack, overdose, break-in, burglary in progress, someone is hurt","mode":"fixed","body":"If this is an emergency, please call 911 right away.\n\nFor police non-emergencies, call the Hilliard Division of Police at (614) 876-7321 (answered 24/7). Fire and EMS in Hilliard are provided by Norwich Township Fire: (614) 876-7694.","enabled":true},
-  {"id":"t2","name":"Legal advice guardrail","keywords":"sue, lawsuit, lawyer, attorney, evict, eviction, custody, court case","mode":"guide","body":"The resident may be asking for legal advice. Provide factual information about city code or processes only, clearly state that the City cannot provide legal advice, and suggest consulting a licensed attorney. For Mayor's Court matters, share the Clerk of Court number (614) 334-2348.","enabled":true},
-  {"id":"t3","name":"Prices and fees","keywords":"cost, fee, price, how much, rate for","mode":"guide","body":"If the question involves current prices or fees (pool passes, memberships, permit fees, program costs), do not quote specific dollar amounts from memory. Direct the resident to the official page or phone number where current pricing is posted.","enabled":true}
-]
-</script>
 
 <script>
 "use strict";
 
-/* ---------- storage helpers ---------- */
-const LS = {
-  get(k, fallback){ try { const v = localStorage.getItem(k); return v === null ? fallback : JSON.parse(v); } catch(e){ return fallback; } },
-  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
-};
-const KB_DEFAULT = document.getElementById('kbDefault').textContent.trim();
-const TOPICS_DEFAULT = JSON.parse(document.getElementById('topicsDefault').textContent);
+/* ======== CONFIGURE: set this to your Cloudflare Worker URL (no trailing slash) ======== */
+const BACKEND = 'https://hilliard-assistant.ralley.workers.dev';
+/* ======================================================================================= */
 
-let topics = LS.get('hilliard_topics', null) || TOPICS_DEFAULT.slice();
-let log = LS.get('hilliard_log', []);
-let kb = LS.get('hilliard_kb', null) || KB_DEFAULT;
-let history = [];           // chat history for API context
-let editingId = null;
+let topics = [];
+let history = [];
 
-/* ---------- tabs ---------- */
-function showPane(name){
-  document.querySelectorAll('.pane').forEach(p => p.classList.remove('visible'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('pane-' + name).classList.add('visible');
-  document.getElementById('tab-' + name).classList.add('active');
-  if(name === 'log') renderLog();
-  if(name === 'topics') renderTopics();
-  if(name === 'settings') loadSettings();
+/* ---------- topics (fetched from backend; customized in /admin) ---------- */
+async function loadTopics(){
+  try{
+    const r = await fetch(BACKEND + '/api/config');
+    const d = await r.json();
+    if(Array.isArray(d.topics)) topics = d.topics;
+  }catch(e){ /* fall back to no customizations */ }
 }
-
-/* ---------- topic matching ---------- */
 function matchTopics(question){
-  return topics.filter(t => t.enabled !== false && t.keywords.split(',')
+  return topics.filter(t => t.enabled !== false && String(t.keywords||'').split(',')
     .map(k => k.trim()).filter(Boolean)
     .some(k => new RegExp('\\b' + k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b','i').test(question)));
 }
 
-/* ---------- simple category tagging for the log ---------- */
+/* ---------- topic tagging for the log ---------- */
 const CATS = [
   ["Trash/Recycling","trash,recycl,garbage,yard waste,bulk,bin,pickup,compost,chipper"],
   ["Taxes","tax,rita,filing"],
@@ -369,13 +107,11 @@ const CATS = [
 function categorize(q, matched){
   if(matched.length) return matched[0].name;
   const s = q.toLowerCase();
-  for(const [name, kws] of CATS){
-    if(kws.split(',').some(k => s.includes(k))) return name;
-  }
+  for(const [name, kws] of CATS){ if(kws.split(',').some(k => s.includes(k))) return name; }
   return "Other";
 }
 
-/* ---------- GIS zoning lookup (City of Hilliard ArcGIS) ---------- */
+/* ---------- GIS zoning lookup (runs in the visitor's browser) ---------- */
 const GIS = {
   parcels: 'https://maps.hilliardohio.gov/arcgis/rest/services/FranklinCoImports/Franklin_County_Parcel_Features/FeatureServer/1/query',
   zoning:  'https://maps.hilliardohio.gov/arcgis/rest/services/Hosted/Zoning_Districts_Public_View/FeatureServer/10/query'
@@ -437,49 +173,18 @@ async function lookupZoning(address){
       source: 'City of Hilliard GIS "Zoning Districts and PUDs" layer (maps.hilliardohio.gov) + Franklin County parcel data'
     };
   }catch(e){
-    return {error:'GIS lookup failed: ' + e.message + '. The map server may be unreachable from this network.'};
+    return {error:'GIS lookup failed: ' + e.message};
   }
 }
-const TOOLS = [{
-  name: 'lookup_zoning',
-  description: "Look up the official zoning district for a street address in Hilliard, Ohio via the City's GIS. Use whenever the resident asks about the zoning, allowed uses, or building rules for a SPECIFIC address or property (e.g. 'what is the zoning at 123 Main St', 'can I open a shop at my house at...', 'is 4000 Davidson Rd commercial?'). Returns the parcel, zoning district code, and for PUDs the name and a link to the governing development text. Never guess a property's zoning — always use this tool.",
-  input_schema: {type:'object', properties:{address:{type:'string', description:"Street address, e.g. '3800 Municipal Way'"}}, required:['address']}
-}];
 
-/* ---------- system prompt ---------- */
-function buildSystemPrompt(matched){
-  let custom = "";
-  const guides = matched.filter(t => t.mode === 'guide');
-  if(guides.length){
-    custom = "\n\n== PRIORITY INSTRUCTIONS FROM CITY STAFF (follow these over anything else) ==\n" +
-      guides.map(t => "• [" + t.name + "] " + t.body).join("\n");
-  }
-  return `You are the Hilliard Assistant, a friendly information agent for the City of Hilliard, Ohio, answering residents' questions on the city's website.
-
-RULES:
-- Answer ONLY from the knowledge base below. If the answer isn't in it, say you're not certain and direct the resident to the right city contact (phone/email/URL from the knowledge base) — never invent facts, phone numbers, prices, or code sections.
-- Keep answers short and practical: 2-6 sentences for most questions. Lead with the direct answer, then the key detail or contact.
-- When a city code rule applies, cite the section number (e.g., "§351.14").
-- Include the relevant URL or phone number when it helps the resident act.
-- You provide general information, not legal advice. For legal interpretation, suggest the resident contact the relevant department or an attorney.
-- If asked about emergencies, always say to call 911 first.
-- ZONING BY ADDRESS: when the question concerns a specific address or property (its zoning, what can be built or operated there), ALWAYS use the lookup_zoning tool first — never guess. Then answer using that district's standards from the knowledge base. If the result is a PUD, explain that the PUD's own approved development text governs (share the pud_text_url link if provided) and refer detailed questions to the Planning Division. If tax_district is not "CITY OF HILLIARD", say the property appears to be outside city zoning jurisdiction. Mention the matched address so the resident can confirm it's the right parcel, and note that GIS results are informational — the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) provides official zoning verification letters.
-- Politely decline questions unrelated to City of Hilliard services, rules, or community life, and steer back to city topics.
-- Today's context: it is ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}.${custom}
-
-== KNOWLEDGE BASE ==
-${kb}`;
-}
-
-/* ---------- chat ---------- */
-function addMsg(role, text, tag){
+/* ---------- chat UI ---------- */
+function addMsg(role, text, tagLabel){
   const wrap = document.getElementById('chatScroll');
   const div = document.createElement('div');
   div.className = 'msg ' + role;
-  if(tag){
+  if(tagLabel){
     const t = document.createElement('span');
-    t.className = 'tag' + (tag.custom ? ' custom' : '');
-    t.textContent = tag.label;
+    t.className = 'tag'; t.textContent = tagLabel;
     div.appendChild(t);
     div.appendChild(document.createElement('br'));
   }
@@ -514,17 +219,11 @@ async function send(){
   const matched = matchTopics(q);
   const topicName = categorize(q, matched);
 
-  // Fixed-answer topic: reply instantly, no API call
+  // Fixed-answer topic: reply instantly, no backend call
   const fixed = matched.find(t => t.mode === 'fixed');
   if(fixed){
-    addMsg('bot', fixed.body, {label: 'Custom response — ' + fixed.name, custom: true});
-    logEntry(q, fixed.body, fixed.name, 'Custom');
-    return;
-  }
-
-  const key = LS.get('hilliard_api_key', '');
-  if(!key){
-    addMsg('bot', 'I\'m not connected yet. Open Settings and enter a Claude API key to enable answers.');
+    addMsg('bot', fixed.body, 'City notice — ' + fixed.name);
+    postLog(q, fixed.body, fixed.name, 'Custom');
     return;
   }
 
@@ -534,31 +233,22 @@ async function send(){
   typing.className = 'typing'; typing.textContent = 'Hilliard Assistant is typing…';
   document.getElementById('chatScroll').appendChild(typing);
 
+  const guides = matched.filter(t => t.mode === 'guide').map(t => '[' + t.name + '] ' + t.body);
+
   try{
     history.push({role:'user', content: q});
     let messages = history.slice(-12);
     let answer = null, usedGIS = false;
     for(let turn = 0; turn < 4; turn++){
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      const resp = await fetch(BACKEND + '/api/chat', {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': key,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: LS.get('hilliard_model', 'claude-sonnet-5'),
-          max_tokens: 900,
-          system: buildSystemPrompt(matched),
-          tools: TOOLS,
-          messages
-        })
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({messages, guides})
       });
       const data = await resp.json();
       if(!resp.ok){
         typing.remove();
-        addMsg('bot', 'Sorry — I hit a connection problem: ' + ((data.error && data.error.message) || ('API error ' + resp.status)));
+        addMsg('bot', 'Sorry — ' + ((data.error && data.error.message) || 'I hit a connection problem. Please try again.'));
         history.pop();
         return;
       }
@@ -580,197 +270,33 @@ async function send(){
     typing.remove();
     if(answer === null){ answer = 'Sorry — I couldn\'t finish that lookup. Please try again.'; }
     history.push({role:'assistant', content: answer});
-    const guided = matched.filter(t => t.mode === 'guide');
-    const tagBits = [];
-    if(guided.length) tagBits.push('Customized — ' + guided.map(t=>t.name).join(', '));
-    if(usedGIS) tagBits.push('Checked city zoning GIS');
-    addMsg('bot', answer, tagBits.length ? {label: tagBits.join(' · '), custom: guided.length > 0} : null);
-    logEntry(q, answer, topicName, (guided.length ? 'AI + custom' : 'AI') + (usedGIS ? ' + GIS' : ''));
+    addMsg('bot', answer, usedGIS ? 'Checked the official city zoning map' : null);
+    postLog(q, answer, topicName, (guides.length ? 'AI + custom' : 'AI') + (usedGIS ? ' + GIS' : ''));
   }catch(err){
     typing.remove();
-    addMsg('bot', 'Sorry — I couldn\'t reach the answer service (' + err.message + '). Check your internet connection and API key in Settings.');
+    addMsg('bot', 'Sorry — I couldn\'t reach the answer service. Please check your connection and try again, or call the City at (614) 876-7361.');
     history.pop();
   }finally{
     btn.disabled = false;
   }
 }
 
+function postLog(question, answer, topic, source){
+  fetch(BACKEND + '/api/log', {
+    method: 'POST', headers: {'content-type': 'application/json'},
+    body: JSON.stringify({question, answer, topic, source})
+  }).catch(() => {});
+}
+
 document.getElementById('chatInput').addEventListener('keydown', e => {
   if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); }
 });
 
-/* ---------- logging ---------- */
-function logEntry(q, a, topic, source){
-  log.push({ts: new Date().toISOString(), question: q, answer: a, topic, source, model: source==='Custom' ? '' : LS.get('hilliard_model','claude-sonnet-5')});
-  LS.set('hilliard_log', log);
-}
-function renderLog(){
-  const body = document.getElementById('logBody');
-  body.innerHTML = '';
-  [...log].reverse().forEach(e => {
-    const tr = document.createElement('tr');
-    const d = new Date(e.ts);
-    const cells = [
-      d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-      e.question,
-      e.answer.length > 260 ? e.answer.slice(0,260) + '…' : e.answer,
-      e.topic, e.source
-    ];
-    cells.forEach((c,i) => { const td = document.createElement('td'); if(i===2) td.className='ans'; td.textContent = c; tr.appendChild(td); });
-    body.appendChild(tr);
-  });
-  const byTopic = {};
-  log.forEach(e => byTopic[e.topic] = (byTopic[e.topic]||0)+1);
-  const top = Object.entries(byTopic).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t,n])=>t+' ('+n+')').join(', ');
-  document.getElementById('logStats').textContent = log.length + ' question' + (log.length===1?'':'s') + ' logged' + (top ? ' — top topics: ' + top : '');
-}
-function csvCell(v){ return '"' + String(v ?? '').replace(/"/g,'""') + '"'; }
-function downloadCSV(){
-  const rows = [['Timestamp','Question','Answer','Topic','Source','Model']];
-  log.forEach(e => rows.push([new Date(e.ts).toLocaleString(), e.question, e.answer, e.topic, e.source, e.model]));
-  const csv = '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
-  downloadFile(csv, 'hilliard-chat-log-' + new Date().toISOString().slice(0,10) + '.csv', 'text/csv;charset=utf-8');
-}
-function downloadLogJSON(){
-  downloadFile(JSON.stringify(log, null, 2), 'hilliard-chat-log.json', 'application/json');
-}
-function downloadFile(content, name, type){
-  const blob = new Blob([content], {type});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = name; a.click();
-  URL.revokeObjectURL(a.href);
-}
-function clearLog(){
-  if(confirm('Delete all ' + log.length + ' logged questions? Download the spreadsheet first if you want to keep them.')){
-    log = []; LS.set('hilliard_log', log); renderLog();
-  }
-}
-
-/* ---------- topics admin ---------- */
-function renderTopics(){
-  const list = document.getElementById('topicList');
-  list.innerHTML = '';
-  if(!topics.length){ list.innerHTML = '<p class="statline" style="padding:8px">No topics yet — add one above.</p>'; return; }
-  topics.forEach(t => {
-    const div = document.createElement('div');
-    div.className = 'topic-item';
-    const modeLabel = t.enabled === false ? 'off' : t.mode;
-    div.innerHTML =
-      '<div class="t-head"><span class="t-name"></span>' +
-      '<span class="t-mode ' + (t.enabled===false?'off':(t.mode==='fixed'?'fixed':'guide')) + '">' + (t.enabled===false?'Disabled':(t.mode==='fixed'?'Fixed answer':'Guides AI')) + '</span>' +
-      '<div style="margin-left:auto;display:flex;gap:6px">' +
-      '<button class="btn small ghost" data-act="toggle">' + (t.enabled===false?'Enable':'Disable') + '</button>' +
-      '<button class="btn small ghost" data-act="edit">Edit</button>' +
-      '<button class="btn small danger" data-act="del">Delete</button></div></div>' +
-      '<div class="t-kw"></div><div class="t-body"></div>';
-    div.querySelector('.t-name').textContent = t.name;
-    div.querySelector('.t-kw').textContent = 'Keywords: ' + t.keywords;
-    div.querySelector('.t-body').textContent = t.body;
-    div.querySelector('[data-act=toggle]').onclick = () => { t.enabled = t.enabled === false; LS.set('hilliard_topics', topics); renderTopics(); };
-    div.querySelector('[data-act=edit]').onclick = () => editTopic(t.id);
-    div.querySelector('[data-act=del]').onclick = () => { if(confirm('Delete topic "' + t.name + '"?')){ topics = topics.filter(x => x.id !== t.id); LS.set('hilliard_topics', topics); renderTopics(); } };
-    list.appendChild(div);
-  });
-}
-function saveTopic(){
-  const name = document.getElementById('tName').value.trim();
-  const keywords = document.getElementById('tKeywords').value.trim();
-  const mode = document.getElementById('tMode').value;
-  const body = document.getElementById('tBody').value.trim();
-  if(!name || !keywords || !body){ alert('Please fill in the topic name, keywords, and text.'); return; }
-  if(editingId){
-    const t = topics.find(x => x.id === editingId);
-    Object.assign(t, {name, keywords, mode, body});
-  } else {
-    topics.push({id: 't' + Date.now(), name, keywords, mode, body, enabled: true});
-  }
-  LS.set('hilliard_topics', topics);
-  cancelEdit(); renderTopics();
-}
-function editTopic(id){
-  const t = topics.find(x => x.id === id);
-  if(!t) return;
-  editingId = id;
-  document.getElementById('tName').value = t.name;
-  document.getElementById('tKeywords').value = t.keywords;
-  document.getElementById('tMode').value = t.mode;
-  document.getElementById('tBody').value = t.body;
-  document.getElementById('tSaveBtn').textContent = 'Save changes';
-  document.getElementById('tCancelBtn').style.display = '';
-  document.getElementById('pane-topics').scrollTop = 0;
-}
-function cancelEdit(){
-  editingId = null;
-  ['tName','tKeywords','tBody'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('tMode').value = 'guide';
-  document.getElementById('tSaveBtn').textContent = 'Add topic';
-  document.getElementById('tCancelBtn').style.display = 'none';
-}
-function exportTopics(){ downloadFile(JSON.stringify(topics, null, 2), 'hilliard-topics.json', 'application/json'); }
-function importTopics(ev){
-  const f = ev.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try{
-      const arr = JSON.parse(r.result);
-      if(!Array.isArray(arr)) throw new Error('not an array');
-      topics = arr; LS.set('hilliard_topics', topics); renderTopics();
-    }catch(e){ alert('Could not import: ' + e.message); }
-  };
-  r.readAsText(f);
-  ev.target.value = '';
-}
-
-/* ---------- settings ---------- */
-function loadSettings(){
-  document.getElementById('apiKey').value = LS.get('hilliard_api_key','');
-  document.getElementById('modelSel').value = LS.get('hilliard_model','claude-sonnet-5');
-  document.getElementById('kbEdit').value = kb;
-  document.getElementById('kbStat').textContent = Math.round(kb.length/1000) + 'k characters' + (kb === KB_DEFAULT ? ' (original)' : ' (edited)');
-  renderKeyStatus();
-}
-function renderKeyStatus(){
-  const el = document.getElementById('keyStatus');
-  el.innerHTML = LS.get('hilliard_api_key','')
-    ? '<div class="ok">✓ API key saved in this browser. The assistant is ready to answer questions.</div>'
-    : '<div class="warn">⚠ No API key yet — the chat can only serve Fixed-answer topics until you add one below.</div>';
-}
-function saveSettings(){
-  LS.set('hilliard_api_key', document.getElementById('apiKey').value.trim());
-  LS.set('hilliard_model', document.getElementById('modelSel').value);
-  renderKeyStatus();
-  document.getElementById('testResult').textContent = 'Saved.';
-}
-async function testKey(){
-  const out = document.getElementById('testResult');
-  out.textContent = 'Testing…';
-  const key = document.getElementById('apiKey').value.trim();
-  if(!key){ out.textContent = 'Enter a key first.'; return; }
-  try{
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body: JSON.stringify({model: document.getElementById('modelSel').value, max_tokens: 10, messages:[{role:'user',content:'Say OK'}]})
-    });
-    if(resp.ok){ out.textContent = '✓ Connection works.'; }
-    else { const d = await resp.json(); out.textContent = '✗ ' + ((d.error && d.error.message) || resp.status); }
-  }catch(e){ out.textContent = '✗ ' + e.message; }
-}
-function saveKB(){
-  kb = document.getElementById('kbEdit').value;
-  LS.set('hilliard_kb', kb);
-  document.getElementById('kbStat').textContent = 'Saved — ' + Math.round(kb.length/1000) + 'k characters (edited)';
-}
-function resetKB(){
-  if(confirm('Replace your edits with the original knowledge base?')){
-    kb = KB_DEFAULT; LS.set('hilliard_kb', kb); loadSettings();
-  }
-}
-
 /* ---------- boot ---------- */
 addMsg('bot', "Hi! I'm the Hilliard Assistant. I can answer questions about City of Hilliard services, rules, and contacts — trash pickup, permits, parks, taxes, city code, and more. I can also look up the zoning for any Hilliard address on the city's official map. What can I help you with?");
-if(!LS.get('hilliard_api_key','')){
-  addMsg('bot', 'Setup note for staff: open the Settings tab and add a Claude API key to activate answers. (Residents won\'t see this once configured.)');
+loadTopics();
+if(BACKEND.includes('YOUR-WORKER-NAME')){
+  addMsg('bot', 'Setup note: the BACKEND constant at the top of this file has not been set to your Cloudflare Worker URL yet. Residents will not be able to get answers until it is.');
 }
 </script>
 </body>
