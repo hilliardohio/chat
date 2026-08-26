@@ -33,6 +33,9 @@
   .chips button{background:#fff;border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:12.5px;cursor:pointer;color:var(--navy)}
   .chips button:hover{border-color:var(--navy)}
   .typing{color:var(--muted);font-style:italic;font-size:13px;padding:6px 4px}
+  .letter{background:#fbfcfd;border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:8px;padding:12px 14px;margin:10px 0;font-size:13px}
+  .letter .lt{font-weight:800;color:var(--navy);font-size:13.5px;letter-spacing:.3px;margin-bottom:2px}
+  .printBtn{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;margin-top:4px}
   @media (max-width:640px){ .msg{max-width:92%} header h1{font-size:14px} }
 </style>
 </head>
@@ -58,6 +61,7 @@
       <button onclick="ask('What is the zoning for 3800 Municipal Way?')">Zoning by address</button>
       <button onclick="ask('How big is the property at 3993 Cosgray Rd and who owns it?')">Property info</button>
       <button onclick="ask('How do I see the permits that have been issued for my property?')">Permit history</button>
+      <button onclick="ask('Can I get a zoning letter for 3800 Municipal Way?')">Zoning letter</button>
     </div>
     <div id="inputRow">
       <textarea id="chatInput" rows="1" placeholder="Ask a question about City of Hilliard services, rules, or contacts…"></textarea>
@@ -205,9 +209,50 @@ function addMsg(role, text, tagLabel){
     div.appendChild(t);
     div.appendChild(document.createElement('br'));
   }
-  div.appendChild(linkify(text));
+  renderBody(div, text, role);
   wrap.appendChild(div);
   wrap.scrollTop = wrap.scrollHeight;
+}
+function renderBody(div, text, role){
+  const m = role === 'bot' ? text.match(/<<<LETTER>>>([\s\S]*?)<<<END LETTER>>>/) : null;
+  if(!m){ div.appendChild(linkify(text)); return; }
+  const before = text.slice(0, m.index).trim();
+  const after = text.slice(m.index + m[0].length).trim();
+  const body = m[1].trim();
+  if(before){ div.appendChild(linkify(before)); }
+  const box = document.createElement('div');
+  box.className = 'letter';
+  const lt = document.createElement('div');
+  lt.className = 'lt'; lt.textContent = 'INFORMATIONAL ZONING SUMMARY';
+  box.appendChild(lt);
+  box.appendChild(linkify(body));
+  div.appendChild(box);
+  const btn = document.createElement('button');
+  btn.className = 'printBtn';
+  btn.textContent = 'Print / Save as PDF';
+  btn.onclick = () => printLetter(body);
+  div.appendChild(btn);
+  if(after){ div.appendChild(document.createElement('br')); div.appendChild(linkify(after)); }
+}
+function printLetter(body){
+  const w = window.open('', '_blank');
+  if(!w){ alert('Please allow pop-ups to print the letter.'); return; }
+  const esc = body.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  w.document.write('<!DOCTYPE html><html><head><title>Informational Zoning Summary</title><style>'
+    + "body{font-family:Georgia,'Times New Roman',serif;color:#1d2b36;max-width:7.2in;margin:40px auto;line-height:1.55;font-size:13.5px}"
+    + ".lh{border-bottom:3px solid #1b3a5c;padding-bottom:12px;margin-bottom:6px}"
+    + ".lh h1{font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#1b3a5c;font-size:22px;margin:0}"
+    + ".lh .sub{font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#5c6b78;font-size:11.5px;margin-top:3px}"
+    + ".banner{background:#fdf3dc;border:1px solid #ecd9a0;padding:8px 12px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:.3px;margin:14px 0;text-transform:uppercase;color:#7a5a00}"
+    + 'pre{white-space:pre-wrap;font:inherit;margin:0}'
+    + '@media print{.noprint{display:none}}'
+    + '</style></head><body>'
+    + '<div class="lh"><h1>City of Hilliard, Ohio</h1><div class="sub">Hilliard Assistant &middot; hilliardohio.gov &middot; (614) 876-7361 &middot; 3800 Municipal Way, Hilliard, OH 43026</div></div>'
+    + '<div class="banner">Informational zoning summary &mdash; not an official Zoning Verification Letter</div>'
+    + '<pre>' + esc + '</pre>'
+    + '<p class="noprint"><button onclick="window.print()">Print</button></p>'
+    + '</body></html>');
+  w.document.close();
 }
 function linkify(text){
   const frag = document.createDocumentFragment();
