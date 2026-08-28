@@ -237,8 +237,21 @@ function renderBody(div, text, role){
 function printLetter(body){
   const w = window.open('', '_blank');
   if(!w){ alert('Please allow pop-ups to print the letter.'); return; }
-  const esc = body.replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  let esc = body.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  // Convert markdown links to anchors first, protecting them with placeholders
+  // so the bare-URL pass below can't double-wrap their href.
+  const anchors = [];
+  esc = esc.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (mm, label, url) => {
+    anchors.push('<a href="' + url + '" target="_blank" rel="noopener">' + label + '</a>');
+    return '\uE000' + (anchors.length - 1) + '\uE000';
+  });
+  esc = esc.replace(/(https?:\/\/[^\s<]+|(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s<]*)?)/gi, (u) => {
+    let trail = ''; const tm = u.match(URL_TRAIL);
+    if(tm){ trail = u.slice(u.length - tm[0].length); u = u.slice(0, u.length - tm[0].length); }
+    const href = u.startsWith('http') ? u : 'https://' + u;
+    return '<a href="' + href + '" target="_blank" rel="noopener">' + u + '</a>' + trail;
+  });
+  esc = esc.replace(/\uE000(\d+)\uE000/g, (mm, i) => anchors[+i]);
   w.document.write('<!DOCTYPE html><html><head><title>Informational Zoning Summary</title><style>'
     + "body{font-family:Georgia,'Times New Roman',serif;color:#1d2b36;max-width:7.2in;margin:40px auto;line-height:1.55;font-size:13.5px}"
     + ".lh{border-bottom:3px solid #1b3a5c;padding-bottom:12px;margin-bottom:6px}"
@@ -270,16 +283,25 @@ function linkify(text){
   frag.appendChild(autolink(text.slice(last)));
   return frag;
 }
+// Match a full http(s) URL (any chars incl. dots in the path, up to whitespace)
+// OR a bare domain ending in gov/com/org/net with an optional path.
+const URL_RE = /(https?:\/\/[^\s<]+|(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s<]*)?)/gi;
+// Trailing punctuation that is almost never part of a URL (sentence enders).
+const URL_TRAIL = /[)\].,;:!?'"]+$/;
 function autolink(text){
   const frag = document.createDocumentFragment();
-  const re = /((?:https?:\/\/)?(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s),.;]*)?)/gi;
   let last = 0, m;
-  while((m = re.exec(text)) !== null){
+  URL_RE.lastIndex = 0;
+  while((m = URL_RE.exec(text)) !== null){
     frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+    let raw = m[1], trail = '';
+    const tm = raw.match(URL_TRAIL);
+    if(tm){ trail = raw.slice(raw.length - tm[0].length); raw = raw.slice(0, raw.length - tm[0].length); }
     const a = document.createElement('a');
-    a.href = m[1].startsWith('http') ? m[1] : 'https://' + m[1];
-    a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener';
+    a.href = raw.startsWith('http') ? raw : 'https://' + raw;
+    a.textContent = raw; a.target = '_blank'; a.rel = 'noopener';
     frag.appendChild(a);
+    if(trail) frag.appendChild(document.createTextNode(trail));
     last = m.index + m[1].length;
   }
   frag.appendChild(document.createTextNode(text.slice(last)));
