@@ -237,7 +237,8 @@ function renderBody(div, text, role){
 function printLetter(body){
   const w = window.open('', '_blank');
   if(!w){ alert('Please allow pop-ups to print the letter.'); return; }
-  const esc = body.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const esc = body.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
   w.document.write('<!DOCTYPE html><html><head><title>Informational Zoning Summary</title><style>'
     + "body{font-family:Georgia,'Times New Roman',serif;color:#1d2b36;max-width:7.2in;margin:40px auto;line-height:1.55;font-size:13.5px}"
     + ".lh{border-bottom:3px solid #1b3a5c;padding-bottom:12px;margin-bottom:6px}"
@@ -254,7 +255,22 @@ function printLetter(body){
     + '</body></html>');
   w.document.close();
 }
+// Render markdown links [label](url) as clickable labels, and auto-link bare URLs elsewhere.
 function linkify(text){
+  const frag = document.createDocumentFragment();
+  const md = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  let last = 0, m;
+  while((m = md.exec(text)) !== null){
+    frag.appendChild(autolink(text.slice(last, m.index)));
+    const a = document.createElement('a');
+    a.href = m[2]; a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener';
+    frag.appendChild(a);
+    last = m.index + m[0].length;
+  }
+  frag.appendChild(autolink(text.slice(last)));
+  return frag;
+}
+function autolink(text){
   const frag = document.createDocumentFragment();
   const re = /((?:https?:\/\/)?(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s),.;]*)?)/gi;
   let last = 0, m;
