@@ -135,26 +135,52 @@ function normalizeAddress(addr){
     .replace(/\b\d{5}(-\d{4})?\b/g,'')
     .replace(/\s+/g,' ').trim();
 }
+const PARCEL_FIELDS = 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,Shape__Area';
+const PARCEL_SUFFIX = ['RD','ROAD','DR','DRIVE','ST','STREET','AVE','AVENUE','AV','LN','LANE','CT','COURT','BLVD','BOULEVARD','WAY','WY','CIR','CIRCLE','PL','PLACE','PKWY','PARKWAY','SQ','SQUARE','TRL','TRAIL','LOOP','RUN','XING','CROSSING'];
+// Match a parcel from an address string that has a house number.
+async function parcelByAddress(address){
+  const norm = normalizeAddress(String(address || ''));
+  const m = norm.match(/^(\d+)\s+(.+)$/);
+  if(!m) return null;
+  const num = m[1], words = m[2].split(' ');
+  const core = words.filter(w => !PARCEL_SUFFIX.includes(w)).join(' ');
+  const patterns = [...new Set([num+' '+words.join(' '), num+' '+core, num+' '+words[0]])];
+  for(const pat of patterns){
+    const d = await gisQuery(GIS.parcels, {
+      where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
+      outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', resultRecordCount: '5'
+    });
+    if(d.features && d.features.length) return d.features;
+  }
+  return null;
+}
+// Match a parcel by a lon/lat point (WGS84) via spatial intersect.
+async function parcelByPoint(lon, lat){
+  const d = await gisQuery(GIS.parcels, {
+    geometry: lon+','+lat, geometryType:'esriGeometryPoint', inSR:'4326', spatialRel:'esriSpatialRelIntersects',
+    outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', resultRecordCount: '3'
+  });
+  return (d.features && d.features.length) ? d.features : null;
+}
+// Resolve a place/business/landmark name (or fuzzy address) to a point via the Worker's geocoder.
+async function geocodePlace(q){
+  try{ const g = await fetch(BACKEND + '/api/geocode?q=' + encodeURIComponent(q)).then(r=>r.json()); return (g && !g.error && g.lat) ? g : null; }
+  catch(e){ return null; }
+}
 async function lookupZoning(address){
   try{
-    const norm = normalizeAddress(String(address || ''));
-    const m = norm.match(/^(\d+)\s+(.+)$/);
-    if(!m) return {error:'Need a street address with a house number, e.g. "3800 Municipal Way".'};
-    const num = m[1], words = m[2].split(' ');
-    const SUFFIX = ['RD','ROAD','DR','DRIVE','ST','STREET','AVE','AVENUE','AV','LN','LANE','CT','COURT','BLVD','BOULEVARD','WAY','WY','CIR','CIRCLE','PL','PLACE','PKWY','PARKWAY','SQ','SQUARE','TRL','TRAIL','LOOP','RUN','XING','CROSSING'];
-    const core = words.filter(w => !SUFFIX.includes(w)).join(' ');
-    const patterns = [...new Set([num+' '+words.join(' '), num+' '+core, num+' '+words[0]])];
-    let feats = [];
-    for(const pat of patterns){
-      const d = await gisQuery(GIS.parcels, {
-        where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
-        outFields: 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,Shape__Area',
-        returnCentroid: 'true', returnGeometry: 'false', resultRecordCount: '5'
-      });
-      feats = d.features || [];
-      if(feats.length) break;
+    let feats = await parcelByAddress(address);
+    let resolved_place;
+    if(!feats){
+      // No direct address match — try resolving a place/business/landmark name.
+      const g = await geocodePlace(address);
+      if(g){
+        if(g.streetAddress) feats = await parcelByAddress(g.streetAddress);
+        if(!feats) feats = await parcelByPoint(g.lon, g.lat);
+        if(feats) resolved_place = { query: String(address), resolved_address: g.streetAddress || feats[0].attributes.SITEADDRESS, note: 'resolved from a place/landmark name via public geocoder — confirm it is the intended property' };
+      }
     }
-    if(!feats.length) return {error:'No parcel found matching "' + address + '" in the county parcel layer. It may be outside the Hilliard area or spelled differently.'};
+    if(!feats) return {error:'Could not find a Hilliard parcel for "' + address + '". Try a specific street address (e.g., "4656 Cemetery Rd"), or contact the Planning Division at (614) 334-2366.'};
     const p = feats[0], c = p.centroid;
     const z = await gisQuery(GIS.zoning, {
       geometry: c.x + ',' + c.y, geometryType: 'esriGeometryPoint', inSR: '102723',
@@ -173,6 +199,7 @@ async function lookupZoning(address){
     const PCLASS_MAP = {R:'Residential', C:'Commercial', I:'Industrial', A:'Agricultural', E:'Exempt (government/institutional)', M:'Mineral', U:'Utility'};
     return {
       matched_address: at.SITEADDRESS,
+      resolved_place: resolved_place,
       parcel_id: at.PARCELID,
       tax_district: at.CVTTXDSCRP,
       school_district: at.SCHLDSCRP,
