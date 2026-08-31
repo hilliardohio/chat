@@ -120,8 +120,24 @@ function categorize(q, matched){
 /* ---------- GIS zoning lookup (runs in the visitor's browser) ---------- */
 const GIS = {
   parcels: 'https://maps.hilliardohio.gov/arcgis/rest/services/FranklinCoImports/Franklin_County_Parcel_Features/FeatureServer/1/query',
-  zoning:  'https://maps.hilliardohio.gov/arcgis/rest/services/Hosted/Zoning_Districts_Public_View/FeatureServer/10/query'
+  zoning:  'https://maps.hilliardohio.gov/arcgis/rest/services/Hosted/Zoning_Districts_Public_View/FeatureServer/10/query',
+  // Franklin County's live parcel service (authoritative & current — the City layer above
+  // is a periodic import that lags recent sales/ownership changes). Used to refresh the
+  // property details (owner, last transfer, acreage, year built) by parcel ID.
+  countyParcels: 'https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0/query'
 };
+// Pull the current Franklin County Auditor attributes for a parcel id (or null on failure).
+async function countyParcelDetails(pid){
+  if(!pid) return null;
+  try{
+    const d = await gisQuery(GIS.countyParcels, {
+      where: "PARCELID='" + String(pid).replace(/'/g,"''") + "'",
+      outFields: 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,ACRES',
+      returnGeometry: 'false', resultRecordCount: '1'
+    });
+    return (d.features && d.features[0]) ? d.features[0].attributes : null;
+  }catch(e){ return null; }
+}
 async function gisQuery(url, params){
   const r = await fetch(url + '?' + new URLSearchParams({f:'json', ...params}));
   if(!r.ok) throw new Error('GIS server returned ' + r.status);
@@ -196,24 +212,31 @@ async function lookupZoning(address){
       rezoning_ordinance: f.attributes.post_2014 || undefined
     }));
     const at = p.attributes;
+    // Refresh the property details from Franklin County's live parcel service (current);
+    // fall back to the City's imported attributes only if the county lookup is unavailable.
+    const cty = await countyParcelDetails(at.PARCELID);
+    const S = cty || at;
+    const acres = (S.ACRES != null && S.ACRES !== '') ? +(+S.ACRES).toFixed(3)
+                : (at.Shape__Area ? +(at.Shape__Area / 43560).toFixed(3) : undefined);
     const PCLASS_MAP = {R:'Residential', C:'Commercial', I:'Industrial', A:'Agricultural', E:'Exempt (government/institutional)', M:'Mineral', U:'Utility'};
     return {
-      matched_address: at.SITEADDRESS,
+      matched_address: S.SITEADDRESS || at.SITEADDRESS,
       resolved_place: resolved_place,
       parcel_id: at.PARCELID,
-      tax_district: at.CVTTXDSCRP,
-      school_district: at.SCHLDSCRP,
+      tax_district: S.CVTTXDSCRP || at.CVTTXDSCRP,
+      school_district: S.SCHLDSCRP || at.SCHLDSCRP,
       zoning: zones.length ? zones : 'No Hilliard zoning polygon at this location — if tax_district is not CITY OF HILLIARD, the property is outside city zoning jurisdiction (contact Franklin County or the township).',
       property_details_from_county_auditor_data: {
-        owner: [at.OWNERNME1, at.OWNERNME2].filter(Boolean).join(' & ') || undefined,
-        parcel_size_acres: at.Shape__Area ? +(at.Shape__Area / 43560).toFixed(3) : undefined,
-        legal_description_note: at.PRPRTYDSCRP3 || undefined,
-        residence_year_built: at.RESYRBLT || undefined,
-        last_transfer_date: at.SALEDATE ? new Date(at.SALEDATE).toISOString().slice(0,10) : undefined,
-        last_transfer_price: (at.SALEPRICE || at.SALEPRICE === 0) ? at.SALEPRICE : undefined,
-        property_class: PCLASS_MAP[at.PCLASS] || at.PCLASS || undefined,
-        subdivision_or_condo: at.CNVYNAME || undefined,
-        homestead_exemption: at.HOMSTD === 'Y' ? 'Yes' : (at.HOMSTD === 'N' ? 'No' : undefined),
+        owner: [S.OWNERNME1, S.OWNERNME2].filter(Boolean).join(' & ') || undefined,
+        parcel_size_acres: acres,
+        legal_description_note: S.PRPRTYDSCRP3 || undefined,
+        residence_year_built: S.RESYRBLT || undefined,
+        last_transfer_date: S.SALEDATE ? new Date(S.SALEDATE).toISOString().slice(0,10) : undefined,
+        last_transfer_price: (S.SALEPRICE || S.SALEPRICE === 0) ? S.SALEPRICE : undefined,
+        property_class: PCLASS_MAP[S.PCLASS] || S.PCLASS || undefined,
+        subdivision_or_condo: S.CNVYNAME || undefined,
+        homestead_exemption: S.HOMSTD === 'Y' ? 'Yes' : (S.HOMSTD === 'N' ? 'No' : undefined),
+        data_source: cty ? 'Franklin County Auditor live parcel records (current)' : 'City of Hilliard county-data import (may lag recent sales)',
         full_records_link: 'https://property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address'
       },
       permit_history_link: 'https://hilliardoh.portal.opengov.com/search — resident can type the address under "Locations" to see every active and historical permit for this property',
