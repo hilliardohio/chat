@@ -153,53 +153,134 @@ function normalizeAddress(addr){
 }
 const PARCEL_FIELDS = 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,Shape__Area';
 const PARCEL_SUFFIX = ['RD','ROAD','DR','DRIVE','ST','STREET','AVE','AVENUE','AV','LN','LANE','CT','COURT','BLVD','BOULEVARD','WAY','WY','CIR','CIRCLE','PL','PLACE','PKWY','PARKWAY','SQ','SQUARE','TRL','TRAIL','LOOP','RUN','XING','CROSSING'];
-// Match a parcel from an address string that has a house number.
-async function parcelByAddress(address){
+function addressPatterns(address){
   const norm = normalizeAddress(String(address || ''));
   const m = norm.match(/^(\d+)\s+(.+)$/);
   if(!m) return null;
   const num = m[1], words = m[2].split(' ');
   const core = words.filter(w => !PARCEL_SUFFIX.includes(w)).join(' ');
-  const patterns = [...new Set([num+' '+words.join(' '), num+' '+core, num+' '+words[0]])];
+  return [...new Set([num+' '+words.join(' '), num+' '+core, num+' '+words[0]])];
+}
+// Match a parcel from an address string that has a house number (City parcel layer).
+async function parcelByAddress(address){
+  const patterns = addressPatterns(address);
+  if(!patterns) return null;
   for(const pat of patterns){
     const d = await gisQuery(GIS.parcels, {
       where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
-      outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', resultRecordCount: '5'
+      outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', outSR: '4326', resultRecordCount: '5'
     });
     if(d.features && d.features.length) return d.features;
   }
   return null;
 }
-// Match a parcel by a lon/lat point (WGS84) via spatial intersect.
+// Match a parcel by a lon/lat point (WGS84) via spatial intersect (City parcel layer).
 async function parcelByPoint(lon, lat){
   const d = await gisQuery(GIS.parcels, {
     geometry: lon+','+lat, geometryType:'esriGeometryPoint', inSR:'4326', spatialRel:'esriSpatialRelIntersects',
-    outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', resultRecordCount: '3'
+    outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', outSR: '4326', resultRecordCount: '3'
   });
   return (d.features && d.features.length) ? d.features : null;
+}
+// Franklin County's live parcel layer (county-wide, authoritative) as a fallback when the
+// City's import has no match. It doesn't return centroids, so compute one from the geometry.
+const COUNTY_FIELDS = 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,ACRES';
+function withCentroid(feats){
+  return (feats || []).map(f => {
+    if(!f.centroid && f.geometry && f.geometry.rings && f.geometry.rings.length){
+      let xs = 0, ys = 0, n = 0;
+      for(const ring of f.geometry.rings) for(const pt of ring){ xs += pt[0]; ys += pt[1]; n++; }
+      f.centroid = n ? { x: xs/n, y: ys/n } : null;
+    }
+    return f;
+  });
+}
+async function countyParcelByAddress(address){
+  const patterns = addressPatterns(address);
+  if(!patterns) return null;
+  for(const pat of patterns){
+    try{
+      const d = await gisQuery(GIS.countyParcels, {
+        where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
+        outFields: COUNTY_FIELDS, returnGeometry: 'true', outSR: '4326', resultRecordCount: '5'
+      });
+      if(d.features && d.features.length) return withCentroid(d.features);
+    }catch(e){}
+  }
+  return null;
+}
+async function countyParcelByPoint(lon, lat){
+  try{
+    const d = await gisQuery(GIS.countyParcels, {
+      geometry: lon+','+lat, geometryType:'esriGeometryPoint', inSR:'4326', spatialRel:'esriSpatialRelIntersects',
+      outFields: COUNTY_FIELDS, returnGeometry: 'true', outSR: '4326', resultRecordCount: '3'
+    });
+    return (d.features && d.features.length) ? withCentroid(d.features) : null;
+  }catch(e){ return null; }
+}
+// Search the Planning & Zoning application master list (served by the Worker from the published CSV).
+async function searchProjectsViaWorker(q){
+  try{ return await fetch(BACKEND + '/api/projects?q=' + encodeURIComponent(q || '')).then(r => r.json()); }
+  catch(e){ return { unavailable: true, reason: e.message }; }
 }
 // Resolve a place/business/landmark name (or fuzzy address) to a point via the Worker's geocoder.
 async function geocodePlace(q){
   try{ const g = await fetch(BACKEND + '/api/geocode?q=' + encodeURIComponent(q)).then(r=>r.json()); return (g && !g.error && g.lat) ? g : null; }
   catch(e){ return null; }
 }
+// City's public interactive zoning map (ArcGIS Instant App "Zone Lookup").
+const ZONE_LOOKUP_APP = 'https://maps.hilliardohio.gov/portal/apps/instant/lookup/index.html?appid=417de4a1ec914ade845ae8bf746bc65f';
+// Static zoning-map image (City "Hilliard" map service: Zoning Districts + Tax Parcels + labels),
+// a deep link that opens this parcel on the live Zone Lookup map, and the full-map link.
+function zoningMapUrls(lon, lat){
+  const dlon = 0.0030, dlat = 0.0017; // ~1,700 x 1,250 ft window (4:3)
+  const bbox = [lon-dlon, lat-dlat, lon+dlon, lat+dlat].map(v => v.toFixed(6)).join(',');
+  const pt = lon.toFixed(6) + ',' + lat.toFixed(6);
+  return {
+    image_url: 'https://maps.hilliardohio.gov/arcgis/rest/services/Hilliard/MapServer/export?bbox=' + bbox +
+      '&bboxSR=4326&imageSR=102723&size=480,360&format=png&layers=show:5,3,16&transparent=false&f=image',
+    live_map_url: ZONE_LOOKUP_APP + '&find=' + pt + '&center=' + pt + '&level=17',
+    full_map_url: ZONE_LOOKUP_APP,
+    note: 'The property is at the center of the map image; clicking the image opens this parcel on the live City Zone Lookup map.'
+  };
+}
+// Direct link to a parcel's profile on the Franklin County Auditor site (pin = parcel digits + "00").
+function auditorLink(pid){
+  const d = String(pid || '').replace(/\D/g, '');
+  if(!d) return 'https://property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address';
+  return 'https://property.franklincountyauditor.com/_web/Datalets/Datalet.aspx?mode=profileall&UseSearch=no&pin=' + (d.length === 9 ? d + '00' : d);
+}
+window.lastZoning = null;
 async function lookupZoning(address){
   try{
     let feats = await parcelByAddress(address);
-    let resolved_place;
+    let resolved_place, found_via = 'City of Hilliard parcel layer';
     if(!feats){
       // No direct address match — try resolving a place/business/landmark name.
       const g = await geocodePlace(address);
       if(g){
         if(g.streetAddress) feats = await parcelByAddress(g.streetAddress);
         if(!feats) feats = await parcelByPoint(g.lon, g.lat);
-        if(feats) resolved_place = { query: String(address), resolved_address: g.streetAddress || feats[0].attributes.SITEADDRESS, note: 'resolved from a place/landmark name via public geocoder — confirm it is the intended property' };
+        if(feats){
+          found_via = 'geocoded place name';
+          resolved_place = { query: String(address), resolved_address: g.streetAddress || feats[0].attributes.SITEADDRESS, note: 'resolved from a place/landmark name via public geocoder — confirm it is the intended property' };
+        } else {
+          // Not in the City layer — check Franklin County Auditor records at that point.
+          feats = await countyParcelByPoint(g.lon, g.lat);
+          if(feats) found_via = 'Franklin County Auditor records (address not in the City parcel layer)';
+        }
       }
     }
-    if(!feats) return {error:'Could not find a Hilliard parcel for "' + address + '". Try a specific street address (e.g., "4656 Cemetery Rd"), or contact the Planning Division at (614) 334-2366.'};
+    if(!feats){
+      // Last resort: search Franklin County Auditor records county-wide by address.
+      feats = await countyParcelByAddress(address);
+      if(feats) found_via = 'Franklin County Auditor records (address not in the City parcel layer)';
+    }
+    if(!feats) return {error:'Could not find a parcel for "' + address + '" in City of Hilliard or Franklin County Auditor records. Check the spelling and house number, try a specific street address (e.g., "4656 Cemetery Rd"), or search the Auditor site directly at property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address. The Planning Division can also help: (614) 334-2366.'};
     const p = feats[0], c = p.centroid;
+    if(!c) return {error:'Found the parcel but could not determine its map location.'};
     const z = await gisQuery(GIS.zoning, {
-      geometry: c.x + ',' + c.y, geometryType: 'esriGeometryPoint', inSR: '102723',
+      geometry: c.x + ',' + c.y, geometryType: 'esriGeometryPoint', inSR: '4326',
       spatialRel: 'esriSpatialRelIntersects',
       outFields: 'zoneclassnew,title,subareatitle,file1url,file1title,post_2014',
       returnGeometry: 'false'
@@ -219,10 +300,13 @@ async function lookupZoning(address){
     const acres = (S.ACRES != null && S.ACRES !== '') ? +(+S.ACRES).toFixed(3)
                 : (at.Shape__Area ? +(at.Shape__Area / 43560).toFixed(3) : undefined);
     const PCLASS_MAP = {R:'Residential', C:'Commercial', I:'Industrial', A:'Agricultural', E:'Exempt (government/institutional)', M:'Mineral', U:'Utility'};
-    return {
+    const result = {
       matched_address: S.SITEADDRESS || at.SITEADDRESS,
+      found_via,
       resolved_place: resolved_place,
       parcel_id: at.PARCELID,
+      auditor_link: auditorLink(at.PARCELID),
+      zoning_map: zoningMapUrls(c.x, c.y),
       tax_district: S.CVTTXDSCRP || at.CVTTXDSCRP,
       school_district: S.SCHLDSCRP || at.SCHLDSCRP,
       zoning: zones.length ? zones : 'No Hilliard zoning polygon at this location — if tax_district is not CITY OF HILLIARD, the property is outside city zoning jurisdiction (contact Franklin County or the township).',
@@ -243,6 +327,8 @@ async function lookupZoning(address){
       other_address_matches: feats.slice(1).map(f => f.attributes.SITEADDRESS),
       source: 'City of Hilliard GIS "Zoning Districts and PUDs" layer (maps.hilliardohio.gov) + Franklin County Auditor parcel data'
     };
+    window.lastZoning = result;
+    return result;
   }catch(e){
     return {error:'GIS lookup failed: ' + e.message};
   }
@@ -275,16 +361,43 @@ function renderBody(div, text, role){
   const lt = document.createElement('div');
   lt.className = 'lt'; lt.textContent = 'INFORMATIONAL ZONING SUMMARY';
   box.appendChild(lt);
-  box.appendChild(linkify(body));
+  // Insert the zoning map where the letter's [ZONING MAP] marker appears (or at the end).
+  const zm = (window.lastZoning && window.lastZoning.zoning_map) || null;
+  const parts = body.split('[ZONING MAP]');
+  box.appendChild(linkify(parts[0]));
+  if(zm){ box.appendChild(zoningMapBlock(zm)); }
+  if(parts.length > 1){ box.appendChild(linkify(parts.slice(1).join(''))); }
   div.appendChild(box);
   const btn = document.createElement('button');
   btn.className = 'printBtn';
   btn.textContent = 'Print / Save as PDF';
-  btn.onclick = () => printLetter(body);
+  btn.onclick = () => printLetter(body, zm);
   div.appendChild(btn);
   if(after){ div.appendChild(document.createElement('br')); div.appendChild(linkify(after)); }
 }
-function printLetter(body){
+// Small zoning map: the image links to this parcel on the live City Zone Lookup map,
+// with a caption link to the full zoning map.
+function zoningMapBlock(zm){
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'margin:8px 0';
+  const a = document.createElement('a');
+  a.href = zm.live_map_url; a.target = '_blank'; a.rel = 'noopener';
+  a.title = 'Open this parcel on the live City zoning map';
+  const img = document.createElement('img');
+  img.src = zm.image_url;
+  img.alt = 'Zoning map of the property — click to open the live City zoning map';
+  img.style.cssText = 'display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px';
+  a.appendChild(img); wrap.appendChild(a);
+  const cap = document.createElement('div');
+  cap.style.cssText = 'font-size:11.5px;color:#5c6b78;margin-top:4px';
+  cap.appendChild(document.createTextNode('Property is at the center of the map. Click the map to open this parcel on the live City zoning map, or open the '));
+  const full = document.createElement('a');
+  full.href = zm.full_map_url; full.target = '_blank'; full.rel = 'noopener'; full.textContent = 'full Hilliard Zoning Map';
+  cap.appendChild(full); cap.appendChild(document.createTextNode('.'));
+  wrap.appendChild(cap);
+  return wrap;
+}
+function printLetter(body, zm){
   const w = window.open('', '_blank');
   if(!w){ alert('Please allow pop-ups to print the letter.'); return; }
   let esc = body.replace(/&/g,'&amp;').replace(/</g,'&lt;');
@@ -302,6 +415,14 @@ function printLetter(body){
     return '<a href="' + href + '" target="_blank" rel="noopener">' + u + '</a>' + trail;
   });
   esc = esc.replace(/\uE000(\d+)\uE000/g, (mm, i) => anchors[+i]);
+  // Zoning map: place it where the [ZONING MAP] marker is (or after the letter text).
+  const hAttr = (s) => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  const mapHtml = zm ? ('<div style="margin:10px 0"><a href="' + hAttr(zm.live_map_url) + '" target="_blank" rel="noopener">'
+    + '<img src="' + hAttr(zm.image_url) + '" alt="Zoning map of the property" style="display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px"></a>'
+    + '<div style="font-family:-apple-system,\'Segoe UI\',Arial,sans-serif;font-size:11px;color:#5c6b78;margin-top:4px">Property is at the center of the map. Click the map to open this parcel on the live City zoning map, or open the <a href="' + hAttr(zm.full_map_url) + '" target="_blank" rel="noopener">full Hilliard Zoning Map</a>.</div></div>') : '';
+  const content = (esc.indexOf('[ZONING MAP]') >= 0)
+    ? '<pre>' + esc.replace('[ZONING MAP]', '</pre>' + mapHtml + '<pre>') + '</pre>'
+    : '<pre>' + esc + '</pre>' + mapHtml;
   w.document.write('<!DOCTYPE html><html><head><title>Informational Zoning Summary</title><style>'
     + "body{font-family:Georgia,'Times New Roman',serif;color:#1d2b36;max-width:7.2in;margin:40px auto;line-height:1.55;font-size:13.5px}"
     + ".lh{border-bottom:3px solid #1b3a5c;padding-bottom:12px;margin-bottom:6px}"
@@ -313,7 +434,7 @@ function printLetter(body){
     + '</style></head><body>'
     + '<div class="lh"><h1>City of Hilliard, Ohio</h1><div class="sub">Hilliard Assistant &middot; hilliardohio.gov &middot; (614) 876-7361 &middot; 3800 Municipal Way, Hilliard, OH 43026</div></div>'
     + '<div class="banner">Informational zoning summary &mdash; not an official Zoning Verification Letter</div>'
-    + '<pre>' + esc + '</pre>'
+    + content
     + '<p class="noprint"><button onclick="window.print()">Print</button></p>'
     + '</body></html>');
   w.document.close();
@@ -408,10 +529,12 @@ async function send(){
         messages = messages.concat([{role:'assistant', content: data.content}]);
         const results = [];
         for(const block of data.content.filter(b => b.type === 'tool_use')){
-          // Only the keyless GIS tool runs in the browser; anything else is handled server-side by the worker.
-          const out = block.name === 'lookup_zoning'
-            ? await lookupZoning(block.input && block.input.address)
-            : { error: 'handled server-side' };
+          // The keyless GIS tool runs in the browser; the P&Z project search is served by the
+          // worker's /api/projects endpoint; anything else is handled server-side by the worker.
+          let out;
+          if(block.name === 'lookup_zoning') out = await lookupZoning(block.input && block.input.address);
+          else if(block.name === 'search_projects') out = await searchProjectsViaWorker(block.input && block.input.query);
+          else out = { error: 'handled server-side' };
           results.push({type:'tool_result', tool_use_id: block.id, content: JSON.stringify(out)});
         }
         messages = messages.concat([{role:'user', content: results}]);
