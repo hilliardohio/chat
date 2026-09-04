@@ -185,6 +185,33 @@ function addressPatterns(address){
   const core = words.filter(w => !PARCEL_SUFFIX.includes(w)).join(' ');
   return [...new Set([num+' '+words.join(' '), num+' '+core, num+' '+words[0]])];
 }
+// The street portion of an address, normalized for comparison (suffix words dropped).
+// "47800 LACON RD" -> "LACON"; used to reject geocoder matches on a different street.
+function streetKeyOf(address){
+  const norm = normalizeAddress(String(address || ''));
+  const m = norm.match(/^(\d+)\s+(.+)$/);
+  const words = (m ? m[2] : norm).split(' ').filter(w => w && !PARCEL_SUFFIX.includes(w)
+    && !['N','S','E','W','NORTH','SOUTH','EAST','WEST'].includes(w));
+  return words.join(' ');
+}
+// When a house number isn't on file, report the numbers that DO exist on that street so the
+// resident can correct a typo — instead of silently matching a parcel somewhere else.
+async function streetNumberRange(address){
+  const street = streetKeyOf(address);
+  if(!street || street.length < 3) return null;
+  try{
+    const d = await gisQuery(GIS.parcels, {
+      where: "SITEADDRESS LIKE '% " + street.replace(/'/g,"''") + "%'",
+      outFields: 'SITEADDRESS', returnGeometry: 'false', resultRecordCount: '1000'
+    });
+    const addrs = (d.features || []).map(f => String(f.attributes.SITEADDRESS || ''))
+      .filter(a => streetKeyOf(a) === street);
+    if(!addrs.length) return null;
+    const nums = addrs.map(a => parseInt(a, 10)).filter(n => !isNaN(n));
+    const name = (addrs[0].match(/^\d+\s+(.+)$/) || [,addrs[0]])[1];
+    return nums.length ? { street: name, low: Math.min(...nums), high: Math.max(...nums), count: addrs.length } : null;
+  }catch(e){ return null; }
+}
 // Match a parcel from an address string that has a house number (City parcel layer).
 async function parcelByAddress(address){
   const patterns = addressPatterns(address);
@@ -269,6 +296,43 @@ function zoningMapUrls(lon, lat){
     note: 'The red dot marks the property on the map image; clicking the image opens the City zoning map centered on this parcel.'
   };
 }
+/* Zoning district -> its name and the exact place in the Hilliard code where that
+   classification is established, so the letter can link the classification itself.
+   Chapters 1109/1111/1113/1115/1117 are codified on Municode; the Community Development
+   districts (Chapter 1116) are not yet codified and live in adopting Ordinance 25-17. */
+const MUNI_CODE = 'https://library.municode.com/oh/hilliard/codes/code_of_ordinances?nodeId=';
+const MUNI_ORD  = 'https://library.municode.com/oh/hilliard/ordinances/code_of_ordinances?nodeId=';
+const CH1109 = MUNI_CODE + 'PTELEVENPLZOCO_CH1109REDI';
+const CH1111 = MUNI_CODE + 'PTELEVENPLZOCO_CH1111BUDI';
+const CH1113 = MUNI_CODE + 'PTELEVENPLZOCO_CH1113INDI';
+const CH1115 = MUNI_CODE + 'PTELEVENPLZOCO_CH1115SPPUDI';
+const CH1117 = MUNI_CODE + 'PTELEVENPLZOCO_CH1117PLUNDEDI';
+const CH1116 = MUNI_ORD  + '1369718';
+const ZONE_INFO = {
+  'R-R':  ['Rural Residential District', CH1109], 'R-1': ['Low Density Residential District', CH1109],
+  'R-2':  ['Low/Medium Density Residential District', CH1109], 'R-3': ['Moderate Density Residential District', CH1109],
+  'R-4':  ['High Density Residential District', CH1109],
+  'B-1':  ['Neighborhood Business District', CH1111], 'B-2': ['Community Business District', CH1111],
+  'B-3':  ['Office/Institutional District', CH1111], 'B-4': ['I-270 Corridor Business District', CH1111],
+  'B-4-I-270': ['I-270 Corridor Business District', CH1111],
+  'M-1':  ['Restricted Industrial District', CH1113], 'M-2': ['General Industrial District', CH1113],
+  'S-1':  ['Support Facilities District', CH1115], 'HCD': ['Hilliard Conservation District', CH1115],
+  'OH-MD':['Old Hilliard Mixed Use District', CH1115], 'OH-RD': ['Old Hilliard Residential District', CH1115],
+  'PUD':  ['Planned Unit Development District', CH1117],
+  'DE':   ['Big Darby Employment District (Community Development District, §1116.07)', CH1116],
+  'I-1':  ['I-270 Corridor District, I-1 Natural subdistrict (§1116.08)', CH1116],
+  'I-3':  ['I-270 Corridor District, I-3 Suburban subdistrict (§1116.08)', CH1116],
+  'I-6':  ['I-270 Corridor District, I-6 Urban Core subdistrict (§1116.08)', CH1116],
+  'I-FE': ['I-270 Corridor District, I-FE Flex Employment subdistrict (§1116.08)', CH1116],
+  'I-MR': ['I-270 Corridor District, I-MR Mill Run subdistrict (§1116.08)', CH1116],
+  'Civic':['I-270 Corridor District, Civic subdistrict (§1116.08)', CH1116]
+};
+function zoneInfo(code){
+  const k = String(code || '').trim();
+  const hit = ZONE_INFO[k] || ZONE_INFO[k.toUpperCase()]
+    || ZONE_INFO[Object.keys(ZONE_INFO).find(z => z.toUpperCase() === k.toUpperCase()) || ''];
+  return hit ? { district_name: hit[0], code_url: hit[1] } : {};
+}
 // Direct link to a parcel's profile on the Franklin County Auditor site (pin = parcel digits + "00").
 function auditorLink(pid){
   const d = String(pid || '').replace(/\D/g, '');
@@ -277,21 +341,30 @@ function auditorLink(pid){
 }
 window.lastZoning = null;
 async function lookupZoning(address){
+  // Clear first: a stale result from an earlier address must never supply the map for this one.
+  window.lastZoning = null;
   try{
     let feats = await parcelByAddress(address);
     let resolved_place, found_via = 'City of Hilliard parcel layer';
+    // Does the query look like a street address (house number + street name)? If so, the
+    // geocoder must land on THAT street — otherwise it will happily return the same house
+    // number on a different road, and the letter would describe the wrong property.
+    const wantStreet = addressPatterns(address) ? streetKeyOf(address) : '';
+    const sameStreet = (fs) => !wantStreet || (fs || []).some(f => streetKeyOf(f.attributes.SITEADDRESS) === wantStreet);
     if(!feats){
       // No direct address match — try resolving a place/business/landmark name.
       const g = await geocodePlace(address);
       if(g){
         if(g.streetAddress) feats = await parcelByAddress(g.streetAddress);
         if(!feats) feats = await parcelByPoint(g.lon, g.lat);
+        if(feats && !sameStreet(feats)) feats = null; // geocoder drifted to another street
         if(feats){
           found_via = 'geocoded place name';
           resolved_place = { query: String(address), resolved_address: g.streetAddress || feats[0].attributes.SITEADDRESS, note: 'resolved from a place/landmark name via public geocoder — confirm it is the intended property' };
         } else {
           // Not in the City layer — check Franklin County Auditor records at that point.
           feats = await countyParcelByPoint(g.lon, g.lat);
+          if(feats && !sameStreet(feats)) feats = null;
           if(feats) found_via = 'Franklin County Auditor records (address not in the City parcel layer)';
         }
       }
@@ -301,22 +374,37 @@ async function lookupZoning(address){
       feats = await countyParcelByAddress(address);
       if(feats) found_via = 'Franklin County Auditor records (address not in the City parcel layer)';
     }
-    if(!feats) return {error:'Could not find a parcel for "' + address + '" in City of Hilliard or Franklin County Auditor records. Check the spelling and house number, try a specific street address (e.g., "4656 Cemetery Rd"), or search the Auditor site directly at property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address. The Planning Division can also help: (614) 334-2366.'};
+    if(!feats){
+      // Never substitute a different property. Say the address wasn't found, and — when the
+      // street exists in Hilliard — show the house numbers that are on file for it.
+      const range = await streetNumberRange(address);
+      let msg = 'No parcel matches "' + address + '" in City of Hilliard or Franklin County Auditor records, so no zoning information can be provided for it.';
+      if(range) msg += ' ' + range.street + ' does exist in Hilliard, but the addresses on file run from ' + range.low + ' to ' + range.high + ' (' + range.count + ' parcels) — please check the house number.';
+      msg += ' Do NOT substitute a different property or guess. Ask the resident to confirm the address, or point them to the Franklin County Auditor address search at property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address, or the Planning Division at (614) 334-2366.';
+      return { error: msg, address_not_found: true, street_on_file: range || undefined };
+    }
     const p = feats[0], c = p.centroid;
     if(!c) return {error:'Found the parcel but could not determine its map location.'};
     const z = await gisQuery(GIS.zoning, {
       geometry: c.x + ',' + c.y, geometryType: 'esriGeometryPoint', inSR: '4326',
       spatialRel: 'esriSpatialRelIntersects',
-      outFields: 'zoneclassnew,title,subareatitle,file1url,file1title,post_2014',
+      // post_2014 (a rezoning-ordinance number) is deliberately NOT requested: it is unreliable
+      // outside PUDs and the model was printing it as if it established the district.
+      outFields: 'zoneclassnew,title,subareatitle,file1url,file1title',
       returnGeometry: 'false'
     });
-    const zones = (z.features || []).map(f => ({
-      district: f.attributes.zoneclassnew,
-      pud_title: f.attributes.title || undefined,
-      subarea: f.attributes.subareatitle || undefined,
-      pud_text_url: f.attributes.file1url || undefined,
-      rezoning_ordinance: f.attributes.post_2014 || undefined
-    }));
+    const zones = (z.features || []).map(f => {
+      const zi = zoneInfo(f.attributes.zoneclassnew);
+      return {
+        district: f.attributes.zoneclassnew,
+        district_name: zi.district_name,
+        // The code chapter (or adopting ordinance) that establishes this classification.
+        code_url: zi.code_url,
+        pud_title: f.attributes.title || undefined,
+        subarea: f.attributes.subareatitle || undefined,
+        pud_text_url: f.attributes.file1url || undefined
+      };
+    });
     const at = p.attributes;
     // Refresh the property details from Franklin County's live parcel service (current);
     // fall back to the City's imported attributes only if the county lookup is unavailable.
