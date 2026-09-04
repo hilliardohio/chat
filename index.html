@@ -44,7 +44,7 @@
 <header>
   <div class="seal">H</div>
   <div>
-    <h1>Hilliard Assistant</h1>
+    <h1>Hilliard Assistant <span id="staffBadge" style="display:none;font-size:11px;font-weight:600;vertical-align:middle;padding:2px 7px;border-radius:10px;background:rgba(255,255,255,.22);letter-spacing:.03em">STAFF VIEW</span></h1>
     <div class="sub">City of Hilliard, Ohio — resident information</div>
   </div>
 </header>
@@ -67,6 +67,12 @@
     <div id="inputRow">
       <textarea id="chatInput" rows="1" placeholder="Ask a question about City of Hilliard services, rules, or contacts…"></textarea>
       <button id="sendBtn" onclick="send()">Send</button>
+    </div>
+    <div id="staffToggleRow" style="display:flex;align-items:center;gap:6px;margin:6px 2px 0;font-size:12px;color:#5c6b78">
+      <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer">
+        <input type="checkbox" id="staffToggle" onchange="setStaffMode(this.checked)" style="margin:0;cursor:pointer">
+        <span>Staff mode — link OpenGov records to the internal record view (City staff login required)</span>
+      </label>
     </div>
     <div class="disclaimer">Automated informational assistant — not legal advice. Verify with the City at (614) 876-7361 or hilliardohio.gov.</div>
   </section>
@@ -435,13 +441,13 @@ function printLetter(body, zm){
   // so the bare-URL pass below can't double-wrap their href.
   const anchors = [];
   esc = esc.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (mm, label, url) => {
-    anchors.push('<a href="' + url + '" target="_blank" rel="noopener">' + label + '</a>');
+    anchors.push('<a href="' + recordHref(url) + '" target="_blank" rel="noopener">' + label + '</a>');
     return '\uE000' + (anchors.length - 1) + '\uE000';
   });
   esc = esc.replace(/(https?:\/\/[^\s<]+|(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s<]*)?)/gi, (u) => {
     let trail = ''; const tm = u.match(URL_TRAIL);
     if(tm){ trail = u.slice(u.length - tm[0].length); u = u.slice(0, u.length - tm[0].length); }
-    const href = u.startsWith('http') ? u : 'https://' + u;
+    const href = recordHref(u.startsWith('http') ? u : 'https://' + u);
     return '<a href="' + href + '" target="_blank" rel="noopener">' + u + '</a>' + trail;
   });
   esc = esc.replace(/\uE000(\d+)\uE000/g, (mm, i) => anchors[+i]);
@@ -473,6 +479,45 @@ function printLetter(body, zm){
     + '</body></html>');
   w.document.close();
 }
+/* Staff mode — toggle under the message box (or ?staff=1 in the URL) makes OpenGov record
+   numbers link to the internal workflow detail view instead of the public record page.
+   Remembered per browser in localStorage; residents who leave it off are unaffected. */
+let STAFF_MODE = (function(){
+  try{
+    const p = new URLSearchParams(location.search);
+    if(p.has('staff')){ const on = p.get('staff') !== '0'; localStorage.setItem('staffMode', on ? '1' : '0'); return on; }
+    return localStorage.getItem('staffMode') === '1';
+  }catch(e){ return false; }
+})();
+const PORTAL_REC = /^https:\/\/hilliardoh\.portal\.opengov\.com\/records\/(\d+)/i;
+const WORKFLOW_REC = /^https:\/\/hilliardoh\.workflow\.opengov\.com\/#\/explore\/records\/(\d+)\/details/i;
+function recordHref(href){
+  const s = String(href || '');
+  if(STAFF_MODE){
+    const m = PORTAL_REC.exec(s);
+    return m ? ('https://hilliardoh.workflow.opengov.com/#/explore/records/' + m[1] + '/details') : s;
+  }
+  const w = WORKFLOW_REC.exec(s);
+  return w ? ('https://hilliardoh.portal.opengov.com/records/' + w[1]) : s;
+}
+function paintStaffMode(){
+  try{
+    const b = document.getElementById('staffBadge');
+    if(b) b.style.display = STAFF_MODE ? 'inline-block' : 'none';
+    const t = document.getElementById('staffToggle');
+    if(t) t.checked = STAFF_MODE;
+  }catch(e){}
+}
+function setStaffMode(on){
+  STAFF_MODE = !!on;
+  try{ localStorage.setItem('staffMode', STAFF_MODE ? '1' : '0'); }catch(e){}
+  paintStaffMode();
+  // Re-point links already on screen so the toggle applies to the current conversation.
+  try{
+    document.querySelectorAll('#chatScroll a[href]').forEach(a => { a.href = recordHref(a.href); });
+  }catch(e){}
+}
+paintStaffMode();
 // Render markdown links [label](url) as clickable labels, and auto-link bare URLs elsewhere.
 function linkify(text){
   const frag = document.createDocumentFragment();
@@ -481,7 +526,7 @@ function linkify(text){
   while((m = md.exec(text)) !== null){
     frag.appendChild(autolink(text.slice(last, m.index)));
     const a = document.createElement('a');
-    a.href = m[2]; a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener';
+    a.href = recordHref(m[2]); a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener';
     frag.appendChild(a);
     last = m.index + m[0].length;
   }
@@ -503,7 +548,7 @@ function autolink(text){
     const tm = raw.match(URL_TRAIL);
     if(tm){ trail = raw.slice(raw.length - tm[0].length); raw = raw.slice(0, raw.length - tm[0].length); }
     const a = document.createElement('a');
-    a.href = raw.startsWith('http') ? raw : 'https://' + raw;
+    a.href = recordHref(raw.startsWith('http') ? raw : 'https://' + raw);
     a.textContent = raw; a.target = '_blank'; a.rel = 'noopener';
     frag.appendChild(a);
     if(trail) frag.appendChild(document.createTextNode(trail));
