@@ -139,11 +139,28 @@ async function countyParcelDetails(pid){
     return (d.features && d.features[0]) ? d.features[0].attributes : null;
   }catch(e){ return null; }
 }
+// Route a GIS URL through the Worker (used when the visitor's network/browser blocks the
+// direct call — corporate DNS/TLS filters, VPNs, privacy extensions).
+function gisViaProxy(fullUrl){ return BACKEND + '/api/gis?u=' + encodeURIComponent(fullUrl); }
 async function gisQuery(url, params){
-  const r = await fetch(url + '?' + new URLSearchParams({f:'json', ...params}));
-  if(!r.ok) throw new Error('GIS server returned ' + r.status);
-  const d = await r.json();
-  if(d.error) throw new Error('GIS: ' + (d.error.message || JSON.stringify(d.error)));
+  const full = url + '?' + new URLSearchParams({f:'json', ...params});
+  let d = null, directErr = null;
+  try{
+    const r = await fetch(full);
+    if(!r.ok) throw new Error('GIS server returned ' + r.status);
+    d = await r.json();
+  }catch(e){
+    // Direct call blocked/failed — retry server-side through the Worker.
+    directErr = e;
+    try{
+      const r2 = await fetch(gisViaProxy(full));
+      if(!r2.ok) throw new Error('GIS proxy returned ' + r2.status);
+      d = await r2.json();
+    }catch(e2){
+      throw new Error('could not reach the City GIS service from this network (' + (directErr.message || 'blocked') + ')');
+    }
+  }
+  if(d && d.error) throw new Error('GIS: ' + (d.error.message || JSON.stringify(d.error)));
   return d;
 }
 function normalizeAddress(addr){
@@ -389,6 +406,8 @@ function zoningMapBlock(zm){
   a.style.cssText = 'position:relative;display:inline-block;line-height:0';
   const img = document.createElement('img');
   img.src = zm.image_url;
+  // If the visitor's network blocks the GIS host, reload the image through the Worker proxy.
+  img.onerror = function(){ if(!img.dataset.retried){ img.dataset.retried = '1'; img.src = gisViaProxy(zm.image_url); } };
   img.alt = 'Zoning map of the property — click to open the live City zoning map';
   img.style.cssText = 'display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px';
   a.appendChild(img);
