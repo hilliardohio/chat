@@ -228,8 +228,9 @@ async function geocodePlace(q){
   try{ const g = await fetch(BACKEND + '/api/geocode?q=' + encodeURIComponent(q)).then(r=>r.json()); return (g && !g.error && g.lat) ? g : null; }
   catch(e){ return null; }
 }
-// City's public interactive zoning map (ArcGIS Instant App "Zone Lookup").
-const ZONE_LOOKUP_APP = 'https://maps.hilliardohio.gov/portal/apps/instant/lookup/index.html?appid=417de4a1ec914ade845ae8bf746bc65f';
+// City's public interactive zoning map — the "New Zoning Map" web map, whose top layer is the
+// Planning service (Zoning Districts + PUD Plans and Standards) over the City aerial basemap.
+const ZONING_WEBMAP = 'https://maps.hilliardohio.gov/portal/apps/mapviewer/index.html?webmap=16422dcdae2749929b88fde5f947f90b';
 // Static zoning-map image (City "Hilliard" map service: Zoning Districts + Tax Parcels + labels),
 // a deep link that opens this parcel on the live Zone Lookup map, and the full-map link.
 function zoningMapUrls(lon, lat){
@@ -239,9 +240,9 @@ function zoningMapUrls(lon, lat){
   return {
     image_url: 'https://maps.hilliardohio.gov/arcgis/rest/services/Hilliard/MapServer/export?bbox=' + bbox +
       '&bboxSR=4326&imageSR=102723&size=480,360&format=png&layers=show:5,3,16&transparent=false&f=image',
-    live_map_url: ZONE_LOOKUP_APP + '&find=' + pt + '&center=' + pt + '&level=17',
-    full_map_url: ZONE_LOOKUP_APP,
-    note: 'The property is at the center of the map image; clicking the image opens this parcel on the live City Zone Lookup map.'
+    live_map_url: ZONING_WEBMAP + '&center=' + pt + '&level=18',
+    full_map_url: ZONING_WEBMAP,
+    note: 'The red dot marks the property on the map image; clicking the image opens the City zoning map centered on this parcel.'
   };
 }
 // Direct link to a parcel's profile on the Franklin County Auditor site (pin = parcel digits + "00").
@@ -383,14 +384,23 @@ function zoningMapBlock(zm){
   const a = document.createElement('a');
   a.href = zm.live_map_url; a.target = '_blank'; a.rel = 'noopener';
   a.title = 'Open this parcel on the live City zoning map';
+  // The image is generated centered on the parcel, so a centered dot marks it exactly.
+  a.style.cssText = 'position:relative;display:inline-block;line-height:0';
   const img = document.createElement('img');
   img.src = zm.image_url;
   img.alt = 'Zoning map of the property — click to open the live City zoning map';
   img.style.cssText = 'display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px';
-  a.appendChild(img); wrap.appendChild(a);
+  a.appendChild(img);
+  const dot = document.createElement('span');
+  dot.setAttribute('aria-hidden', 'true');
+  dot.style.cssText = 'position:absolute;left:50%;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;'
+    + 'border-radius:50%;background:#d93025;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45);'
+    + 'pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact';
+  a.appendChild(dot);
+  wrap.appendChild(a);
   const cap = document.createElement('div');
   cap.style.cssText = 'font-size:11.5px;color:#5c6b78;margin-top:4px';
-  cap.appendChild(document.createTextNode('Property is at the center of the map. Click the map to open this parcel on the live City zoning map, or open the '));
+  cap.appendChild(document.createTextNode('The red dot marks the property. Click the map to open this parcel on the live City zoning map, or open the '));
   const full = document.createElement('a');
   full.href = zm.full_map_url; full.target = '_blank'; full.rel = 'noopener'; full.textContent = 'full Hilliard Zoning Map';
   cap.appendChild(full); cap.appendChild(document.createTextNode('.'));
@@ -417,9 +427,13 @@ function printLetter(body, zm){
   esc = esc.replace(/\uE000(\d+)\uE000/g, (mm, i) => anchors[+i]);
   // Zoning map: place it where the [ZONING MAP] marker is (or after the letter text).
   const hAttr = (s) => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-  const mapHtml = zm ? ('<div style="margin:10px 0"><a href="' + hAttr(zm.live_map_url) + '" target="_blank" rel="noopener">'
-    + '<img src="' + hAttr(zm.image_url) + '" alt="Zoning map of the property" style="display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px"></a>'
-    + '<div style="font-family:-apple-system,\'Segoe UI\',Arial,sans-serif;font-size:11px;color:#5c6b78;margin-top:4px">Property is at the center of the map. Click the map to open this parcel on the live City zoning map, or open the <a href="' + hAttr(zm.full_map_url) + '" target="_blank" rel="noopener">full Hilliard Zoning Map</a>.</div></div>') : '';
+  const dotCss = 'position:absolute;left:50%;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;'
+    + 'background:#d93025;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45);'
+    + '-webkit-print-color-adjust:exact;print-color-adjust:exact';
+  const mapHtml = zm ? ('<div style="margin:10px 0"><a href="' + hAttr(zm.live_map_url) + '" target="_blank" rel="noopener" style="position:relative;display:inline-block;line-height:0">'
+    + '<img src="' + hAttr(zm.image_url) + '" alt="Zoning map of the property" style="display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px">'
+    + '<span aria-hidden="true" style="' + dotCss + '"></span></a>'
+    + '<div style="font-family:-apple-system,\'Segoe UI\',Arial,sans-serif;font-size:11px;color:#5c6b78;margin-top:4px">The red dot marks the property. Click the map to open this parcel on the live City zoning map, or open the <a href="' + hAttr(zm.full_map_url) + '" target="_blank" rel="noopener">full Hilliard Zoning Map</a>.</div></div>') : '';
   const content = (esc.indexOf('[ZONING MAP]') >= 0)
     ? '<pre>' + esc.replace('[ZONING MAP]', '</pre>' + mapHtml + '<pre>') + '</pre>'
     : '<pre>' + esc + '</pre>' + mapHtml;
