@@ -170,10 +170,14 @@ async function gisQuery(url, params){
   return d;
 }
 function normalizeAddress(addr){
-  return addr.toUpperCase().replace(/[.,#]/g,' ')
+  const s = String(addr || '').toUpperCase().replace(/[.,#]/g,' ')
     .replace(/\b(HILLIARD|COLUMBUS|OHIO|OH|USA)\b.*$/,'')
-    .replace(/\b\d{5}(-\d{4})?\b/g,'')
     .replace(/\s+/g,' ').trim();
+  // Strip a ZIP code, but NEVER the leading house number: a 5-digit house number such as
+  // "47800 Lacon" was being erased as if it were a ZIP, which silently turned a street
+  // address into a bare street name and let the geocoder match a different street.
+  const lead = (s.match(/^\d+\s*/) || [''])[0];
+  return (lead + s.slice(lead.length).replace(/\b\d{5}(-\d{4})?\b/g, '')).replace(/\s+/g,' ').trim();
 }
 const PARCEL_FIELDS = 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,Shape__Area';
 const PARCEL_SUFFIX = ['RD','ROAD','DR','DRIVE','ST','STREET','AVE','AVENUE','AV','LN','LANE','CT','COURT','BLVD','BOULEVARD','WAY','WY','CIR','CIRCLE','PL','PLACE','PKWY','PARKWAY','SQ','SQUARE','TRL','TRAIL','LOOP','RUN','XING','CROSSING'];
@@ -349,7 +353,9 @@ async function lookupZoning(address){
     // Does the query look like a street address (house number + street name)? If so, the
     // geocoder must land on THAT street — otherwise it will happily return the same house
     // number on a different road, and the letter would describe the wrong property.
-    const wantStreet = addressPatterns(address) ? streetKeyOf(address) : '';
+    // Judge "looks like a street address" from the raw text, so no normalization quirk can
+    // silently switch the guard off.
+    const wantStreet = /^\s*\d+\s+\S/.test(String(address || '')) ? streetKeyOf(address) : '';
     const sameStreet = (fs) => !wantStreet || (fs || []).some(f => streetKeyOf(f.attributes.SITEADDRESS) === wantStreet);
     if(!feats){
       // No direct address match — try resolving a place/business/landmark name.
