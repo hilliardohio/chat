@@ -1066,6 +1066,24 @@ export default {
           let parsed = null; try { parsed = JSON.parse(text); } catch (e) {}
           return json({ status: r.status, ok: r.ok, body: parsed || text.slice(0, 4000) }, 200, env);
         }
+        if (a === 'og_write') {
+          // Admin-gated write proxy for discovering the OpenGov create/attach API shapes.
+          // Confined to the community base; every call is logged with its status.
+          if (!env.OPENGOV_API_KEY) return json({ error: 'OPENGOV_API_KEY not set' }, 400, env);
+          const method = String(body.method || 'POST').toUpperCase();
+          if (!['POST', 'PATCH', 'PUT', 'DELETE'].includes(method)) return json({ error: 'bad method' }, 400, env);
+          const p = String(body.path || '').replace(/^\/+/, '');
+          if (!/^[a-z0-9\-\/]+$/i.test(p)) return json({ error: 'bad path' }, 400, env);
+          const headers = { Authorization: 'Token ' + env.OPENGOV_API_KEY, Accept: 'application/vnd.api+json' };
+          let payload;
+          if (body.rawText != null) { payload = String(body.rawText); headers['Content-Type'] = String(body.contentType || 'application/octet-stream'); }
+          else if (body.payload != null) { payload = JSON.stringify(body.payload); headers['Content-Type'] = String(body.contentType || 'application/vnd.api+json'); }
+          const r = await fetch(PLCE_BASE + '/' + p, { method, headers, body: payload });
+          const text = await r.text();
+          let parsed = null; try { parsed = JSON.parse(text); } catch (e) {}
+          console.log('og_write', method, p, r.status);
+          return json({ status: r.status, ok: r.ok, body: parsed || text.slice(0, 4000), location: r.headers.get('location') || undefined }, 200, env);
+        }
         if (a === 'og_find_type') {
           // Walk /record-types and return every type whose name matches, with its id.
           if (!env.OPENGOV_API_KEY) return json({ error: 'OPENGOV_API_KEY not set' }, 400, env);
