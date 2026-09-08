@@ -202,14 +202,102 @@ const CODE_LETTER_TOOL = {
     required: ['address']
   }
 };
+/* Ohio Secretary of State business search. Reverse-engineered from the public site:
+     GET https://businesssearchapi.ohiosos.gov/NS_<NAME>_X   -> { data: [ {business_name,
+         business_type, status, charter_num, business_location, county_name, ...} ] }
+     GET https://businesssearchapi.ohiosos.gov/VD_<charter>  -> { data: [ {registrant:[agent]},
+         {firstpanel:{status,...}}, ... ] }
+   The API is behind Cloudflare bot management, so this may be refused. Every failure path
+   returns { unavailable: true } and the letter falls back to the manual-check flag — an
+   unverifiable answer is never presented as a verified one. */
+const SOS_API = 'https://businesssearchapi.ohiosos.gov/';
+const SOS_HEADERS = {
+  'Accept': 'application/json, text/javascript, */*; q=0.01',
+  'Origin': 'https://businesssearch.ohiosos.gov',
+  'Referer': 'https://businesssearch.ohiosos.gov/',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36'
+};
+const SOS_SUFFIX_RE = /\b(LLC|L\.?L\.?C\.?|LTD\.?|INC\.?|CORP\.?|CORPORATION|CO\.?|LP|L\.?P\.?|LLP|COMPANY)\b\.?$/i;
+function sosNorm(s) { return String(s || '').toUpperCase().replace(/[.,'"&]/g, ' ').replace(/\s+/g, ' ').trim(); }
+async function sosSearch(name) {
+  const r = await fetch(SOS_API + 'NS_' + encodeURIComponent(name) + '_X', { headers: SOS_HEADERS, cf: { cacheTtl: 0 } });
+  if (!r.ok) throw new Error('SOS search HTTP ' + r.status);
+  const j = await r.json();
+  return Array.isArray(j.data) ? j.data : [];
+}
+async function lookupSosEntity(ownerName) {
+  const raw = String(ownerName || '').trim();
+  if (!raw) return { unavailable: true, reason: 'no owner name' };
+  try {
+    // Exact-ish name first, then without the entity suffix, per the directions.
+    const tries = [...new Set([raw, raw.replace(SOS_SUFFIX_RE, '').trim()].filter(Boolean))];
+    let rows = [], usedQuery = null;
+    for (const q of tries) { rows = await sosSearch(q); usedQuery = q; if (rows.length) break; }
+    if (!rows.length) return { found: false, searched: tries, note: 'No entity by this name in the Ohio Secretary of State business search.' };
+    const want = sosNorm(raw), wantBare = sosNorm(raw.replace(SOS_SUFFIX_RE, ''));
+    const score = x => {
+      const n = sosNorm(x.business_name);
+      let s = 0;
+      if (n === want) s += 10; else if (sosNorm(n.replace(SOS_SUFFIX_RE, '')) === wantBare) s += 6; else if (n.startsWith(wantBare)) s += 3;
+      if (/^active$/i.test(x.status || '')) s += 2;
+      return s;
+    };
+    const best = rows.map(x => ({ x, s: score(x) })).sort((a, b) => b.s - a.s)[0];
+    const e = best.x;
+    let agent = null, panel = null;
+    try {
+      const d = await fetch(SOS_API + 'VD_' + encodeURIComponent(e.charter_num), { headers: SOS_HEADERS, cf: { cacheTtl: 0 } });
+      if (d.ok) {
+        const dj = await d.json();
+        const part = k => { const o = (dj.data || []).find(v => v && Object.keys(v)[0] === k); return o ? o[k] : null; };
+        const reg = part('registrant'); agent = Array.isArray(reg) ? reg[0] : reg;
+        const fp = part('firstpanel'); panel = Array.isArray(fp) ? fp[0] : fp;
+      }
+    } catch (err) {}
+    const agentAddr = agent ? [agent.contact_addr1, (agent.contact_addr2 && agent.contact_addr2 !== '-') ? agent.contact_addr2 : null].filter(Boolean).join(', ') : null;
+    const agentCsz = agent ? [agent.contact_city, agent.contact_state, agent.contact_zip9].filter(Boolean).join(' ').replace(/ (\w\w) /, ', $1 ') : null;
+    return {
+      found: true,
+      exact_match: best.s >= 10,
+      entity_name: e.business_name,
+      entity_number: e.charter_num,
+      entity_type: e.business_type,
+      status: (panel && panel.status) || e.status,
+      location: [e.business_location, e.county_name ? e.county_name + ' County' : null, e.state_name].filter(Boolean).join(', '),
+      statutory_agent_name: agent ? agent.contact_name : undefined,
+      statutory_agent_street: agentAddr || undefined,
+      statutory_agent_city_state_zip: agentCsz || undefined,
+      agent_status: agent ? (agent.contact_status === 'A' ? 'Active' : agent.contact_status) : undefined,
+      other_matches: rows.filter(x => x !== e).slice(0, 4).map(x => x.business_name + ' (#' + x.charter_num + ', ' + x.status + ')'),
+      searched: usedQuery,
+      source: 'Ohio Secretary of State Business Search, businesssearch.ohiosos.gov'
+    };
+  } catch (err) {
+    return { unavailable: true, reason: (err && err.message) || 'error', note: 'The Ohio SOS business search could not be reached automatically. Confirm the entity manually at businesssearch.ohiosos.gov.' };
+  }
+}
+const SOS_TOOL = {
+  name: 'lookup_sos_entity',
+  description: 'Staff only. Look up a business entity in the Ohio Secretary of State business search by owner name: returns registered name, entity number, status, type, and the statutory agent name and address for service. Call when an owner of record is a business entity or the parcel is non-residential.',
+  input_schema: { type: 'object', properties: { owner_name: { type: 'string', description: 'Owner name exactly as shown on the Auditor record, e.g. "FAST AND FAIR LLC"' } }, required: ['owner_name'] }
+};
 const CODE_LETTER_PROMPT = `== STAFF MODE: CHAPTER 917 WEED & GRASS NOTICES ==
 When a staff member asks for a weed notice, grass notice, code enforcement letter or Chapter 917 notice for one or more addresses:
 
+- FIRST, before any lookup or letter: if the staff member has not said who performed the inspection(s), ask one question — "Who is performing the inspection(s), Kristie Shaffer or Forrest Runnels?" — and wait for the answer. Use the answer for the signature block on EVERY letter in the batch and for the Signature, Title and Phone fields on every OpenGov record. Do not default silently; the wrong name on a statutory notice is a real problem.
+  * Kristie Shaffer — Zoning Enforcement Officer — kshaffer@hilliardohio.gov — 614.334.2366
+  * Forrest Runnels — Zoning Inspector — 614.334.2456 — email: [Forrest Runnels email]
+  If they name someone else, use exactly what they give and bracket any title, phone or email they did not supply.
 - Call lookup_owner_for_notice ONCE PER ADDRESS before writing anything. Never fill owner names, parcel numbers or mailing addresses from memory or inference — service of a statutory notice on the wrong party is void, and a plausible-looking wrong owner is undetectable to the reader.
 - If an address returns address_not_found, say so for that address and carry on with the others. Do not guess a nearby parcel.
 - Use today's date for both letter date and inspection date unless the staff member gives a different inspection date.
 - MAILING ADDRESS: use owner_mailing_street and owner_mailing_city_state_zip exactly as returned. They come from the Auditor's owner mailing record, not the tax-bill address (which is usually a mortgage escrow servicer and would be void service).
-- SECRETARY OF STATE: when secretary_of_state_check_required is true, still produce the letter using the Auditor mailing address, but add a line immediately after the letter (outside the markers) saying the owner appears to be a business entity or non-residential parcel, that the entity must be confirmed at businesssearch.ohiosos.gov, and that the SOS principal-office or statutory-agent address should be added or substituted before mailing. Never invent an entity number, status or agent address — that lookup cannot be done automatically.
+- SECRETARY OF STATE: when secretary_of_state_check_required is true, call lookup_sos_entity with the owner_name before writing that letter.
+  * If it returns found=true with status Active and a statutory agent address: address the letter to the entity, care of the statutory agent, at the agent's address — e.g. line 1 "[ENTITY NAME AS REGISTERED]", line 2 "c/o [AGENT NAME], Statutory Agent", then the agent street and city/state/zip. Then, after the letter (outside the markers), note the SOS entity number and status, and say a duplicate copy should be mailed to the Auditor address, giving that address. If the agent address is the same as the Auditor mailing address, say so and skip the duplicate.
+  * If found=true but status is Cancelled or Dead, or exact_match is false, or no agent address came back: address the letter to the Auditor mailing address, and after the letter say "SOS: no active entity found" (or "SOS: closest match is …, not exact"), with whatever the lookup did return, and flag it for staff review.
+  * If it returns unavailable: address the letter to the Auditor mailing address and say after the letter that the SOS lookup could not be reached automatically and the entity must be confirmed at businesssearch.ohiosos.gov before mailing.
+  * Never invent an entity number, status or agent address. Only report what the tool returned.
+  Always state the source of the mailing address used (Auditor, or SOS with entity number) in the note after each letter.
 - Also note after each letter when absentee_owner is true, since the notice is going somewhere other than the property.
 - OUTPUT: put each letter between <<<CODE ENFORCEMENT LETTER>>> and <<<END CODE ENFORCEMENT LETTER>>>, one pair per property, in the order the addresses were given. The page turns each into its own Word download. Plain text, no markdown. Blank line between every paragraph.
 - Reproduce this letter EXACTLY, substituting only the bracketed fields. The quoted ordinance text and the cost, lien and penalty paragraphs are statutory language — do not paraphrase, shorten or modernise them:
@@ -244,10 +332,12 @@ In addition to the obligation for the payment of all costs associated with the r
 
 Sincerely,
 
-Kristie Shaffer
-Zoning Enforcement Officer
-kshaffer@hilliardohio.gov
-614.334.2366`;
+[INSPECTOR NAME]
+[INSPECTOR TITLE]
+[INSPECTOR EMAIL]
+[INSPECTOR PHONE]
+
+(The four signature lines are the inspector the staff member named — Kristie Shaffer or Forrest Runnels — with that person's title, email and phone from the list above. They are not placeholders to leave in the letter.)`;
 const DRAFT_TOOL = {
   name: 'draft_legislation',
   description: 'Staff only. Look up a model ordinance or resolution from the City\'s adopted legislation library, plus related adopted items, so a new draft can be modeled on real City drafting conventions. Call this FIRST, before writing any draft. Pass a short description of the legislation needed.',
@@ -827,7 +917,7 @@ export default {
         // here on every request. The page's staff-mode checkbox lives in the visitor's
         // own browser and is not evidence of anything.
         const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
-        const tools = isStaff ? TOOLS.concat([DRAFT_TOOL, CODE_LETTER_TOOL]) : TOOLS;
+        const tools = isStaff ? TOOLS.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL]) : TOOLS;
         const maxTokens = isStaff ? 8000 : MAX_TOKENS;
 
         const cfg = await getConfig(env);
@@ -871,6 +961,9 @@ export default {
             // conversation history must never be enough to reach the drafting library.
             else if (b.name === 'draft_legislation') out = isStaff
               ? await findLegislationModels(env, b.input && b.input.subject)
+              : { error: 'not authorized' };
+            else if (b.name === 'lookup_sos_entity') out = isStaff
+              ? await lookupSosEntity(b.input && b.input.owner_name)
               : { error: 'not authorized' };
             else out = { error: 'unknown tool' };
             results.push({ type: 'tool_result', tool_use_id: b.id, content: JSON.stringify(out) });
@@ -958,6 +1051,48 @@ export default {
           if (r.ok) return json({ ok: true }, 200, env);
           const d = await r.json();
           return json({ error: (d.error && d.error.message) || ('API error ' + r.status) }, 400, env);
+        }
+        if (a === 'og_get') {
+          // Admin-gated read proxy into the OpenGov API, used to discover record-type and
+          // form-field IDs for the Grass/weed complaint integration. GET only; the path
+          // is confined to the community base so it cannot reach anything else.
+          if (!env.OPENGOV_API_KEY) return json({ error: 'OPENGOV_API_KEY not set' }, 400, env);
+          const p = String(body.path || '').replace(/^\/+/, '');
+          if (!/^[a-z0-9\-\/]+$/i.test(p)) return json({ error: 'bad path' }, 400, env);
+          const qs = body.query && typeof body.query === 'object'
+            ? '?' + Object.entries(body.query).map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(String(v))).join('&') : '';
+          const r = await fetch(PLCE_BASE + '/' + p + qs, { headers: { Authorization: 'Token ' + env.OPENGOV_API_KEY, Accept: 'application/vnd.api+json' } });
+          const text = await r.text();
+          let parsed = null; try { parsed = JSON.parse(text); } catch (e) {}
+          return json({ status: r.status, ok: r.ok, body: parsed || text.slice(0, 4000) }, 200, env);
+        }
+        if (a === 'og_find_type') {
+          // Walk /record-types and return every type whose name matches, with its id.
+          if (!env.OPENGOV_API_KEY) return json({ error: 'OPENGOV_API_KEY not set' }, 400, env);
+          const H = { Authorization: 'Token ' + env.OPENGOV_API_KEY, Accept: 'application/vnd.api+json' };
+          const want = String(body.name || 'grass').toLowerCase();
+          const hits = []; let all = 0;
+          for (let page = 1; page <= 15; page++) {
+            const r = await fetch(PLCE_BASE + '/record-types?page[number]=' + page + '&page[size]=100', { headers: H });
+            if (!r.ok) return json({ error: 'record-types HTTP ' + r.status, hits }, 200, env);
+            const j = await r.json();
+            const rows = j.data || [];
+            all += rows.length;
+            for (const t of rows) {
+              const at = t.attributes || {};
+              const nm = String(at.name || at.title || '');
+              if (nm.toLowerCase().includes(want)) hits.push({ id: t.id, name: nm, attributes: at });
+            }
+            if (rows.length < 100) break;
+          }
+          return json({ scanned: all, hits }, 200, env);
+        }
+        if (a === 'test_sos') {
+          // Can this Worker reach the Ohio SOS API? Diagnostic only; admin-gated.
+          const name = String(body.name || 'THE KROGER CO').slice(0, 120);
+          const t0 = Date.now();
+          const out = await lookupSosEntity(name);
+          return json({ ok: !out.unavailable, ms: Date.now() - t0, result: out }, 200, env);
         }
         if (a === 'set_model') {
           await env.KV.put('config:model', String(body.model || DEFAULT_MODEL));

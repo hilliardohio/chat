@@ -894,8 +894,8 @@ const CHIP_PROMPTS = {
               build: a => 'Zoning research: ' + a },
   draft:    { prompt: 'What legislation do you need drafted? Tell me what it should do and any key facts you have — contractor or developer name, project number, dollar amount, parcel numbers, dates. I\'ll find a comparable adopted ordinance or resolution to model from, and flag anything missing in brackets rather than inventing it.',
               build: a => 'Draft legislation: ' + a },
-  codeletter:{ prompt: 'Which Hilliard address needs a weed and grass notice? You can give me several at once, one per line. I\'ll look up the owner of record, parcel number and owner mailing address from Franklin County Auditor records and produce a Chapter 917 notice for each, ready to download as Word. If you don\'t give me an inspection date I\'ll use today\'s.',
-              build: a => 'Prepare Chapter 917 weed and grass notices for: ' + a }
+  codeletter:{ prompt: 'Which Hilliard address needs a weed and grass notice? You can give me several at once, one per line. Also tell me who performed the inspection — Kristie Shaffer or Forrest Runnels — so the notice and the OpenGov record carry the right signature. I\'ll look up the owner of record, parcel number and owner mailing address from Franklin County Auditor records, create the Grass/weed complaint record in OpenGov, and attach the Chapter 917 notice to it. Inspection date will be today unless you say otherwise.',
+              build: a => 'Prepare Chapter 917 weed and grass notices and create the OpenGov Grass/weed complaint records for: ' + a }
 };
 let PENDING_CHIP = null;
 function askFor(kind){
