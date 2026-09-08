@@ -478,14 +478,60 @@ function addMsg(role, text, tagLabel){
    natively in Word and Google Docs and needs no library, which keeps the page
    dependency-free. The draft is deliberately plain — it is a working draft, not a
    formatted packet document. */
+/* Turn the model's plain text into laid-out paragraphs. Word renders HTML, so the
+   difference between a readable document and a wall of text is entirely in whether we
+   bother to classify the blocks. Blank lines delimit paragraphs; the rest is inferred
+   from how Hilliard legislation is actually shaped. */
+function wordBodyHtml(bodyText){
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Bracketed blanks stay visible so nobody files a draft with one still in it.
+  const mark = s => esc(s).replace(/\[([^\]]{1,80})\]/g,
+    '<b style="background:#fff2a8">[$1]</b>');
+  const blocks = String(bodyText || '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  const out = [];
+  let capDone = false;
+  for(const raw of blocks){
+    const b = raw.replace(/\s*\n\s*/g, ' ').trim();   // unwrap soft line breaks
+    // The opening all-caps caption, centred and bold like the adopted originals.
+    // Bracketed blanks are lowercase by nature, so ignore them when testing for caps.
+    const capTest = b.replace(/\[[^\]]*\]/g, 'X');
+    if(!capDone && /^[A-Z0-9][A-Z0-9 ,.;:()"'\/&\-]{25,}$/.test(capTest)){
+      out.push('<p style="text-align:center;font-weight:bold;margin:0 0 18pt">' + mark(b) + '</p>');
+      capDone = true; continue;
+    }
+    if(/^NOW,\s*THEREFORE/i.test(b)){
+      out.push('<p style="font-weight:bold;margin:14pt 0 12pt">' + mark(b) + '</p>');
+      continue;
+    }
+    // SECTION n. — hanging indent so the number sits proud of the text.
+    const sec = b.match(/^(SECTION\s+\d+\.)\s*([\s\S]*)$/i);
+    if(sec){
+      out.push('<p style="margin:0 0 10pt;padding-left:54pt;text-indent:-54pt;text-align:justify">'
+        + '<b>' + esc(sec[1]) + '</b> ' + mark(sec[2]) + '</p>');
+      continue;
+    }
+    if(/^WHEREAS/i.test(b)){
+      out.push('<p style="margin:0 0 10pt;text-align:justify">' + mark(b) + '</p>');
+      continue;
+    }
+    // Short line, no sentence punctuation -> a staff-report heading.
+    if(b.length < 70 && !/[.;:]$/.test(b) && /^[A-Z]/.test(b) && b.split(' ').length <= 8){
+      out.push('<p style="font-weight:bold;margin:16pt 0 6pt">' + mark(b) + '</p>');
+      continue;
+    }
+    out.push('<p style="margin:0 0 10pt;text-align:justify">' + mark(b) + '</p>');
+  }
+  return out.join('\n');
+}
 function downloadWordDoc(filename, title, bodyText){
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
     + 'xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
     + '<head><meta charset="utf-8"><title>' + esc(title) + '</title>'
     + '<style>@page{size:8.5in 11in;margin:1in}'
-    + 'body{font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.4;white-space:pre-wrap}'
-    + '</style></head><body>' + esc(bodyText) + '</body></html>';
+    + 'body{font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.35}'
+    + 'p{margin:0 0 10pt}'
+    + '</style></head><body>' + wordBodyHtml(bodyText) + '</body></html>';
   const blob = new Blob(['﻿', html], {type:'application/msword'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
