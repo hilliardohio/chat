@@ -525,14 +525,23 @@ function wordBodyHtml(bodyText){
 }
 function downloadWordDoc(filename, title, bodyText){
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Every paragraph carries inline styles because Word's HTML importer treats a <style>
+  // block as advisory — and ignores white-space/pre entirely, which is why an earlier
+  // version of this arrived in Word as one unbroken blob.
   const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
     + 'xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
-    + '<head><meta charset="utf-8"><title>' + esc(title) + '</title>'
-    + '<style>@page{size:8.5in 11in;margin:1in}'
-    + 'body{font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.35}'
-    + 'p{margin:0 0 10pt}'
-    + '</style></head><body>' + wordBodyHtml(bodyText) + '</body></html>';
-  const blob = new Blob(['﻿', html], {type:'application/msword'});
+    + '<head><meta charset="utf-8">'
+    + '<meta name="ProgId" content="Word.Document">'
+    + '<meta name="Generator" content="Microsoft Word">'
+    + '<title>' + esc(title) + '</title>'
+    + '<style>@page WordSection1{size:8.5in 11.0in;margin:1.0in}div.WordSection1{page:WordSection1}'
+    + 'body,p{font-family:"Times New Roman",Times,serif;font-size:12.0pt}'
+    + '</style></head><body lang="EN-US">'
+    + '<div class="WordSection1" style="font-family:\'Times New Roman\',Times,serif;font-size:12.0pt">'
+    + wordBodyHtml(bodyText)
+    + '</div></body></html>';
+  // No BOM: it lands ahead of <html> and can make Word sniff the file as plain text.
+  const blob = new Blob([html], {type:'application/msword'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = filename;
