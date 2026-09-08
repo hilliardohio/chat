@@ -58,11 +58,12 @@
       <button onclick="ask('What are the noise ordinance quiet hours?')">Noise rules</button>
       <button onclick="ask('What is the city income tax rate and how do I file?')">Income tax</button>
       <button onclick="ask('How do I contact the police for a non-emergency?')">Police</button>
-      <button onclick="ask('What is the zoning for 3800 Municipal Way?')">Zoning by address</button>
-      <button onclick="ask('How big is the property at 3993 Cosgray Rd and who owns it?')">Property info</button>
-      <button onclick="ask('How do I see the permits that have been issued for my property?')">Permit history</button>
-      <button onclick="ask('Can I get a zoning letter for 3800 Municipal Way?')">Zoning letter</button>
-      <button onclick="ask('Zoning research: I want to research a property or development in Hilliard. Explain what you can look up — the zoning district and map for any address or landmark, Franklin County Auditor property details, permit history, and the City\'s Planning &amp; Zoning application history (rezonings, PUDs, plats, variances, conditional uses) searchable by project name, application type, or keyword — then ask me for the address, project name, or keyword to research.')">Zoning research</button>
+      <button onclick="askFor('zoning')">Zoning by address</button>
+      <button onclick="askFor('property')">Property info</button>
+      <button onclick="askFor('permits')">Permit history</button>
+      <button onclick="askFor('letter')">Zoning letter</button>
+      <button onclick="askFor('research')">Zoning research</button>
+      <button id="chipDraft" style="display:none" onclick="askFor('draft')">Draft legislation</button>
     </div>
     <div id="inputRow">
       <textarea id="chatInput" rows="1" placeholder="Ask a question about City of Hilliard services, rules, or contacts…"></textarea>
@@ -743,6 +744,10 @@ function paintStaffMode(){
     if(p && !p.value) p.value = staffToken();
     const s = document.getElementById('staffPwState');
     if(s) s.textContent = staffToken() ? 'set' : '';
+    // The drafting chip is a staff affordance. Hiding it from residents is courtesy,
+    // not security — the Worker still refuses to draft without the password.
+    const d = document.getElementById('chipDraft');
+    if(d) d.style.display = STAFF_MODE ? '' : 'none';
   }catch(e){}
 }
 function setStaffMode(on){
@@ -796,10 +801,52 @@ function autolink(text){
 }
 function ask(q){ document.getElementById('chatInput').value = q; send(); }
 
+/* Chips that need a specific property (or, for staff, a subject) don't fire a canned
+   question any more — they ask first. Answering a question about "3800 Municipal Way"
+   when the resident meant their own house is worse than a short extra step, and the old
+   behaviour buried a real example address in a chip nobody read. */
+const CHIP_PROMPTS = {
+  zoning:   { prompt: 'Sure — which Hilliard address would you like the zoning for? A street address works best (for example, 4101 Greenbelt Dr). A business or landmark name is fine too.',
+              build: a => 'What is the zoning for ' + a + '?' },
+  property: { prompt: 'Happy to look that up — what Hilliard address? I can give you lot size, owner of record, year built and the last sale from Franklin County Auditor records.',
+              build: a => 'How big is the property at ' + a + ', who owns it, and what are its property details?' },
+  permits:  { prompt: 'Which Hilliard address would you like the permit history for? I can list the permits and records on file for that property in OpenGov.',
+              build: a => 'What permits and records are on file for ' + a + '?' },
+  letter:   { prompt: 'Which Hilliard address is the zoning letter for? I\'ll pull the zoning district, property details, permit history and code enforcement status, and lay it out as a printable summary.',
+              build: a => 'Can I get a zoning letter for ' + a + '?' },
+  research: { prompt: 'What would you like to research? I can look up a specific address (zoning district, map, property details, permit history), or search the City\'s Planning & Zoning application list by project name, application type or keyword — for example "PUDs in Hilliard" or "Hill Farm".',
+              build: a => 'Zoning research: ' + a },
+  draft:    { prompt: 'What legislation do you need drafted? Tell me what it should do and any key facts you have — contractor or developer name, project number, dollar amount, parcel numbers, dates. I\'ll find a comparable adopted ordinance or resolution to model from, and flag anything missing in brackets rather than inventing it.',
+              build: a => 'Draft legislation: ' + a }
+};
+let PENDING_CHIP = null;
+function askFor(kind){
+  const c = CHIP_PROMPTS[kind];
+  if(!c) return;
+  PENDING_CHIP = kind;
+  document.getElementById('chips').style.display = 'none';
+  addMsg('bot', c.prompt);
+  const input = document.getElementById('chatInput');
+  input.placeholder = kind === 'draft' ? 'Describe the legislation…'
+                    : (kind === 'research' ? 'Address, project name or keyword…' : 'Hilliard address…');
+  input.focus();
+}
+
 async function send(){
   const input = document.getElementById('chatInput');
-  const q = input.value.trim();
-  if(!q) return;
+  const typed = input.value.trim();
+  if(!typed) return;
+  // If a chip asked for an address or subject, turn the reply into the real question.
+  // Only do this when they answered with a bare value — if they typed a whole question
+  // themselves, respect it and drop the pending chip.
+  let q = typed;
+  if(PENDING_CHIP){
+    const c = CHIP_PROMPTS[PENDING_CHIP];
+    const looksLikeQuestion = /\?$/.test(typed) || /^(what|who|when|where|why|how|can|could|is|are|do|does|draft|prepare|write|tell|show|give)\b/i.test(typed);
+    if(c && !looksLikeQuestion) q = c.build(typed);
+    PENDING_CHIP = null;
+    input.placeholder = 'Ask a question about City of Hilliard services, rules, or contacts…';
+  }
   input.value = '';
   document.getElementById('chips').style.display = 'none';
   addMsg('user', q);
