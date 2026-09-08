@@ -276,6 +276,114 @@ async function lookupSosEntity(ownerName) {
     return { unavailable: true, reason: (err && err.message) || 'error', note: 'The Ohio SOS business search could not be reached automatically. Confirm the entity manually at businesssearch.ohiosos.gov.' };
   }
 }
+/* ---------------- OpenGov Grass/weed complaint record creation (STAFF ONLY) ----------------
+   What the API supports today, verified against the live system on 2026-09-08:
+     POST /records {typeID:6538}                 -> draft record            (works)
+     PATCH /records/{id}/primary-location        -> sets the property       (works)
+     PATCH /records/{id}/form                    -> 501 NOT IMPLEMENTED     (OpenGov hasn't built it)
+     POST /files -> PUT bytes to uploadUrl -> POST /records/{id}/attachments {fileID}   (works)
+   So this creates the draft, pins the location, attaches the notice, and hands back the
+   draft link plus the field values for a staff member to paste. Re-check the form endpoint
+   periodically; when it stops returning 501, wire the values through. */
+const GRASS_WEED_TYPE_ID = 6538;
+const OG_DRAFT_URL = 'https://hilliardoh.workflow.opengov.com/#/create/form/';
+const OG_RECORD_URL = 'https://hilliardoh.workflow.opengov.com/#/explore/records/';
+// Minimal Word-compatible HTML for the notice, mirroring the page's formatter so the
+// attached file matches what the staff member downloaded.
+function noticeDocHtml(title, bodyText) {
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const blocks = String(bodyText || '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  const ps = blocks.map((raw, i) => {
+    const b = raw.replace(/\s*\n\s*/g, ' ').trim();
+    if (i === 0 || /^(NOTICE|OF VIOLATION|CODIFIED ORDINANCES|\d{4} GROWING SEASON|\(Ord\. No\.)/.test(b))
+      return '<p style="text-align:center;font-weight:bold;margin:0 0 4pt">' + esc(raw).replace(/\n/g, '<br>') + '</p>';
+    if (/^(Sincerely,)$/i.test(b)) return '<p style="margin:16pt 0 0">' + esc(b) + '</p>';
+    if (b.length < 60 && !/[.;:]$/.test(b) && blocks.indexOf(raw) > blocks.length - 6) return '<p style="margin:0">' + esc(b) + '</p>';
+    return '<p style="margin:0 0 10pt;text-align:justify">' + esc(b) + '</p>';
+  });
+  return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><meta name="ProgId" content="Word.Document"><title>' + esc(title) + '</title><style>@page WordSection1{size:8.5in 11.0in;margin:1.0in}div.WordSection1{page:WordSection1}body,p{font-family:"Times New Roman",Times,serif;font-size:12.0pt}</style></head><body lang="EN-US"><div class="WordSection1">' + ps.join('\n') + '</div></body></html>';
+}
+async function createGrassWeedComplaint(env, input) {
+  if (!env.OPENGOV_API_KEY) return { unavailable: true, reason: 'OPENGOV_API_KEY not set' };
+  const H = { Authorization: 'Token ' + env.OPENGOV_API_KEY, Accept: 'application/vnd.api+json' };
+  const HJ = Object.assign({ 'Content-Type': 'application/vnd.api+json' }, H);
+  const steps = [];
+  const fail = (step, r, extra) => ({ created: false, failed_step: step, http_status: r && r.status, detail: extra, steps });
+  const jsonOf = async r => { try { return await r.json(); } catch (e) { return null; } };
+  const errDetail = j => (j && j.errors) ? j.errors.map(e => e.detail || e.title).join(' | ') : undefined;
+  try {
+    // 1. Location
+    const a = parseAddress(input.address || '');
+    if (!a.streetNo) return { created: false, failed_step: 'location', detail: 'Address needs a house number and street.' };
+    const found = await findLocation(H, a.streetNo, a.streetName, a.streetNameFull);
+    if (found.auth) return { unavailable: true, reason: 'OpenGov API key lacks Location Read' };
+    if (!found.loc) return { created: false, failed_step: 'location', detail: 'No OpenGov location matches "' + input.address + '". The record must be tied to an OpenGov location; add the address in OpenGov first or check the spelling.' };
+    const loc = found.loc;
+    steps.push({ step: 'location', ok: true, location_id: loc.id });
+    // 2. Draft record
+    let r = await fetch(PLCE_BASE + '/records', { method: 'POST', headers: HJ, body: JSON.stringify({ data: { type: 'record', attributes: { typeID: GRASS_WEED_TYPE_ID } } }) });
+    let j = await jsonOf(r);
+    if (!r.ok || !j || !j.data) return fail('create_record', r, errDetail(j));
+    const recordId = String(j.data.id);
+    steps.push({ step: 'create_record', ok: true, record_id: recordId });
+    // 3. Primary location
+    r = await fetch(PLCE_BASE + '/records/' + recordId + '/primary-location', { method: 'PATCH', headers: HJ, body: JSON.stringify({ data: { type: 'location', id: String(loc.id) } }) });
+    if (!r.ok) { j = await jsonOf(r); steps.push({ step: 'set_location', ok: false, detail: errDetail(j) }); }
+    else steps.push({ step: 'set_location', ok: true });
+    // 4-6. Attach the notice
+    let attachment = { attached: false };
+    if (input.letter_text) {
+      const fileName = (input.letter_filename || ('Chapter 917 Notice - ' + (a.streetNo + ' ' + a.streetNameFull))).replace(/[\\/:*?"<>|]/g, '').slice(0, 120) + '.doc';
+      r = await fetch(PLCE_BASE + '/files', { method: 'POST', headers: HJ, body: JSON.stringify({ data: { type: 'file', attributes: { fileName } } }) });
+      j = await jsonOf(r);
+      if (!r.ok || !j || !j.data) attachment = { attached: false, failed_step: 'create_file', detail: errDetail(j) };
+      else {
+        const fileId = String(j.data.id), uploadUrl = j.data.attributes && j.data.attributes.uploadUrl;
+        const html = noticeDocHtml(fileName, input.letter_text);
+        const up = await fetch(uploadUrl, { method: 'PUT', headers: { 'x-ms-blob-type': 'BlockBlob', 'Content-Type': 'application/msword' }, body: html });
+        if (!up.ok) attachment = { attached: false, failed_step: 'upload_bytes', http_status: up.status, detail: (await up.text()).slice(0, 200) };
+        else {
+          r = await fetch(PLCE_BASE + '/records/' + recordId + '/attachments', { method: 'POST', headers: HJ, body: JSON.stringify({ data: { type: 'recordAttachment', attributes: { fileID: fileId } } }) });
+          j = await jsonOf(r);
+          attachment = r.ok ? { attached: true, file_id: fileId, file_name: fileName } : { attached: false, failed_step: 'attach', http_status: r.status, detail: errDetail(j) || JSON.stringify(j).slice(0, 200) };
+        }
+      }
+    }
+    steps.push(Object.assign({ step: 'attachment' }, attachment));
+    return {
+      created: true,
+      record_id: recordId,
+      status: 'DRAFT — not yet submitted',
+      draft_url: OG_DRAFT_URL + recordId,
+      location: (loc.attributes && (loc.attributes.streetNo + ' ' + loc.attributes.streetName)) || input.address,
+      attachment,
+      form_fields_not_set: true,
+      why: 'OpenGov\'s API does not yet implement writing form fields (PATCH /records/{id}/form returns 501), so the form values below must be pasted in by a staff member before the record is submitted.',
+      form_values_to_paste: input.form_values || {},
+      steps
+    };
+  } catch (e) {
+    return { created: false, failed_step: 'exception', detail: (e && e.message) || 'error', steps };
+  }
+}
+const CREATE_GW_TOOL = {
+  name: 'create_grass_weed_complaint',
+  description: 'Staff only. Create a Grass/weed complaint DRAFT record in OpenGov for a property: sets the location, attaches the Chapter 917 notice as a Word file, and returns the draft link. OpenGov\'s API cannot fill form fields yet, so pass the values in form_values and they are returned for the staff member to paste. Call once per address, AFTER lookup_owner_for_notice and after writing the letter.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      address: { type: 'string', description: 'Property street address, e.g. "3399 Crandon St"' },
+      letter_text: { type: 'string', description: 'The complete plain-text notice exactly as written between the markers' },
+      letter_filename: { type: 'string', description: 'Optional file name without extension' },
+      form_values: {
+        type: 'object',
+        description: 'The record form values, for the staff member to paste: description, owner_agent_name, owner_address, city, state, zip, tax_district, parcel_number, investigation_conducted_on, zoning_code_violation, zoning_date_assigned, how_mailed, signature, title, phone, email',
+        additionalProperties: { type: 'string' }
+      }
+    },
+    required: ['address', 'letter_text', 'form_values']
+  }
+};
 const SOS_TOOL = {
   name: 'lookup_sos_entity',
   description: 'Staff only. Look up a business entity in the Ohio Secretary of State business search by owner name: returns registered name, entity number, status, type, and the statutory agent name and address for service. Call when an owner of record is a business entity or the parcel is non-residential.',
@@ -300,6 +408,9 @@ When a staff member asks for a weed notice, grass notice, code enforcement lette
   Always state the source of the mailing address used (Auditor, or SOS with entity number) in the note after each letter.
 - Also note after each letter when absentee_owner is true, since the notice is going somewhere other than the property.
 - OUTPUT: put each letter between <<<CODE ENFORCEMENT LETTER>>> and <<<END CODE ENFORCEMENT LETTER>>>, one pair per property, in the order the addresses were given. The page turns each into its own Word download. Plain text, no markdown. Blank line between every paragraph.
+- OPENGOV RECORD: after writing each letter, call create_grass_weed_complaint for that address with the full letter text and these form_values (use exactly these keys): description "Entry via Hilliard Chat"; owner_agent_name; owner_address (street only); city; state ("Ohio"); zip; tax_district (the part of the parcel number before the first dash, e.g. "050"); parcel_number (everything after the first dash, e.g. "002776"); investigation_conducted_on and zoning_date_assigned (MM/DD/YYYY, today unless told otherwise); zoning_code_violation "917.02 REMOVAL OF WEEDS; DUTY OF ZONING OFFICER"; how_mailed "1st Class"; signature, title, phone, email (the named inspector). Owner values come from lookup_owner_for_notice, or from the SOS agent address when the letter was addressed there.
+  * The tool creates a DRAFT with the location set and the notice attached, but OpenGov's API cannot fill form fields yet, so after the letter show: the draft link (draft_url) as a Markdown link labeled "Open draft record in OpenGov", then a short "Paste into the form:" list of the form values in the order the form shows them, then a reminder to click Create Record in OpenGov to submit it. If attachment.attached is false, say the notice could not be attached and that the Word download above should be attached manually.
+  * If the tool returns created=false, report failed_step and detail plainly and tell them the record must be created by hand for that address. Never claim a record exists when the tool didn't create one.
 - Reproduce this letter EXACTLY, substituting only the bracketed fields. The quoted ordinance text and the cost, lien and penalty paragraphs are statutory language — do not paraphrase, shorten or modernise them:
 
 NOTICE
@@ -917,7 +1028,7 @@ export default {
         // here on every request. The page's staff-mode checkbox lives in the visitor's
         // own browser and is not evidence of anything.
         const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
-        const tools = isStaff ? TOOLS.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL]) : TOOLS;
+        const tools = isStaff ? TOOLS.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL, CREATE_GW_TOOL]) : TOOLS;
         const maxTokens = isStaff ? 8000 : MAX_TOKENS;
 
         const cfg = await getConfig(env);
@@ -964,6 +1075,9 @@ export default {
               : { error: 'not authorized' };
             else if (b.name === 'lookup_sos_entity') out = isStaff
               ? await lookupSosEntity(b.input && b.input.owner_name)
+              : { error: 'not authorized' };
+            else if (b.name === 'create_grass_weed_complaint') out = isStaff
+              ? await createGrassWeedComplaint(env, b.input || {})
               : { error: 'not authorized' };
             else out = { error: 'unknown tool' };
             results.push({ type: 'tool_result', tool_use_id: b.id, content: JSON.stringify(out) });
@@ -1104,6 +1218,16 @@ export default {
             if (rows.length < 100) break;
           }
           return json({ scanned: all, hits }, 200, env);
+        }
+        if (a === 'test_gw_create') {
+          // Full create+attach dry run on a City-owned address. Creates a real DRAFT.
+          const out = await createGrassWeedComplaint(env, {
+            address: String(body.address || '3800 Municipal Way'),
+            letter_text: String(body.letter_text || 'NOTICE\nOF VIOLATION OF CHAPTER 917 OF THE\nCODIFIED ORDINANCES OF THE CITY OF HILLIARD, OHIO\n\nTest attachment created by the Hilliard Assistant admin test. Safe to discard.'),
+            letter_filename: 'TEST - Chapter 917 Notice - 3800 Municipal Way',
+            form_values: body.form_values || { description: 'Entry via Hilliard Chat (admin test)' }
+          });
+          return json(out, 200, env);
         }
         if (a === 'test_sos') {
           // Can this Worker reach the Ohio SOS API? Diagnostic only; admin-gated.
