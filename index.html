@@ -68,11 +68,17 @@
       <textarea id="chatInput" rows="1" placeholder="Ask a question about City of Hilliard services, rules, or contacts…"></textarea>
       <button id="sendBtn" onclick="send()">Send</button>
     </div>
-    <div id="staffToggleRow" style="display:flex;align-items:center;gap:6px;margin:6px 2px 0;font-size:12px;color:#5c6b78">
+    <div id="staffToggleRow" style="display:flex;align-items:center;gap:6px;margin:6px 2px 0;font-size:12px;color:#5c6b78;flex-wrap:wrap">
       <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer">
         <input type="checkbox" id="staffToggle" onchange="setStaffMode(this.checked)" style="margin:0;cursor:pointer">
-        <span>Staff mode — link OpenGov records to the internal record view (City staff login required)</span>
+        <span>Staff mode — internal OpenGov record links, and legislation drafting with the staff password</span>
       </label>
+      <span id="staffPwWrap" style="display:none;align-items:center;gap:5px">
+        <input type="password" id="staffPw" placeholder="Staff password" autocomplete="off"
+               oninput="setStaffToken(this.value)"
+               style="font-size:12px;padding:2px 6px;border:1px solid #ccd6df;border-radius:4px;width:130px">
+        <span id="staffPwState"></span>
+      </span>
     </div>
     <div class="disclaimer">Automated informational assistant — not legal advice. Verify with the City at (614) 876-7361 or hilliardohio.gov.</div>
   </section>
@@ -468,7 +474,72 @@ function addMsg(role, text, tagLabel){
   wrap.appendChild(div);
   wrap.scrollTop = wrap.scrollHeight;
 }
+/* Word download for staff drafts. A .doc file containing Word-compatible HTML opens
+   natively in Word and Google Docs and needs no library, which keeps the page
+   dependency-free. The draft is deliberately plain — it is a working draft, not a
+   formatted packet document. */
+function downloadWordDoc(filename, title, bodyText){
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
+    + 'xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
+    + '<head><meta charset="utf-8"><title>' + esc(title) + '</title>'
+    + '<style>@page{size:8.5in 11in;margin:1in}'
+    + 'body{font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.4;white-space:pre-wrap}'
+    + '</style></head><body>' + esc(bodyText) + '</body></html>';
+  const blob = new Blob(['﻿', html], {type:'application/msword'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function draftBlock(label, bodyText, shortSubject){
+  const box = document.createElement('div');
+  box.className = 'letter';
+  const lt = document.createElement('div');
+  lt.className = 'lt';
+  lt.textContent = label + ' — UNREVIEWED DRAFT';
+  box.appendChild(lt);
+  const pre = document.createElement('div');
+  pre.style.whiteSpace = 'pre-wrap';
+  pre.textContent = bodyText;
+  box.appendChild(pre);
+  const wrap = document.createElement('div');
+  const btn = document.createElement('button');
+  btn.className = 'printBtn';
+  btn.textContent = 'Download ' + label + ' (Word)';
+  const date = new Date().toISOString().slice(0,10);
+  const name = date + ' ' + label + (shortSubject ? ' - ' + shortSubject : '');
+  btn.onclick = () => downloadWordDoc(name.replace(/[\\/:*?"<>|]/g,'') + '.doc', name, bodyText);
+  wrap.appendChild(btn);
+  return { box, buttons: wrap };
+}
+const DRAFT_MARKERS = [
+  ['Draft Legislation', /<<<DRAFT LEGISLATION>>>([\s\S]*?)<<<END DRAFT LEGISLATION>>>/],
+  ['Staff Report',      /<<<STAFF REPORT>>>([\s\S]*?)<<<END STAFF REPORT>>>/]
+];
 function renderBody(div, text, role){
+  // Staff drafting output: render each marked block with its own Word download.
+  if(role === 'bot' && /<<<DRAFT LEGISLATION>>>|<<<STAFF REPORT>>>/.test(text)){
+    let rest = text, subject = '';
+    const first = text.match(/<<<DRAFT LEGISLATION>>>([\s\S]*?)<<<END DRAFT LEGISLATION>>>/);
+    if(first){
+      const cap = first[1].split('\n').find(l => /^[A-Z0-9 ,.\-()'"]{25,}$/.test(l.trim()));
+      subject = cap ? cap.trim().slice(0,50).replace(/[.,]$/,'') : '';
+    }
+    for(const [label, re] of DRAFT_MARKERS){
+      const mm = rest.match(re);
+      if(!mm) continue;
+      const before = rest.slice(0, mm.index).trim();
+      if(before) div.appendChild(linkify(before));
+      const blk = draftBlock(label, mm[1].trim(), subject);
+      div.appendChild(blk.box);
+      div.appendChild(blk.buttons);
+      rest = rest.slice(mm.index + mm[0].length);
+    }
+    if(rest.trim()) div.appendChild(linkify(rest.trim()));
+    return;
+  }
   const m = role === 'bot' ? text.match(/<<<LETTER>>>([\s\S]*?)<<<END LETTER>>>/) : null;
   if(!m){ div.appendChild(linkify(text)); return; }
   const before = text.slice(0, m.index).trim();
@@ -594,12 +665,29 @@ function recordHref(href){
   const w = WORKFLOW_REC.exec(s);
   return w ? ('https://hilliardoh.portal.opengov.com/records/' + w[1]) : s;
 }
+/* The staff password unlocks legislation drafting. It is only ever sent to the Worker,
+   which compares it against its STAFF_PASSWORD secret — nothing is decided in the browser.
+   Kept in sessionStorage so it doesn't persist on a shared machine after the tab closes. */
+function staffToken(){
+  try{ return STAFF_MODE ? (sessionStorage.getItem('staffToken') || '') : ''; }catch(e){ return ''; }
+}
+function setStaffToken(v){
+  try{ sessionStorage.setItem('staffToken', String(v || '')); }catch(e){}
+  const s = document.getElementById('staffPwState');
+  if(s) s.textContent = (v && String(v).length) ? 'set' : '';
+}
 function paintStaffMode(){
   try{
     const b = document.getElementById('staffBadge');
     if(b) b.style.display = STAFF_MODE ? 'inline-block' : 'none';
     const t = document.getElementById('staffToggle');
     if(t) t.checked = STAFF_MODE;
+    const w = document.getElementById('staffPwWrap');
+    if(w) w.style.display = STAFF_MODE ? 'inline-flex' : 'none';
+    const p = document.getElementById('staffPw');
+    if(p && !p.value) p.value = staffToken();
+    const s = document.getElementById('staffPwState');
+    if(s) s.textContent = staffToken() ? 'set' : '';
   }catch(e){}
 }
 function setStaffMode(on){
@@ -687,7 +775,9 @@ async function send(){
       const resp = await fetch(BACKEND + '/api/chat', {
         method: 'POST',
         headers: {'content-type': 'application/json'},
-        body: JSON.stringify({messages, guides})
+        // staffToken is verified by the Worker against its STAFF_PASSWORD secret; the
+        // staff-mode checkbox alone unlocks nothing on the server.
+        body: JSON.stringify({messages, guides, staffToken: staffToken()})
       });
       const data = await resp.json();
       if(!resp.ok){

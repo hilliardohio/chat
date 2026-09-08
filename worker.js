@@ -99,6 +99,101 @@ async function getNews(env) {
   }
 }
 
+/* ---------------- Legislation drafting (STAFF ONLY) ----------------
+   Gated on the STAFF_PASSWORD secret, checked in the Worker on every request. The
+   staff-mode checkbox in the page is only a display convenience — it is set in the
+   visitor's own browser and proves nothing, so it must never be what unlocks this.
+
+   The Worker cannot browse CivicWeb (its Document Center is JavaScript-rendered) or
+   parse PDFs, so the model library is pre-built: legislation-index.json carries the
+   full text of a few model documents plus a catalogue of adopted legislation. Rebuild
+   and republish that file to add more models. */
+const LEGISLATION_DEFAULT_URL = 'https://hilliardohio.github.io/chat/legislation-index.json';
+async function getLegislation(env) {
+  try {
+    const cached = await env.KV.get('legis:cache');
+    if (cached) {
+      const o = JSON.parse(cached);
+      if (Date.now() - o.ts < 6 * 3600 * 1000) return o.data;
+    }
+  } catch (e) {}
+  const url = (await env.KV.get('config:legislationUrl')) || LEGISLATION_DEFAULT_URL;
+  const r = await fetch(url, { cf: { cacheTtl: 3600 } });
+  if (!r.ok) throw new Error('legislation index fetch failed (' + r.status + ')');
+  const data = await r.json();
+  try { await env.KV.put('legis:cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
+  return data;
+}
+// Score catalogue entries and models against the request so the draft is built from a
+// genuinely comparable document rather than whichever one happens to be first.
+const LEGIS_STOP = new Set(['the','a','an','and','or','for','of','to','in','on','at','is','are','be','draft','new','resolution','ordinance','staff','report','city','hilliard','please','need','council']);
+function legisTerms(q) {
+  return [...new Set(String(q || '').toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2 && !LEGIS_STOP.has(w)))];
+}
+function scoreLegis(text, terms) {
+  const t = String(text || '').toLowerCase();
+  let s = 0;
+  for (const w of terms) if (t.includes(w)) s++;
+  return s;
+}
+async function findLegislationModels(env, query) {
+  try {
+    const idx = await getLegislation(env);
+    const terms = legisTerms(query);
+    const models = (idx.models || [])
+      .map(m => ({ m, s: scoreLegis(m.title + ' ' + m.kind + ' ' + m.text, terms) }))
+      .sort((a, b) => b.s - a.s);
+    const related = (idx.documents || [])
+      .map(d => ({ d, s: scoreLegis(d.subject, terms) }))
+      .filter(x => x.s > 0)
+      .sort((a, b) => b.s - a.s)
+      .slice(0, 12)
+      .map(x => ({
+        number: x.d.number, type: x.d.type, subject: x.d.subject,
+        adopted: x.d.month + ' ' + x.d.year,
+        url: (idx.documentUrlPattern || '').replace('{docId}', x.d.docId)
+      }));
+    return {
+      model: models.length && models[0].s > 0 ? models[0].m : (models[0] ? models[0].m : null),
+      model_was_close_match: !!(models.length && models[0].s > 0),
+      other_models: models.slice(1, 3).map(x => ({ number: x.m.number, title: x.m.title, kind: x.m.kind })),
+      related_adopted_legislation: related,
+      index_generated: idx.generated,
+      catalogue_size: (idx.documents || []).length
+    };
+  } catch (e) {
+    return { unavailable: true, reason: (e && e.message) || 'error' };
+  }
+}
+/* Appended to the system prompt only for verified staff. Mirrors the Cowork
+   ordinance-prep skill: model-first, flag rather than invent, nothing that implies
+   review or adoption that hasn't happened. */
+const STAFF_DRAFTING_PROMPT = `== STAFF MODE: LEGISLATION DRAFTING (verified City staff only) ==
+You are talking to a verified City of Hilliard staff member. In addition to everything above, you can draft Council legislation.
+
+- WHEN TO DRAFT: if they ask you to draft, prepare or write an ordinance, resolution, staff report, Council packet item or agenda item — or describe a Council-approvable action (property transfer, easement, right-of-way vacation, acceptance of public infrastructure, zoning amendment, agreement, fee change, appropriation, contract award).
+- ALWAYS call draft_legislation FIRST with a short description of what's needed. It returns a model document's full text plus related adopted legislation. Never draft from memory — the result would use conventions the City does not have.
+- CHECK FOR DUPLICATES: look at related_adopted_legislation in the result. If something there already appears to cover this exact action, say so plainly, name it with its number and date, and ask what they actually need before drafting. Drafting a duplicate wastes staff time and creates a confusing record.
+- CONFIRM THE MODEL: name the model you're using in one line ("modeling from Resolution 26-R-74, the Alton Place sanitary sewer acceptance"). If model_was_close_match is false, say the library has no close match, name what you're falling back to, and ask whether to continue.
+- FOLLOW THE MODEL exactly — caption style, WHEREAS phrasing and order, section numbering, enacting language, signature and clerk-certificate blocks. Substitute the new facts.
+- FLAG, NEVER INVENT. Any fact you were not given goes inline as [[NEEDS CONFIRMATION: what's missing]] in the exact place it belongs. This applies to project numbers, parcel numbers, legal descriptions, dollar figures, dates, developer names and the legislation number itself (the Clerk assigns it). A draft with five confirmation markers is useful; one with five invented parcel numbers is worse than useless because the errors are invisible.
+- Leave Adopted/Passed and Effective blank. Leave signature lines blank. Never write "Approved as to form" as though it happened.
+- OUTPUT FORMAT: put the legislation between the exact markers <<<DRAFT LEGISLATION>>> and <<<END DRAFT LEGISLATION>>>, and the staff report between <<<STAFF REPORT>>> and <<<END STAFF REPORT>>>. The page turns each into a downloadable Word file. Plain text inside the markers — no markdown.
+- End the staff report with a short "Drafting notes — delete before filing" section naming the model document used and listing every [[NEEDS CONFIRMATION]] item, so provenance travels with the file once it is emailed around.
+- After the markers, add one or two sentences on what you modeled from and what still needs confirming. Don't recap the draft.
+- These are unreviewed working drafts that go to the Law Director before Council. Say so if it's the first draft in the conversation.`;
+const DRAFT_TOOL = {
+  name: 'draft_legislation',
+  description: 'Staff only. Look up a model ordinance or resolution from the City\'s adopted legislation library, plus related adopted items, so a new draft can be modeled on real City drafting conventions. Call this FIRST, before writing any draft. Pass a short description of the legislation needed.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      subject: { type: 'string', description: 'What the legislation must do, e.g. "resolution accepting public infrastructure for Alton Place Section 2 sanitary sewer"' }
+    },
+    required: ['subject']
+  }
+};
+
 /* ---------------- OpenGov Permitting & Licensing permit history (server-side) ----------------
    Runs only in the Worker so the OPENGOV_API_KEY secret never reaches the browser.
    Base + auth verified against the live API:
@@ -431,11 +526,11 @@ async function searchProjects(env, query) {
     return { unavailable: true, reason: (e && e.message) || 'error', note: 'The Planning & Zoning application list has not been loaded yet (an administrator can paste the spreadsheet into the /admin page). Refer the resident to the Planning Division at (614) 334-2366 or the OpenGov portal.' };
   }
 }
-async function callAnthropic(apiKey, model, system, messages) {
+async function callAnthropic(apiKey, model, system, messages, tools, maxTokens) {
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model, max_tokens: MAX_TOKENS, system, tools: TOOLS, messages })
+    body: JSON.stringify({ model, max_tokens: maxTokens || MAX_TOKENS, system, tools: tools || TOOLS, messages })
   });
   return { ok: resp.ok, status: resp.status, data: await resp.json() };
 }
@@ -662,16 +757,24 @@ export default {
         if (JSON.stringify(messages).length > 60000) return json({ error: { message: 'Conversation too long — please refresh the page.' } }, 400, env);
         const guides = Array.isArray(body.guides) ? body.guides.slice(0, 10).map(g => String(g).slice(0, 2000)) : [];
 
+        // Staff drafting is unlocked ONLY by the shared STAFF_PASSWORD secret, verified
+        // here on every request. The page's staff-mode checkbox lives in the visitor's
+        // own browser and is not evidence of anything.
+        const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
+        const tools = isStaff ? TOOLS.concat([DRAFT_TOOL]) : TOOLS;
+        const maxTokens = isStaff ? 8000 : MAX_TOKENS;
+
         const cfg = await getConfig(env);
         const news = await getNews(env);
-        const system = buildSystemPrompt(cfg.kb, guides, news);
+        let system = buildSystemPrompt(cfg.kb, guides, news);
+        if (isStaff) system += '\n\n' + STAFF_DRAFTING_PROMPT;
         // Multi-hop loop: the Worker handles lookup_permits itself (it holds the
         // OpenGov key); lookup_zoning is delegated to the browser (keyless GIS),
         // so any response containing a lookup_zoning call is returned as-is.
         let convo = messages;
         let last = null;
         for (let hop = 0; hop < 4; hop++) {
-          const r = await callAnthropic(apiKey, cfg.model, system, convo);
+          const r = await callAnthropic(apiKey, cfg.model, system, convo, tools, maxTokens);
           if (!r.ok) {
             // Surface enough of the upstream failure to diagnose it without leaking the key.
             const up = (r.data && r.data.error) || {};
@@ -697,6 +800,11 @@ export default {
             let out;
             if (b.name === 'lookup_permits') out = await lookupPermitsOpenGov(env, b.input && b.input.address);
             else if (b.name === 'search_projects') out = await searchProjects(env, b.input && b.input.query);
+            // Re-check isStaff here, not just at tool-list assembly: a tool name in the
+            // conversation history must never be enough to reach the drafting library.
+            else if (b.name === 'draft_legislation') out = isStaff
+              ? await findLegislationModels(env, b.input && b.input.subject)
+              : { error: 'not authorized' };
             else out = { error: 'unknown tool' };
             results.push({ type: 'tool_result', tool_use_id: b.id, content: JSON.stringify(out) });
           }

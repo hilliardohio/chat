@@ -11,6 +11,7 @@ borrowed machine with nothing installed but a browser.
 | The web page residents use | `index.html` | GitHub Pages — <https://hilliardohio.github.io/chat/> | Automatically, ~1 min after you commit |
 | The backend (Claude API key, permit lookups, admin page) | `worker.js` | Cloudflare Worker — `hilliard-assistant.ralley.workers.dev` | Automatically, ~1–2 min after you commit |
 | Planning & Zoning master list | `projects.csv` | Served from GitHub Pages, read by the Worker | Automatically |
+| Model legislation library (staff drafting) | `legislation-index.json` | Served from GitHub Pages, read by the Worker | Automatically |
 | Worker settings (bindings, variables) | `wrangler.jsonc` | Cloudflare | Read on every deploy |
 
 **Commit a change → it goes live.** There is no copy-and-paste step any more, and no way to
@@ -50,7 +51,29 @@ the repo, never in the browser, and never visible to residents:
 
 - `ADMIN_PASSWORD` — password for the `/admin` page
 - `OPENGOV_API_KEY` — OpenGov Permitting & Licensing API token
+- `STAFF_PASSWORD` — unlocks legislation drafting for City staff
 - The Claude API key — stored in Workers KV, set through the `/admin` page
+
+## Staff legislation drafting
+
+Staff can draft Council ordinances and resolutions in the chat: tick **Staff mode** under
+the message box, enter the staff password, and describe what's needed. The draft and its
+staff report each come back with a Word download button.
+
+Two things are worth understanding about how this is gated. The staff-mode checkbox is a
+display setting stored in the visitor's own browser — it proves nothing and unlocks nothing
+on its own. What actually unlocks drafting is the `STAFF_PASSWORD` secret, which the Worker
+checks on every single request. The password is held in `sessionStorage`, so it clears when
+the tab closes.
+
+It is a *shared* password, which means no record of who drafted what. That is the main
+reason to move to Cloudflare Access with real city accounts if this gets used beyond a
+couple of people.
+
+Drafts are modeled on real adopted legislation from `legislation-index.json`. To add more
+model types, that file needs rebuilding from the CivicWeb Document Center — ask Claude to
+do it. Any fact not supplied comes back as a `[[NEEDS CONFIRMATION: …]]` marker rather than
+an invented parcel number, and every draft goes to the Law Director before Council.
 
 To change any of them, use the Cloudflare dashboard (Worker → Settings → *Variables and
 Secrets*) or the assistant's own `/admin` page. Never paste a key into a file in this repo.
@@ -83,7 +106,3 @@ Install the Claude desktop app on the home machine, clone or download this repos
 folder, and point Cowork at that folder. Claude can then read and edit the same files. Pull
 the latest changes before you start and commit when you finish, so the two machines never
 drift apart.
-
----
-
-Automatic deployment from GitHub was connected and verified on 2026-09-08.
