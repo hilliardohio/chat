@@ -83,3 +83,7 @@ Install the Claude desktop app on the home machine, clone or download this repos
 folder, and point Cowork at that folder. Claude can then read and edit the same files. Pull
 the latest changes before you start and commit when you finish, so the two machines never
 drift apart.
+
+---
+
+Automatic deployment from GitHub was connected and verified on 2026-09-08.
