@@ -1,0 +1,12 @@
+# Never commit secrets. Cloudflare reads these from the Worker itself, not from the repo.
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+
+# Local tooling
+node_modules/
+.wrangler/
+
+# macOS
+.DS_Store
