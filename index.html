@@ -64,6 +64,7 @@
       <button onclick="askFor('letter')">Zoning letter</button>
       <button onclick="askFor('research')">Zoning research</button>
       <button id="chipDraft" style="display:none" onclick="askFor('draft')">Draft legislation</button>
+      <button id="chipCodeLetter" style="display:none" onclick="askFor('codeletter')">Code enforcement letter</button>
     </div>
     <div id="inputRow">
       <textarea id="chatInput" rows="1" placeholder="Ask a question about City of Hilliard services, rules, or contacts…"></textarea>
@@ -279,6 +280,68 @@ async function countyParcelByPoint(lon, lat){
     });
     return (d.features && d.features.length) ? withCentroid(d.features) : null;
   }catch(e){ return null; }
+}
+/* Owner-of-record lookup for code enforcement notices (staff).
+   Two fields in the county record look like a mailing address and only one of them is:
+     MAILNME1/MAILNME2 — the OWNER's mailing address. This is the one a legal notice goes to.
+     PSTLADDRES        — where the TAX BILL goes, which for any mortgaged property is the
+                         escrow servicer (CoreLogic in Coppell, Texas, over and over).
+   Mailing a Chapter 917 notice to the servicer would be void service, so PSTLADDRES is
+   never used here. */
+const NOTICE_FIELDS = 'PARCELID,SITEADDRESS,OWNERNME1,OWNERNME2,MAILNME1,MAILNME2,CLASSDSCRP,RENTAL,ZIPCD';
+const ENTITY_RE = /\b(LLC|L\.?L\.?C|LTD|INC|CORP|CORPORATION|COMPANY|CO|LP|LLP|TRUST|TRUSTEE|PROPERTIES|HOLDINGS|RENTALS|INVESTMENTS|PARTNERS|PARTNERSHIP|ENTERPRISES|GROUP|ASSOCIATES|BANK|CHURCH|BOARD)\b/i;
+const RESIDENTIAL_CLASS_RE = /SINGLE FAMILY|TWO FAMILY|THREE FAMILY|CONDOMINIUM|CONDO|VACANT RES|RESIDENTIAL/i;
+function streetOnly(s){
+  return String(s || '').toUpperCase().replace(/[.,#]/g,' ').replace(/\s+/g,' ').trim();
+}
+async function lookupOwnerForNotice(address){
+  try{
+    const patterns = addressPatterns(address);
+    if(!patterns) return { error: 'Not a street address: "' + address + '". Give a house number and street.' };
+    let feats = null;
+    for(const pat of patterns){
+      const d = await gisQuery(GIS.countyParcels, {
+        where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
+        outFields: NOTICE_FIELDS, returnGeometry: 'false', resultRecordCount: '5'
+      });
+      if(d.features && d.features.length){ feats = d.features; break; }
+    }
+    if(!feats) return { error: 'No parcel found for "' + address + '" in Franklin County Auditor records. Check the house number and street.', address_not_found: true };
+    const a = feats[0].attributes;
+    const owners = [...new Set([a.OWNERNME1, a.OWNERNME2].filter(Boolean))];
+    const ownerName = owners.join(' & ');
+    const propAddr = a.SITEADDRESS;
+    // No MAILNME1 means the tax record carries no separate owner mailing address, which in
+    // practice means the owner is at the property.
+    const mailStreet = a.MAILNME1 || propAddr;
+    const mailCityStateZip = a.MAILNME1 ? (a.MAILNME2 || '') : ('HILLIARD, OH ' + (a.ZIPCD || '43026'));
+    const absentee = !!(a.MAILNME1 && streetOnly(a.MAILNME1) !== streetOnly(propAddr));
+    const isEntity = ENTITY_RE.test(ownerName || '');
+    const nonResidentialClass = !!(a.CLASSDSCRP && !RESIDENTIAL_CLASS_RE.test(a.CLASSDSCRP));
+    const needsSOS = isEntity || nonResidentialClass;
+    return {
+      parcel_number: a.PARCELID,
+      property_address: propAddr,
+      owner_name: ownerName,
+      owner_mailing_street: mailStreet,
+      owner_mailing_city_state_zip: mailCityStateZip,
+      mailing_address_source: 'Franklin County Auditor owner mailing address (MAILNME)',
+      property_class: a.CLASSDSCRP || undefined,
+      auditor_rental_flag: a.RENTAL || undefined,
+      owner_occupied: !absentee,
+      absentee_owner: absentee,
+      owner_is_business_entity: isEntity,
+      non_residential_class: nonResidentialClass,
+      secretary_of_state_check_required: needsSOS,
+      secretary_of_state_note: needsSOS
+        ? 'Owner appears to be a business entity or the parcel is not classed residential. Ohio SOS registered-agent and principal-office addresses cannot be retrieved automatically — a staff member must confirm the entity at businesssearch.ohiosos.gov and add the SOS mailing address before sending.'
+        : undefined,
+      other_matches: feats.slice(1).map(f => f.attributes.SITEADDRESS),
+      source: 'Franklin County Auditor live parcel records'
+    };
+  }catch(e){
+    return { error: 'Could not reach Franklin County Auditor parcel records: ' + ((e && e.message) || 'error') };
+  }
 }
 // Search the Planning & Zoning application master list (served by the Worker from the published CSV).
 async function searchProjectsViaWorker(q){
@@ -570,30 +633,41 @@ function draftBlock(label, bodyText, shortSubject){
   wrap.appendChild(btn);
   return { box, buttons: wrap };
 }
-const DRAFT_MARKERS = [
-  ['Draft Legislation', /<<<DRAFT LEGISLATION>>>([\s\S]*?)<<<END DRAFT LEGISLATION>>>/],
-  ['Staff Report',      /<<<STAFF REPORT>>>([\s\S]*?)<<<END STAFF REPORT>>>/]
-];
+/* One scanner for every marked staff document. Blocks are matched in the order they
+   appear rather than by type, because a code-enforcement run produces one letter per
+   address and they must each keep their own download button. */
+const DOC_MARKER_RE = /<<<(DRAFT LEGISLATION|STAFF REPORT|CODE ENFORCEMENT LETTER)>>>([\s\S]*?)<<<END \1>>>/g;
+const DOC_LABELS = {
+  'DRAFT LEGISLATION': 'Draft Legislation',
+  'STAFF REPORT': 'Staff Report',
+  'CODE ENFORCEMENT LETTER': 'Notice of Violation'
+};
 function renderBody(div, text, role){
-  // Staff drafting output: render each marked block with its own Word download.
-  if(role === 'bot' && /<<<DRAFT LEGISLATION>>>|<<<STAFF REPORT>>>/.test(text)){
-    let rest = text, subject = '';
-    const first = text.match(/<<<DRAFT LEGISLATION>>>([\s\S]*?)<<<END DRAFT LEGISLATION>>>/);
-    if(first){
-      const cap = first[1].split('\n').find(l => /^[A-Z0-9 ,.\-()'"]{25,}$/.test(l.trim()));
-      subject = cap ? cap.trim().slice(0,50).replace(/[.,]$/,'') : '';
-    }
-    for(const [label, re] of DRAFT_MARKERS){
-      const mm = rest.match(re);
-      if(!mm) continue;
-      const before = rest.slice(0, mm.index).trim();
+  if(role === 'bot' && /<<<(DRAFT LEGISLATION|STAFF REPORT|CODE ENFORCEMENT LETTER)>>>/.test(text)){
+    let last = 0, m;
+    DOC_MARKER_RE.lastIndex = 0;
+    while((m = DOC_MARKER_RE.exec(text)) !== null){
+      const before = text.slice(last, m.index).trim();
       if(before) div.appendChild(linkify(before));
-      const blk = draftBlock(label, mm[1].trim(), subject);
+      const body = m[2].trim();
+      const label = DOC_LABELS[m[1]] || 'Document';
+      // Name the file after the property for a notice, or the caption for legislation,
+      // so a batch of ten letters doesn't download as ten identical filenames.
+      let subject = '';
+      if(m[1] === 'CODE ENFORCEMENT LETTER'){
+        const addr = body.match(/\b(\d+\s+[A-Za-z0-9'.\- ]+?)\s+Hilliard,\s*Ohio/);
+        subject = addr ? addr[1].trim() : '';
+      } else {
+        const cap = body.split('\n').find(l => /^[A-Z0-9][A-Z0-9 ,.\-()'"\[\]]{25,}$/.test(l.trim()));
+        subject = cap ? cap.trim().slice(0,50).replace(/[.,]$/,'') : '';
+      }
+      const blk = draftBlock(label, body, subject);
       div.appendChild(blk.box);
       div.appendChild(blk.buttons);
-      rest = rest.slice(mm.index + mm[0].length);
+      last = m.index + m[0].length;
     }
-    if(rest.trim()) div.appendChild(linkify(rest.trim()));
+    const rest = text.slice(last).trim();
+    if(rest) div.appendChild(linkify(rest));
     return;
   }
   const m = role === 'bot' ? text.match(/<<<LETTER>>>([\s\S]*?)<<<END LETTER>>>/) : null;
@@ -748,6 +822,8 @@ function paintStaffMode(){
     // not security — the Worker still refuses to draft without the password.
     const d = document.getElementById('chipDraft');
     if(d) d.style.display = STAFF_MODE ? '' : 'none';
+    const ce = document.getElementById('chipCodeLetter');
+    if(ce) ce.style.display = STAFF_MODE ? '' : 'none';
   }catch(e){}
 }
 function setStaffMode(on){
@@ -817,7 +893,9 @@ const CHIP_PROMPTS = {
   research: { prompt: 'What would you like to research? I can look up a specific address (zoning district, map, property details, permit history), or search the City\'s Planning & Zoning application list by project name, application type or keyword — for example "PUDs in Hilliard" or "Hill Farm".',
               build: a => 'Zoning research: ' + a },
   draft:    { prompt: 'What legislation do you need drafted? Tell me what it should do and any key facts you have — contractor or developer name, project number, dollar amount, parcel numbers, dates. I\'ll find a comparable adopted ordinance or resolution to model from, and flag anything missing in brackets rather than inventing it.',
-              build: a => 'Draft legislation: ' + a }
+              build: a => 'Draft legislation: ' + a },
+  codeletter:{ prompt: 'Which Hilliard address needs a weed and grass notice? You can give me several at once, one per line. I\'ll look up the owner of record, parcel number and owner mailing address from Franklin County Auditor records and produce a Chapter 917 notice for each, ready to download as Word. If you don\'t give me an inspection date I\'ll use today\'s.',
+              build: a => 'Prepare Chapter 917 weed and grass notices for: ' + a }
 };
 let PENDING_CHIP = null;
 function askFor(kind){
@@ -899,6 +977,8 @@ async function send(){
           let out;
           if(block.name === 'lookup_zoning') out = await lookupZoning(block.input && block.input.address);
           else if(block.name === 'search_projects') out = await searchProjectsViaWorker(block.input && block.input.query);
+          // Owner lookup for code enforcement notices is keyless GIS, so it runs here.
+          else if(block.name === 'lookup_owner_for_notice') out = await lookupOwnerForNotice(block.input && block.input.address);
           else out = { error: 'handled server-side' };
           results.push({type:'tool_result', tool_use_id: block.id, content: JSON.stringify(out)});
         }

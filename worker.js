@@ -186,9 +186,68 @@ You are talking to a verified City of Hilliard staff member. In addition to ever
   Never write "Approved as to form" as though it happened.
 - OUTPUT FORMAT: put the legislation between the exact markers <<<DRAFT LEGISLATION>>> and <<<END DRAFT LEGISLATION>>>, and the staff report between <<<STAFF REPORT>>> and <<<END STAFF REPORT>>>. The page turns each into a downloadable Word file. Plain text inside the markers — no markdown, no asterisks, no # headers. Separate every paragraph, WHEREAS clause and SECTION with a blank line; the Word converter uses blank lines to find paragraph breaks, so text run together will come out as one block.
 - STAFF REPORT: no memo header — omit TO, FROM, DATE and RE entirely. Open with a "Summary" heading followed by two to four sentences stating plainly what Council is being asked to approve, for whom, and for how much: someone reading only that paragraph should understand the request without reading the ordinance. Write it in plain language, not legislative language — no WHEREAS phrasing, no all-caps caption text. Then follow the model's headings and order: Background, Analysis, Fiscal Impact, Recommendation. Put each heading on its own line with a blank line before and after it.
-- End the staff report with a short "Drafting notes — delete before filing" section naming the model document used and listing every bracketed blank, so provenance travels with the file once it is emailed around.
-- After the markers, add one or two sentences on what you modeled from and what still needs confirming. Don't recap the draft.
+- Do NOT add a "Drafting notes" section, a list of the bracketed blanks, or any other drafting commentary to the staff report. It ends at the Recommendation. The documents are working drafts meant to be edited and filed, and an appended checklist has to be deleted by hand every time.
+- Put that information in the chat instead, after the closing marker: name the model document you used with its number, then list the bracketed blanks that need filling in. Keep it to a few lines. Don't recap the draft itself — they are about to read it.
 - These are unreviewed working drafts that go to the Law Director before Council. Say so if it's the first draft in the conversation.`;
+/* Chapter 917 weed and grass notices. The letter is statutory boilerplate with a handful
+   of per-property fields, so the risk isn't the prose — it's addressing it wrongly. Service
+   has to reach the owner of record, which is why the owner-lookup tool deliberately returns
+   the Auditor OWNER mailing address and never the tax-bill address. */
+const CODE_LETTER_TOOL = {
+  name: 'lookup_owner_for_notice',
+  description: 'Staff only. Look up the owner of record, parcel number and owner mailing address for one Hilliard property address from Franklin County Auditor records, for addressing a code enforcement notice. Call once per address. Returns flags for absentee/business-entity owners that need a Secretary of State check.',
+  input_schema: {
+    type: 'object',
+    properties: { address: { type: 'string', description: 'One Hilliard street address, e.g. "3399 Crandon St"' } },
+    required: ['address']
+  }
+};
+const CODE_LETTER_PROMPT = `== STAFF MODE: CHAPTER 917 WEED & GRASS NOTICES ==
+When a staff member asks for a weed notice, grass notice, code enforcement letter or Chapter 917 notice for one or more addresses:
+
+- Call lookup_owner_for_notice ONCE PER ADDRESS before writing anything. Never fill owner names, parcel numbers or mailing addresses from memory or inference — service of a statutory notice on the wrong party is void, and a plausible-looking wrong owner is undetectable to the reader.
+- If an address returns address_not_found, say so for that address and carry on with the others. Do not guess a nearby parcel.
+- Use today's date for both letter date and inspection date unless the staff member gives a different inspection date.
+- MAILING ADDRESS: use owner_mailing_street and owner_mailing_city_state_zip exactly as returned. They come from the Auditor's owner mailing record, not the tax-bill address (which is usually a mortgage escrow servicer and would be void service).
+- SECRETARY OF STATE: when secretary_of_state_check_required is true, still produce the letter using the Auditor mailing address, but add a line immediately after the letter (outside the markers) saying the owner appears to be a business entity or non-residential parcel, that the entity must be confirmed at businesssearch.ohiosos.gov, and that the SOS principal-office or statutory-agent address should be added or substituted before mailing. Never invent an entity number, status or agent address — that lookup cannot be done automatically.
+- Also note after each letter when absentee_owner is true, since the notice is going somewhere other than the property.
+- OUTPUT: put each letter between <<<CODE ENFORCEMENT LETTER>>> and <<<END CODE ENFORCEMENT LETTER>>>, one pair per property, in the order the addresses were given. The page turns each into its own Word download. Plain text, no markdown. Blank line between every paragraph.
+- Reproduce this letter EXACTLY, substituting only the bracketed fields. The quoted ordinance text and the cost, lien and penalty paragraphs are statutory language — do not paraphrase, shorten or modernise them:
+
+NOTICE
+OF VIOLATION OF CHAPTER 917 OF THE
+CODIFIED ORDINANCES OF THE CITY OF HILLIARD, OHIO
+2026 GROWING SEASON
+(Ord. No. 917.02)
+
+[LETTER DATE]
+
+[OWNER NAME]
+[OWNER MAILING STREET]
+[OWNER MAILING CITY, STATE ZIP]
+
+It was brought to my attention that a code violation may exist concerning the following property located at Parcel [PARCEL NUMBER], [PROPERTY ADDRESS] Hilliard, Ohio 43026. The tax and property records on file with the Franklin County Auditor's office identify you as the owner of the property. An investigation of the complaint was conducted on: [INSPECTION DATE].
+
+Ordinance No. 917.02 of the Codified Ordinances of the City of Hilliard, Ohio provides that:
+
+"No owner shall permit weeds, noxious weeds, herbage of rank growth, grasses, vines or other undesirable vegetation to grow thereon to a height in excess of six inches, or to spread or mature seeds thereon, or fail to cut and destroy such weeds, noxious weeks, herbage of rank growth, grasses, vines or other undesirable vegetation when notified by the Zoning Officer or designee".
+
+You are hereby notified that noxious weeds, herbage or rank growth or other undesirable vegetation, grasses or vines are growing on the property located at Parcel [PARCEL NUMBER], [PROPERTY ADDRESS] Hilliard, Ohio 43026 and that they must be cut and destroyed within five days after service of this notice and thereafter during the growing season with sufficient frequency to prevent such weeds, herbage, vegetation, grasses or vines from exceeding six inches or maturing seeds thereon.
+
+The City of Hilliard need only give you one written notice each growing season (from March 1 through November 30) to cut and maintain your vegetation in accordance with the City Ordinances.
+
+If you do not cut and destroy your vegetation within five days after service of this notice, and thereafter as required by City Ordinances, the City may cause such weeds, herbage, vegetation, grasses or vines to be cut by use of City forces and equipment or by the hiring of private contractors and you shall pay all costs associated with the cutting and removal of the weeds, herbage of rank growth or other undesirable vegetation, grasses or vines. The costs include a processing cost of fifty dollars; ownership investigation fee of fifty dollars; City or contractor equipment operator charge; fuel charge; equipment transportation charge; administration and supervision charge; publication notice cost; incidental labor charge, removal charge and any contractual charges. The City shall mail you a statement of the costs incurred.
+
+You may pay all costs for the cutting and destruction of vegetation on your property within fifteen (15) days after the statement of costs without further costs or penalty. If you do not pay the cost when due, the costs shall be certified to the Franklin County Auditor and entered upon the tax duplicate and shall be a lien upon your property from the date of entry.
+
+In addition to the obligation for the payment of all costs associated with the removal and destruction of weeds on your property, a criminal complaint may also be filed against you. The violation of any provision of the weed ordinances of the City of Hilliard is a third-degree misdemeanor and shall be fined not less than two hundred fifty dollars ($250.00). Each day a violation of the weed ordinances of the City of Hilliard is committed or permitted to continue constitutes a separate offense. An owner that commits a subsequent violation from March 1 to November 30 of any year shall be deemed guilty of a misdemeanor of the second degree and shall be fined not less than five hundred dollars ($500.00). Each day such violation is committed or permitted to other penalties as permitted in Section 501.99.
+
+Sincerely,
+
+Kristie Shaffer
+Zoning Enforcement Officer
+kshaffer@hilliardohio.gov
+614.334.2366`;
 const DRAFT_TOOL = {
   name: 'draft_legislation',
   description: 'Staff only. Look up a model ordinance or resolution from the City\'s adopted legislation library, plus related adopted items, so a new draft can be modeled on real City drafting conventions. Call this FIRST, before writing any draft. Pass a short description of the legislation needed.',
@@ -768,13 +827,13 @@ export default {
         // here on every request. The page's staff-mode checkbox lives in the visitor's
         // own browser and is not evidence of anything.
         const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
-        const tools = isStaff ? TOOLS.concat([DRAFT_TOOL]) : TOOLS;
+        const tools = isStaff ? TOOLS.concat([DRAFT_TOOL, CODE_LETTER_TOOL]) : TOOLS;
         const maxTokens = isStaff ? 8000 : MAX_TOKENS;
 
         const cfg = await getConfig(env);
         const news = await getNews(env);
         let system = buildSystemPrompt(cfg.kb, guides, news);
-        if (isStaff) system += '\n\n' + STAFF_DRAFTING_PROMPT;
+        if (isStaff) system += '\n\n' + STAFF_DRAFTING_PROMPT + '\n\n' + CODE_LETTER_PROMPT;
         // Multi-hop loop: the Worker handles lookup_permits itself (it holds the
         // OpenGov key); lookup_zoning is delegated to the browser (keyless GIS),
         // so any response containing a lookup_zoning call is returned as-is.
@@ -798,8 +857,9 @@ export default {
           last = r.data;
           if (r.data.stop_reason !== 'tool_use') return json(r.data, 200, env);
           const toolBlocks = r.data.content.filter(b => b.type === 'tool_use');
-          // If the model wants the browser-side GIS tool, hand the whole turn back.
-          if (toolBlocks.some(b => b.name === 'lookup_zoning')) return json(r.data, 200, env);
+          // If the model wants a browser-side GIS tool, hand the whole turn back — those
+          // run keyless in the visitor's browser, not here.
+          if (toolBlocks.some(b => b.name === 'lookup_zoning' || b.name === 'lookup_owner_for_notice')) return json(r.data, 200, env);
           // Otherwise every tool call is server-side (lookup_permits) — run and continue.
           convo = convo.concat([{ role: 'assistant', content: r.data.content }]);
           const results = [];
