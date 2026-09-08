@@ -286,7 +286,7 @@ When a staff member asks for a weed notice, grass notice, code enforcement lette
 
 - FIRST, before any lookup or letter: if the staff member has not said who performed the inspection(s), ask one question — "Who is performing the inspection(s), Kristie Shaffer or Forrest Runnels?" — and wait for the answer. Use the answer for the signature block on EVERY letter in the batch and for the Signature, Title and Phone fields on every OpenGov record. Do not default silently; the wrong name on a statutory notice is a real problem.
   * Kristie Shaffer — Zoning Enforcement Officer — kshaffer@hilliardohio.gov — 614.334.2366
-  * Forrest Runnels — Zoning Inspector — 614.334.2456 — email: [Forrest Runnels email]
+  * Forrest Runnels — Zoning Inspector — frunnels@hilliardohio.gov — 614.334.2456
   If they name someone else, use exactly what they give and bracket any title, phone or email they did not supply.
 - Call lookup_owner_for_notice ONCE PER ADDRESS before writing anything. Never fill owner names, parcel numbers or mailing addresses from memory or inference — service of a statutory notice on the wrong party is void, and a plausible-looking wrong owner is undetectable to the reader.
 - If an address returns address_not_found, say so for that address and carry on with the others. Do not guess a nearby parcel.
