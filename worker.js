@@ -118,8 +118,11 @@ async function getLegislation(env) {
     }
   } catch (e) {}
   const url = (await env.KV.get('config:legislationUrl')) || LEGISLATION_DEFAULT_URL;
-  const r = await fetch(url, { cf: { cacheTtl: 3600 } });
-  if (!r.ok) throw new Error('legislation index fetch failed (' + r.status + ')');
+  // Cache successes only. A plain cacheTtl would also cache a 404 — which happens
+  // naturally in the minute between committing the file and GitHub Pages republishing
+  // it — and that 404 would then persist long after the file went live.
+  const r = await fetch(url, { cf: { cacheTtlByStatus: { '200-299': 3600, '300-399': 0, '400-499': 0, '500-599': 0 } } });
+  if (!r.ok) throw new Error('legislation index fetch failed (' + r.status + ') — if the file was just committed, GitHub Pages may still be republishing; try again in a minute');
   const data = await r.json();
   try { await env.KV.put('legis:cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
   return data;
