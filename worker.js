@@ -303,6 +303,58 @@ function noticeDocHtml(title, bodyText) {
   });
   return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><meta name="ProgId" content="Word.Document"><title>' + esc(title) + '</title><style>@page WordSection1{size:8.5in 11.0in;margin:1.0in}div.WordSection1{page:WordSection1}body,p{font-family:"Times New Roman",Times,serif;font-size:12.0pt}</style></head><body lang="EN-US"><div class="WordSection1">' + ps.join('\n') + '</div></body></html>';
 }
+/* Form-field writing. Per OpenGov support (2026-09-09): the Record Forms endpoints require
+   the new Forms version, scheduled for this community on 2026-10-01 (or earlier on request
+   under the limited release); until then they return 501. Once live, form data is written
+   to a SUBMITTED record, so the order is: submit -> write fields.
+   Strategy: probe form-write on the draft first. A 501 means not enabled -> leave it a
+   draft and hand back the paste list (never submit a blank numbered record). Anything
+   else means forms are live -> submit, write, report exactly which fields landed. */
+const GW_FIELD_MAP = [
+  // form_values key -> form field label as OpenGov defines it (first match wins)
+  ['description', 'Please describe the specific grass/weed complaint.'],
+  ['owner_agent_name', 'Owner/Agent Name'],
+  ['owner_address', "Owner's Address"],
+  ['city', 'City'], ['state', 'State'], ['zip', 'Zip code'],
+  ['tax_district', 'Tax district'], ['parcel_number', 'Parcel number'],
+  ['investigation_conducted_on', 'Investigation conducted on'],
+  ['zoning_code_violation', 'Zoning Code violation'],
+  ['zoning_date_assigned', 'Zoning date assigned'],
+  ['how_mailed', 'How will this letter be mailed'],
+  ['signature', 'Signature'], ['title', 'Title'], ['phone', 'Phone number'], ['email', 'Email']
+];
+async function gwFormFields(H) {
+  const r = await fetch(PLCE_BASE + '/record-types/' + GRASS_WEED_TYPE_ID + '/form', { headers: H });
+  if (!r.ok) return null;
+  const j = await r.json();
+  return (j.data && j.data.attributes && j.data.attributes.fields) || null;
+}
+function gwBuildFieldWrites(fields, values) {
+  const writes = [], unmapped = [];
+  for (const [key, label] of GW_FIELD_MAP) {
+    const v = values && values[key];
+    if (v == null || v === '') continue;
+    const f = fields.find(x => x.label === label) || fields.find(x => x.label.toLowerCase() === label.toLowerCase());
+    if (f) writes.push({ id: f.id, label: f.label, value: String(v) }); else unmapped.push(key);
+  }
+  return { writes, unmapped };
+}
+async function gwWriteForm(HJ, recordId, writes) {
+  // Try the two plausible JSON:API shapes; report the first non-501 outcome.
+  const shapes = [
+    { data: { id: String(recordId), type: 'formData', attributes: { fields: writes.map(w => ({ id: w.id, value: w.value })) } } },
+    { data: { id: String(recordId), type: 'formData', attributes: Object.fromEntries(writes.map(w => [w.id, w.value])) } }
+  ];
+  let last = null;
+  for (const body of shapes) {
+    const r = await fetch(PLCE_BASE + '/records/' + recordId + '/form', { method: 'PATCH', headers: HJ, body: JSON.stringify(body) });
+    let j = null; try { j = await r.json(); } catch (e) {}
+    last = { status: r.status, ok: r.ok, detail: (j && j.errors) ? j.errors.map(e => e.detail || e.title).join(' | ').slice(0, 300) : undefined };
+    if (r.status === 501) return Object.assign(last, { not_enabled: true });
+    if (r.ok) return last;
+  }
+  return last;
+}
 async function createGrassWeedComplaint(env, input) {
   if (!env.OPENGOV_API_KEY) return { unavailable: true, reason: 'OPENGOV_API_KEY not set' };
   const H = { Authorization: 'Token ' + env.OPENGOV_API_KEY, Accept: 'application/vnd.api+json' };
@@ -350,17 +402,52 @@ async function createGrassWeedComplaint(env, input) {
       }
     }
     steps.push(Object.assign({ step: 'attachment' }, attachment));
+    const locationText = (loc.attributes && (loc.attributes.streetNo + ' ' + loc.attributes.streetName)) || input.address;
+
+    // 7. Form fields — only if OpenGov has enabled the Forms API for this community.
+    const fields = await gwFormFields(H);
+    const { writes, unmapped } = fields ? gwBuildFieldWrites(fields, input.form_values) : { writes: [], unmapped: [] };
+    let probe = writes.length ? await gwWriteForm(HJ, recordId, writes) : { not_enabled: true, status: 0 };
+    steps.push({ step: 'form_probe_on_draft', status: probe.status, not_enabled: !!probe.not_enabled, detail: probe.detail });
+
+    if (probe.not_enabled) {
+      // Forms API not live yet: stay a DRAFT so nothing numbered exists with blank fields.
+      return {
+        created: true, record_id: recordId, status: 'DRAFT — not yet submitted',
+        draft_url: OG_DRAFT_URL + recordId, location: locationText, attachment,
+        form_fields_not_set: true,
+        why: 'OpenGov has not yet enabled the Record Forms API for this community (scheduled 2026-10-01; earlier on request). Form values must be pasted in by a staff member, who then clicks Create Record.',
+        form_values_to_paste: input.form_values || {}, steps
+      };
+    }
+
+    // Forms API is live. Submit the draft, then write the fields.
+    let submitted = false;
+    if (!probe.ok) {
+      r = await fetch(PLCE_BASE + '/records/' + recordId, { method: 'PATCH', headers: HJ, body: JSON.stringify({ data: { type: 'record', id: recordId, attributes: { status: 'ACTIVE' } } }) });
+      j = await jsonOf(r);
+      submitted = r.ok;
+      steps.push({ step: 'submit', ok: r.ok, status: r.status, detail: errDetail(j) });
+      if (r.ok) { probe = await gwWriteForm(HJ, recordId, writes); steps.push({ step: 'form_write_after_submit', status: probe.status, ok: probe.ok, detail: probe.detail }); }
+    } else {
+      // Writing on the draft worked; submit it now.
+      r = await fetch(PLCE_BASE + '/records/' + recordId, { method: 'PATCH', headers: HJ, body: JSON.stringify({ data: { type: 'record', id: recordId, attributes: { status: 'ACTIVE' } } }) });
+      j = await jsonOf(r); submitted = r.ok;
+      steps.push({ step: 'submit', ok: r.ok, status: r.status, detail: errDetail(j) });
+    }
+    let number = null;
+    try { const rr = await fetch(PLCE_BASE + '/records/' + recordId, { headers: H }); const jj = await jsonOf(rr); number = jj && jj.data && jj.data.attributes && jj.data.attributes.number; } catch (e) {}
+    const fieldsOk = !!probe.ok;
     return {
-      created: true,
-      record_id: recordId,
-      status: 'DRAFT — not yet submitted',
-      draft_url: OG_DRAFT_URL + recordId,
-      location: (loc.attributes && (loc.attributes.streetNo + ' ' + loc.attributes.streetName)) || input.address,
-      attachment,
-      form_fields_not_set: true,
-      why: 'OpenGov\'s API does not yet implement writing form fields (PATCH /records/{id}/form returns 501), so the form values below must be pasted in by a staff member before the record is submitted.',
-      form_values_to_paste: input.form_values || {},
-      steps
+      created: true, record_id: recordId, record_number: number || undefined,
+      status: submitted ? (fieldsOk ? 'ACTIVE — submitted with form fields filled' : 'ACTIVE — submitted but form fields FAILED to write; complete them by hand') : 'DRAFT — submit failed',
+      record_url: submitted ? OG_RECORD_URL + recordId + '/details' : undefined,
+      draft_url: submitted ? undefined : OG_DRAFT_URL + recordId,
+      location: locationText, attachment,
+      form_fields_written: fieldsOk ? writes.map(w => w.label) : [],
+      form_fields_not_written: fieldsOk ? unmapped : Object.keys(input.form_values || {}),
+      form_values_to_paste: fieldsOk ? undefined : (input.form_values || {}),
+      form_write_detail: probe.detail, steps
     };
   } catch (e) {
     return { created: false, failed_step: 'exception', detail: (e && e.message) || 'error', steps };
@@ -409,7 +496,11 @@ When a staff member asks for a weed notice, grass notice, code enforcement lette
 - Also note after each letter when absentee_owner is true, since the notice is going somewhere other than the property.
 - OUTPUT: put each letter between <<<CODE ENFORCEMENT LETTER>>> and <<<END CODE ENFORCEMENT LETTER>>>, one pair per property, in the order the addresses were given. The page turns each into its own Word download. Plain text, no markdown. Blank line between every paragraph.
 - OPENGOV RECORD: after writing each letter, call create_grass_weed_complaint for that address with the full letter text and these form_values (use exactly these keys): description "Entry via Hilliard Chat"; owner_agent_name; owner_address (street only); city; state ("Ohio"); zip; tax_district (the part of the parcel number before the first dash, e.g. "050"); parcel_number (everything after the first dash, e.g. "002776"); investigation_conducted_on and zoning_date_assigned (MM/DD/YYYY, today unless told otherwise); zoning_code_violation "917.02 REMOVAL OF WEEDS; DUTY OF ZONING OFFICER"; how_mailed "1st Class"; signature, title, phone, email (the named inspector). Owner values come from lookup_owner_for_notice, or from the SOS agent address when the letter was addressed there.
-  * The tool creates a DRAFT with the location set and the notice attached, but OpenGov's API cannot fill form fields yet, so after the letter show: the draft link (draft_url) as a Markdown link labeled "Open draft record in OpenGov", then a short "Paste into the form:" list of the form values in the order the form shows them, then a reminder to click Create Record in OpenGov to submit it. If attachment.attached is false, say the notice could not be attached and that the Word download above should be attached manually.
+  * The tool's result tells you which of two things happened — report the one that did:
+    (a) form_fields_not_set is true: OpenGov created a DRAFT with the location set and the notice attached, but the Forms API isn't enabled yet. After the letter show the draft link (draft_url) as a Markdown link labeled "Open draft record in OpenGov", then a short "Paste into the form:" list of form_values_to_paste in the order the form shows them, then a reminder to click Create Record in OpenGov to submit it.
+    (b) record_number is present and status begins "ACTIVE — submitted with form fields filled": the record is complete. Show it as a Markdown link labeled with the record number (e.g. "GR-26-161") pointing at record_url, say the form was filled and the notice attached, and list form_fields_not_written if any. Nothing to paste.
+    (c) status says fields FAILED to write: the record is active but incomplete — link it, show form_values_to_paste, and tell them to complete it by hand via Edit on the Details tab. Include form_write_detail so the failure is visible.
+    If attachment.attached is false in any case, say the notice could not be attached and that the Word download above should be attached manually.
   * If the tool returns created=false, report failed_step and detail plainly and tell them the record must be created by hand for that address. Never claim a record exists when the tool didn't create one.
 - Reproduce this letter EXACTLY, substituting only the bracketed fields. The quoted ordinance text and the cost, lien and penalty paragraphs are statutory language — do not paraphrase, shorten or modernise them:
 
