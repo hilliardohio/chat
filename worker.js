@@ -109,7 +109,7 @@ const PROGRAMS_DEFAULT_URL = 'https://hilliardohio.github.io/chat/programs.json'
 async function getPrograms(env) {
   try {
     const cached = await env.KV.get('programs:cache');
-    if (cached) { const o = JSON.parse(cached); if (Date.now() - o.ts < 6 * 3600 * 1000) return o.data; }
+    if (cached) { const o = JSON.parse(cached); if (Date.now() - o.ts < 15 * 60 * 1000) return o.data; }
   } catch (e) {}
   const url = (await env.KV.get('config:programsUrl')) || PROGRAMS_DEFAULT_URL;
   const r = await fetch(url, { cf: { cacheTtlByStatus: { '200-299': 3600, '400-499': 0, '500-599': 0 } } });
@@ -1658,6 +1658,13 @@ export default {
           });
           return json(out, 200, env);
         }
+        if (a === 'refresh_caches') {
+          // Drop cached copies of the published data files so a freshly uploaded
+          // programs.json / legislation-index.json / meetings.json is used immediately.
+          for (const k of ['programs:cache', 'legis:cache', 'projects:cache', 'meetings:live']) { try { await env.KV.delete(k); } catch (e) {} }
+          let programs = null; try { const c = await getPrograms(env); programs = { count: (c.programs || []).length, generated: c.generated }; } catch (e) { programs = { error: e.message }; }
+          return json({ ok: true, programs }, 200, env);
+        }
         if (a === 'test_meetings') {
           const out = await lookupMeetingAgenda(env, { query: String(body.query || 'what is on the BZA agenda tonight') });
           return json(out, 200, env);
@@ -1825,6 +1832,8 @@ td.ans{max-width:320px}
     <div style="margin-top:10px">
       <button class="btn" onclick="setProjectsCsv()">Save link</button>
       <button class="btn ghost" onclick="refreshProjects()">Refresh &amp; test</button>
+      <button class="btn ghost" onclick="refreshCaches()">Reload all data files</button>
+      <span id="cachesMsg" class="stat"></span>
     </div>
     <div class="stat" id="projectsStatus"></div>
   </div>
@@ -1912,6 +1921,12 @@ async function refreshProjects(){
   const d = await api('refresh_projects');
   document.getElementById('projectsMsg').innerHTML = d.ok ? '<span class="ok">✓ Loaded ' + d.count + ' applications.</span>' : '<span class="err">' + d.error + '</span>';
   refreshStatus();
+}
+async function refreshCaches(){
+  document.getElementById('cachesMsg').textContent = 'Reloading…';
+  const d = await api('refresh_caches');
+  const pr = d.programs || {};
+  document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ Reloaded. Programs: ' + (pr.count != null ? pr.count + ' (' + pr.generated + ')' : pr.error) + '</span>' : '<span class="err">' + (d.error || 'failed') + '</span>';
 }
 async function refreshStatus(){ const d = await api('status'); if(!d.error) renderStatus(d); }
 async function setKey(){
