@@ -111,12 +111,73 @@ async function getPrograms(env) {
     const cached = await env.KV.get('programs:cache');
     if (cached) { const o = JSON.parse(cached); if (Date.now() - o.ts < 15 * 60 * 1000) return o.data; }
   } catch (e) {}
+  // A catalog crawled by the Worker itself (admin 'crawl_programs') beats the published file.
+  try { const live = await env.KV.get('programs:data'); if (live) { const data = JSON.parse(live); try { await env.KV.put('programs:cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) {} return data; } } catch (e) {}
   const url = (await env.KV.get('config:programsUrl')) || PROGRAMS_DEFAULT_URL;
-  const r = await fetch(url, { cf: { cacheTtlByStatus: { '200-299': 3600, '400-499': 0, '500-599': 0 } } });
+  const r = await fetch(url, { cf: { cacheTtlByStatus: { '200-299': 300, '400-499': 0, '500-599': 0 } } });
   if (!r.ok) throw new Error('programs.json is not available at ' + url + ' (HTTP ' + r.status + '). It must be uploaded to the GitHub repo alongside projects.csv; if it was just committed, GitHub Pages may still be publishing it.');
   const data = await r.json();
   try { await env.KV.put('programs:cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
   return data;
+}
+/* Server-side crawl of WebTrac, so the catalog can be refreshed from /admin without any
+   file handling. Parses the same server-rendered search pages the browser crawl used.
+   If WebTrac refuses non-browser clients this throws, and programs.json stays the source. */
+const WEBTRAC = 'https://webtrac.hilliardohio.gov/webtrac/web/';
+const WT_CATS = { AQUA: 'Aquatics', ENRICH: 'Art, Culture & Enrichment', FIT: 'Fitness & Wellness', HSC: 'Senior Center (HSC 55+)', OUTDOOR: 'Outdoor Adventure', SEASONAL: 'Seasonal', SPORTS: 'Sports' };
+const WT_HEADERS = { 'Accept': 'text/html,application/xhtml+xml', 'Accept-Language': 'en-US,en;q=0.9', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36' };
+function wtCell(html, label) {
+  let t = htmlText(html).replace(/\s+/g, ' ').trim();
+  if (t.startsWith(label)) t = t.slice(label.length).trim();
+  return t;
+}
+function parseWebtracPage(html, code) {
+  const out = [];
+  const blocks = html.split(/<div[^>]*class="[^"]*result-content[^"]*"/i).slice(1);
+  for (const blk of blocks) {
+    const h2 = (blk.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i) || [])[1]; if (!h2) continue;
+    const ht = htmlText(h2).replace(/\s+/g, ' ').trim();
+    const m = ht.match(/^(.*?)\s*-\s*(\d{6,})\s*$/);
+    const name = m ? m[1].trim() : ht, actNo = m ? m[2] : '';
+    const desc = htmlText((blk.match(/result-header__description[^>]*>([\s\S]*?)<\/div>/i) || [])[1] || '').replace(/\s+/g, ' ').trim();
+    const sections = [];
+    for (const row of blk.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)) {
+      const tds = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(c => c[1]);
+      if (tds.length < 10) continue;
+      const fm = (row[1].match(/iteminfo\.html\?[^"']*FMID=(\d+)/i) || [])[1];
+      sections.push({ section: wtCell(tds[1], 'Activity #'), title: wtCell(tds[2], 'Description'), dates: wtCell(tds[3], 'Dates'), times: wtCell(tds[4], 'Times'), days: wtCell(tds[5], 'Days'), location: wtCell(tds[6], 'Location'), ages: wtCell(tds[7], 'Ages'), cost: wtCell(tds[8], 'Cost'), availability: wtCell(tds[9], 'Availability'), section_url: fm ? WEBTRAC + 'iteminfo.html?Module=AR&FMID=' + fm : undefined });
+    }
+    out.push({ category: WT_CATS[code], name, activity_number: actNo, description: desc, category_url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail', sections });
+  }
+  return out;
+}
+async function crawlWebtracLive() {
+  const programs = []; const pagesRead = {};
+  for (const code of Object.keys(WT_CATS)) {
+    const seen = new Set();
+    for (let page = 1; page <= 20; page++) {
+      const r = await fetch(WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail&page=' + page, { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
+      if (!r.ok) throw new Error('WebTrac HTTP ' + r.status + ' on ' + code + ' page ' + page);
+      const html = await r.text();
+      if (page === 1 && !/result-content/.test(html)) throw new Error('WebTrac returned no results markup for ' + code + ' (' + html.length + ' bytes) — likely requires a browser session');
+      const got = parseWebtracPage(html, code).filter(p => !seen.has(p.activity_number + '|' + p.name));
+      if (!got.length) break;
+      got.forEach(p => { seen.add(p.activity_number + '|' + p.name); programs.push(p); });
+      const sh = html.match(/Showing results (\d+)-(\d+) of (\d+)/);
+      pagesRead[code] = page + (sh ? ' (' + sh[3] + ' results)' : '');
+      if (sh && +sh[2] >= +sh[3]) break;
+    }
+  }
+  return {
+    generated: new Date().toISOString().slice(0, 10),
+    source: 'City of Hilliard Recreation & Parks online registration (RecTrac/WebTrac), crawled live by the assistant',
+    note: 'Availability and waitlists change daily — always send people to the section_url or category_url for current status and to register. Cost is resident/non-resident.',
+    registration_home: WEBTRAC + 'splash.html',
+    keyword_search_url_pattern: WEBTRAC + 'search.html?module=AR&keyword={KEYWORD}&display=detail',
+    categories: Object.entries(WT_CATS).map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail' })),
+    age_groups: [['ADULT', 'Adult 18+'], ['ALL', 'All Ages'], ['FAMILY', 'Family'], ['PRE', 'Preschool Under 5'], ['SR', 'Senior 55+'], ['TEEN', 'Teen 13-17'], ['YOUTH', 'Youth 6-12']].map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&type=' + code + '&display=detail' })),
+    programs, pages_read: pagesRead
+  };
 }
 const PROGRAM_STOP = new Set(['the','a','an','and','or','for','of','to','in','on','at','is','are','be','class','classes','program','programs','register','registration','sign','up','well','hilliard','any','there','what','when','does','do','have','offer','offers','me','my','i','year','years','old','age','ages','yo','son','daughter']);
 // Synonyms only broaden to a category word, never to a sibling activity — "pickleball"
@@ -1554,7 +1615,8 @@ export default {
           const projectsPasted = !!(await env.KV.get('projects:data'));
           let projectsCount = null, projectsCachedAt = null;
           try { const c = await env.KV.get('projects:cache'); if (c) { const o = JSON.parse(c); projectsCount = (o.rows || []).length; projectsCachedAt = o.ts; } } catch (e) {}
-          return json({ hasKey, model: cfg.model, kbLength: cfg.kb.length, kbEdited: cfg.kb !== DEFAULT_KB, topics: cfg.topics, todayCount, logCount: list.keys.length, logMore: !list.list_complete, projectsCsvUrl, projectsPasted, projectsDefaultUrl: PROJECTS_DEFAULT_CSV, projectsCount, projectsCachedAt }, 200, env);
+          let programsInfo = null; try { const pd = await env.KV.get('programs:data'); if (pd) { const o = JSON.parse(pd); programsInfo = { source: 'crawled by Worker', generated: o.generated, count: (o.programs||[]).length }; } } catch (e) {}
+          return json({ programsInfo, hasKey, model: cfg.model, kbLength: cfg.kb.length, kbEdited: cfg.kb !== DEFAULT_KB, topics: cfg.topics, todayCount, logCount: list.keys.length, logMore: !list.list_complete, projectsCsvUrl, projectsPasted, projectsDefaultUrl: PROJECTS_DEFAULT_CSV, projectsCount, projectsCachedAt }, 200, env);
         }
         if (a === 'set_projects_csv') {
           const u = String(body.url || '').trim();
@@ -1657,6 +1719,18 @@ export default {
             form_values: body.form_values || { description: 'Entry via Hilliard Chat (admin test)' }
           });
           return json(out, 200, env);
+        }
+        if (a === 'crawl_programs') {
+          // Rebuild the recreation catalog straight from WebTrac and keep it in KV.
+          const t0 = Date.now();
+          try {
+            const data = await crawlWebtracLive();
+            await env.KV.put('programs:data', JSON.stringify(data));
+            await env.KV.delete('programs:cache');
+            return json({ ok: true, ms: Date.now() - t0, programs: data.programs.length, sections: data.programs.reduce((n, p) => n + p.sections.length, 0), pages_read: data.pages_read, generated: data.generated }, 200, env);
+          } catch (e) {
+            return json({ ok: false, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'WebTrac could not be crawled from the Worker; the published programs.json remains in use.' }, 200, env);
+          }
         }
         if (a === 'refresh_caches') {
           // Drop cached copies of the published data files so a freshly uploaded
@@ -1833,6 +1907,7 @@ td.ans{max-width:320px}
       <button class="btn" onclick="setProjectsCsv()">Save link</button>
       <button class="btn ghost" onclick="refreshProjects()">Refresh &amp; test</button>
       <button class="btn ghost" onclick="refreshCaches()">Reload all data files</button>
+      <button class="btn ghost" onclick="crawlPrograms()">Refresh rec programs from WebTrac</button>
       <span id="cachesMsg" class="stat"></span>
     </div>
     <div class="stat" id="projectsStatus"></div>
@@ -1921,6 +1996,11 @@ async function refreshProjects(){
   const d = await api('refresh_projects');
   document.getElementById('projectsMsg').innerHTML = d.ok ? '<span class="ok">✓ Loaded ' + d.count + ' applications.</span>' : '<span class="err">' + d.error + '</span>';
   refreshStatus();
+}
+async function crawlPrograms(){
+  document.getElementById('cachesMsg').textContent = 'Crawling WebTrac (about a minute)…';
+  const d = await api('crawl_programs');
+  document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.programs + ' programs / ' + d.sections + ' sections crawled (' + Math.round(d.ms/1000) + 's).</span>' : '<span class="err">' + (d.error || 'failed') + '</span>';
 }
 async function refreshCaches(){
   document.getElementById('cachesMsg').textContent = 'Reloading…';
