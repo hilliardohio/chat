@@ -113,7 +113,7 @@ async function getPrograms(env) {
   } catch (e) {}
   const url = (await env.KV.get('config:programsUrl')) || PROGRAMS_DEFAULT_URL;
   const r = await fetch(url, { cf: { cacheTtlByStatus: { '200-299': 3600, '400-499': 0, '500-599': 0 } } });
-  if (!r.ok) throw new Error('programs catalog fetch failed (' + r.status + ')');
+  if (!r.ok) throw new Error('programs.json is not available at ' + url + ' (HTTP ' + r.status + '). It must be uploaded to the GitHub repo alongside projects.csv; if it was just committed, GitHub Pages may still be publishing it.');
   const data = await r.json();
   try { await env.KV.put('programs:cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
   return data;
@@ -181,7 +181,7 @@ async function searchPrograms(env, query) {
       note: 'Availability shown is from the catalog snapshot dated ' + cat.generated + '; the register_url shows live status. Costs are resident / non-resident.'
     };
   } catch (e) {
-    return { unavailable: true, reason: (e && e.message) || 'error', registration_home: 'https://webtrac.hilliardohio.gov/webtrac/web/splash.html' };
+    return { unavailable: true, reason: (e && e.message) || 'error', staff_note: 'This is a publishing problem with the catalog file, not a WebTrac outage — see reason.', registration_home: 'https://webtrac.hilliardohio.gov/webtrac/web/splash.html' };
   }
 }
 const PROGRAMS_TOOL = {
