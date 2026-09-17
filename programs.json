@@ -1,0 +1,3350 @@
+{
+ "generated": "2026-09-17",
+ "source": "City of Hilliard Recreation & Parks online registration (RecTrac/WebTrac), webtrac.hilliardohio.gov",
+ "note": "Snapshot of the program catalog. Availability and waitlists change daily — always send people to the section_url or category_url for current status and to register. Cost is shown as resident/non-resident.",
+ "registration_home": "https://webtrac.hilliardohio.gov/webtrac/web/splash.html",
+ "keyword_search_url_pattern": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&keyword={KEYWORD}&display=detail",
+ "categories": [
+  {
+   "code": "AQUA",
+   "name": "Aquatics",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail"
+  },
+  {
+   "code": "ENRICH",
+   "name": "Art, Culture & Enrichment",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail"
+  },
+  {
+   "code": "FIT",
+   "name": "Fitness & Wellness",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail"
+  },
+  {
+   "code": "HSC",
+   "name": "Senior Center (HSC 55+)",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=HSC&display=detail"
+  },
+  {
+   "code": "OUTDOOR",
+   "name": "Outdoor Adventure",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=OUTDOOR&display=detail"
+  },
+  {
+   "code": "SEASONAL",
+   "name": "Seasonal",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SEASONAL&display=detail"
+  },
+  {
+   "code": "SPORTS",
+   "name": "Sports",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail"
+  }
+ ],
+ "age_groups": [
+  {
+   "code": "ADULT",
+   "name": "Adult 18+",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&type=ADULT&display=detail"
+  },
+  {
+   "code": "ALL",
+   "name": "All Ages",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&type=ALL&display=detail"
+  },
+  {
+   "code": "FAMILY",
+   "name": "Family",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&type=FAMILY&display=detail"
+  },
+  {
+   "code": "PRE",
+   "name": "Preschool Under 5",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&type=PRE&display=detail"
+  },
+  {
+   "code": "SR",
+   "name": "Senior 55+",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&type=SR&display=detail"
+  },
+  {
+   "code": "TEEN",
+   "name": "Teen 13-17",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&type=TEEN&display=detail"
+  },
+  {
+   "code": "YOUTH",
+   "name": "Youth 6-12",
+   "url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&type=YOUTH&display=detail"
+  }
+ ],
+ "programs": [
+  {
+   "category": "Aquatics",
+   "name": "Parent/Child Swim Lessons - Fall 1",
+   "activity_number": "411155",
+   "description": "",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "411155-01",
+     "title": "Parent/Child Swim Lessons- Baby 1",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "10:00 am -10:30 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "0.5-3.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=462030984"
+    },
+    {
+     "section": "411155-02",
+     "title": "Parent/Child Swim Lessons- Baby 2",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "10:35 am -11:05 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "1.5-3.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=462030959"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Preschool Swim Lessons- Fall 1",
+   "activity_number": "412150",
+   "description": "Preschool Swim Lessons (Ages 3–5, Levels 1–3) Our preschool swim lessons focus on water comfort, basic safety skills, and introducing foundational strokes. Classes are grouped by skill level to ensure age-appropriate instruction and progress.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "412150-22",
+     "title": "Preschool Level 1",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "8:50 am - 9:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461968055"
+    },
+    {
+     "section": "412150-23",
+     "title": "Preschool Level 1",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "9:25 am - 9:55 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461968057"
+    },
+    {
+     "section": "412150-24",
+     "title": "Preschool Level 2",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "8:50 am - 9:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461968059"
+    },
+    {
+     "section": "412150-25",
+     "title": "Preschool Level 3",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "9:25 am - 9:55 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461968061"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Junior Lifeguard - Fall 2",
+   "activity_number": "413111",
+   "description": "Come learn what it takes to be a lifeguard with lessons and activities in water safety, swimming skills, the importance of being a lifeguard, and have the opportunity to earn an American Red Cross CPR/AED for the Professional Rescuer certification!*Please note that this program does not certify anyone to become a lifeguard.Prerequisites: Participants must be able to swim 100 yards continuously to participate in this program.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "413111-01",
+     "title": "Junior Lifeguard",
+     "dates": "11/07/2026 -12/19/2026*",
+     "times": "8:00 am -12:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "11-14.99",
+     "cost": "$145.00/$155.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=462033364"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Adaptive Swim Lessons - Fall 1",
+   "activity_number": "413130",
+   "description": "",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "413130-01",
+     "title": "Adaptive Swim",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "11:10 am -11:45 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$60.00/$67.50",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=462024089"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Youth Swim Lessons - Fall 1",
+   "activity_number": "413150",
+   "description": "Youth Swim Lessons (Ages 6–12, Levels 1-6) Youth group lessons focus on water comfort, basic safety skills, and introducing foundational strokes in levels 1-3. Levels 4-6 are designed to build on skills learned in levels 1-3 to develop stroke technique, endurance, and continued water safety knowledge. It is strongly encouraged that all group swim lesson participants attend a Lesson Placement Day to help determine the appropriate level before registering. If you choose to enroll without attending a placement day and later need to switch levels, we cannot guarantee availability in your preferred",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "413150-40",
+     "title": "Youth Level 1",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "8:50 am - 9:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461970393"
+    },
+    {
+     "section": "413150-41",
+     "title": "Youth Level 2",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "9:25 am - 9:55 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461970395"
+    },
+    {
+     "section": "413150-42",
+     "title": "Youth Level 3",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "8:50 am - 9:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461970397"
+    },
+    {
+     "section": "413150-43",
+     "title": "Youth Level 4",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "9:25 am - 9:55 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461970399"
+    },
+    {
+     "section": "413150-44",
+     "title": "Youth Level 5",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "8:50 am - 9:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461970401"
+    },
+    {
+     "section": "413150-45",
+     "title": "Youth Level 6",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "9:25 am - 9:55 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461970403"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Teen Swim Lessons - Fall 1",
+   "activity_number": "414150",
+   "description": "",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "414150-01",
+     "title": "Teen Swim Lessons",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "11:10 am -11:45 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "13-17.99",
+     "cost": "$84.00/$91.50",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461993038"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Aqua Zumba",
+   "activity_number": "41504001",
+   "description": "A lot impact but high intensity water aerobics class where no swimming skills are needed. This class is designed to improve flexibility, range of motion, strength, muscle bone, and cardiovascular endurance while using the resistance of the water to cushion the feet, knees, and back.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "41504001-02",
+     "title": "Aqua ZUMBA Mondays",
+     "dates": "11/02/2026 -12/14/2026*",
+     "times": "9:30 am -10:30 am",
+     "days": "M",
+     "location": "The Well",
+     "ages": "18-99.99",
+     "cost": "$48.00/$53.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=465352411"
+    },
+    {
+     "section": "41504001-04",
+     "title": "Aqua ZUMBA Wednesdays",
+     "dates": "11/04/2026 -12/16/2026*",
+     "times": "9:30 am -10:30 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "18-99.99",
+     "cost": "$48.00/$53.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=465352421"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Adult Swim Lessons - Fall 1",
+   "activity_number": "415150",
+   "description": "",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "415150-01",
+     "title": "Adult Swim Lessons",
+     "dates": "09/19/2026 -10/24/2026",
+     "times": "11:10 am -11:45 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "18-100",
+     "cost": "$84.00/$91.50",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=461993645"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Lesson Placement Days - September",
+   "activity_number": "417150",
+   "description": "Lesson Placement Days give you guidance on what level to register for. Our instructors will spend a few minutes in the water to assess current skills and recommend the best level for a safe, successful, and fun swim experience. Placement days are available prior to program registration for all group lessons.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "417150-17",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "11:00 am -11:15 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413957"
+    },
+    {
+     "section": "417150-18",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "11:15 am -11:30 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413959"
+    },
+    {
+     "section": "417150-19",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "11:30 am -11:45 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413961"
+    },
+    {
+     "section": "417150-20",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "11:45 am -12:00 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413963"
+    },
+    {
+     "section": "417150-21",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "12:00 pm -12:15 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413928"
+    },
+    {
+     "section": "417150-22",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "12:15 pm -12:30 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413926"
+    },
+    {
+     "section": "417150-23",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "12:30 pm -12:45 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413930"
+    },
+    {
+     "section": "417150-24",
+     "title": "Lessons Placement Day",
+     "dates": "09/20/2026 -09/20/2026",
+     "times": "12:45 pm - 1:00 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449413932"
+    }
+   ]
+  },
+  {
+   "category": "Aquatics",
+   "name": "Lesson Placement Days - October",
+   "activity_number": "417151",
+   "description": "Lesson Placement Days give you guidance on what level to register for. Our instructors will spend a few minutes in the water to assess current skills and recommend the best level for a safe, successful, and fun swim experience. Placement days are available prior to program registration for all group lessons.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=AQUA&display=detail",
+   "sections": [
+    {
+     "section": "417151-01",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "11:00 am -11:15 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414121"
+    },
+    {
+     "section": "417151-02",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "11:15 am -11:30 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414123"
+    },
+    {
+     "section": "417151-03",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "11:30 am -11:45 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414125"
+    },
+    {
+     "section": "417151-04",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "11:45 am -12:00 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414127"
+    },
+    {
+     "section": "417151-05",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "12:00 pm -12:15 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414129"
+    },
+    {
+     "section": "417151-06",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "12:15 pm -12:30 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414131"
+    },
+    {
+     "section": "417151-07",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "12:30 pm -12:45 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414133"
+    },
+    {
+     "section": "417151-08",
+     "title": "Lessons Placement Day",
+     "dates": "10/04/2026 -10/04/2026",
+     "times": "12:45 pm - 1:00 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414135"
+    },
+    {
+     "section": "417151-09",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "5:00 pm - 5:15 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414137"
+    },
+    {
+     "section": "417151-10",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "5:15 pm - 5:30 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414139"
+    },
+    {
+     "section": "417151-11",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "5:30 pm - 5:45 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414141"
+    },
+    {
+     "section": "417151-12",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "5:45 pm - 6:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414103"
+    },
+    {
+     "section": "417151-13",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "6:00 pm - 6:15 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414107"
+    },
+    {
+     "section": "417151-14",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "6:15 pm - 6:30 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414109"
+    },
+    {
+     "section": "417151-15",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "6:30 pm - 6:45 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414105"
+    },
+    {
+     "section": "417151-16",
+     "title": "Lessons Placement Day",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "6:45 pm - 7:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414151"
+    },
+    {
+     "section": "417151-17",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "11:00 am -11:15 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414143"
+    },
+    {
+     "section": "417151-18",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "11:15 am -11:30 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414145"
+    },
+    {
+     "section": "417151-19",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "11:30 am -11:45 am",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414147"
+    },
+    {
+     "section": "417151-20",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "11:45 am -12:00 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414149"
+    },
+    {
+     "section": "417151-21",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "12:00 pm -12:15 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414115"
+    },
+    {
+     "section": "417151-22",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "12:15 pm -12:30 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414113"
+    },
+    {
+     "section": "417151-23",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "12:30 pm -12:45 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414117"
+    },
+    {
+     "section": "417151-24",
+     "title": "Lessons Placement Day",
+     "dates": "10/18/2026 -10/18/2026",
+     "times": "12:45 pm - 1:00 pm",
+     "days": "Su",
+     "location": "The Well",
+     "ages": "3-100",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=449414119"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Spanish for Preschoolers",
+   "activity_number": "1236550",
+   "description": "Learn the fundamental language skills needed for everyday interaction in Spanish. Everyday words, simple questions and answers are covered through fun and engaging age-appropriate songs, games, play-based activities, and craft projects from our native-speaking Spanish Teacher.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1236550-01",
+     "title": "Spanish for Preschoolers",
+     "dates": "01/09/2027 -02/20/2027",
+     "times": "9:00 am -10:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$140.00/$150.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514145197"
+    },
+    {
+     "section": "1236550-02",
+     "title": "Spanish for Preschoolers",
+     "dates": "01/06/2027 -02/17/2027",
+     "times": "10:00 am -10:45 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$140.00/$150.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514146663"
+    },
+    {
+     "section": "1236550-03",
+     "title": "Spanish for Parent & Tot",
+     "dates": "01/06/2027 -02/17/2027",
+     "times": "9:00 am - 9:45 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "1.6-3.99",
+     "cost": "$140.00/$150.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514151762"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "DK Acting Academy",
+   "activity_number": "1340310",
+   "description": "This immersive acting class offers a dive into theatre while focusing on the real-world skills teens need most in today's tech-driven world. No prior experience is required. Through improv, role-play, character work, and scene study, students strengthen their communication, collaboration, and creative-thinking skills. The session concludes with a low-pressure showcase; a chance for students to share a scripted scene and demonstrate the skills and growth they’ve gained during the class.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1340310-01",
+     "title": "DK Acting Academy",
+     "dates": "01/13/2027 -03/03/2027",
+     "times": "7:15 pm - 8:15 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "12-17",
+     "cost": "$160.00/$170.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513196343"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Tyke Time",
+   "activity_number": "1520023",
+   "description": "This program in the MAC gym is a wonderful opportunity to network with other parents as your child makes new friends. Parents provide supervision for this program. Equipment includes mats and play equipment such as balls, ride-on-toys, blocks, coloring, and more. Registration is required.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1520023-01",
+     "title": "Tyke Time",
+     "dates": "01/13/2027 -03/17/2027*",
+     "times": "9:00 am -11:00 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "0.5-5.99",
+     "cost": "$24.00/$30.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513678819"
+    },
+    {
+     "section": "1520023-02",
+     "title": "Tyke Time",
+     "dates": "03/31/2027 -05/26/2027",
+     "times": "9:00 am -11:00 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "0.5-5.99",
+     "cost": "$24.00/$30.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513683120"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Lil Builders Club",
+   "activity_number": "1520210",
+   "description": "Welcome to Lil Builders- a fun hands-on playtime just for preschoolers! Explore, create, and build using colorful building tiles and classic LEGO bricks in a relaxed, self-led environment. This open-ended play session encourages imagination, fine motor skills, and cooperative play. Whether they’re stacking towers, designing simple structures, or just experimenting with shapes and colors, your little builder is sure to have a blast!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1520210-01",
+     "title": "Lil Builders Club",
+     "dates": "01/11/2027 -01/25/2027",
+     "times": "10:00 am -11:00 am",
+     "days": "M",
+     "location": "The Well",
+     "ages": "0.6-3",
+     "cost": "$10.00/$12.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=510555470"
+    },
+    {
+     "section": "1520210-03",
+     "title": "Lil Builders Club",
+     "dates": "02/22/2027 -03/08/2027",
+     "times": "10:00 am -11:00 am",
+     "days": "M",
+     "location": "The Well",
+     "ages": "0.6-3",
+     "cost": "$10.00/$12.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=510555585"
+    },
+    {
+     "section": "1520210-04",
+     "title": "Lil Builders Club",
+     "dates": "03/29/2027 -04/12/2027",
+     "times": "10:00 am -11:00 am",
+     "days": "M",
+     "location": "The Well",
+     "ages": "0.6-3",
+     "cost": "$10.00/$12.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=510555636"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "The Play Spot Class",
+   "activity_number": "1520260",
+   "description": "Expertly designed by a pediatric Speech-Language Pathologist (SLP) and Occupational Therapist (OT), this dynamic program focuses on enhancing fine and gross motor skills, language development, and social interactions through stimulating and fun play activities. Children explore sensory bins, unleash their creativity with crafts, enjoy captivating stories, music and movement, and navigate exciting obstacle courses through engaging weekly themes. Enroll your child for an enriching experience that combines play and skill-building! To see our class in action and spot the upcoming class themes, fin",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1520260-01",
+     "title": "The Play Spot Class",
+     "dates": "02/09/2027 -03/16/2027",
+     "times": "10:00 am -10:45 am",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "1.4-5.99",
+     "cost": "$258.00/$270.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514132137"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Active Adventures",
+   "activity_number": "1520420",
+   "description": "Active Adventures creates a fun, supportive environment where children develop essential motor and cognitive skills through play-based activities that encourage confidence, coordination, social growth, and a passion for staying active.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1520420-01",
+     "title": "Active Adventures-Toddlers",
+     "dates": "01/06/2027 -01/27/2027",
+     "times": "2:00 pm - 2:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "1.6-2.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514164516"
+    },
+    {
+     "section": "1520420-02",
+     "title": "Active Adventures-Preschoolers",
+     "dates": "01/06/2027 -01/27/2027",
+     "times": "2:35 pm - 3:05 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "3-4.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514166272"
+    },
+    {
+     "section": "1520420-03",
+     "title": "Active Adventures-Pre Kindergaten",
+     "dates": "01/06/2027 -01/27/2027",
+     "times": "3:10 pm - 4:10 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "4-5.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514167648"
+    },
+    {
+     "section": "1520420-04",
+     "title": "Active Adventures-Toddlers",
+     "dates": "02/03/2027 -02/24/2027",
+     "times": "2:00 pm - 2:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "1.6-2.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514169005"
+    },
+    {
+     "section": "1520420-05",
+     "title": "Active Adventures-Preschoolers",
+     "dates": "02/03/2027 -02/24/2027",
+     "times": "2:35 pm - 3:05 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "3-4.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514169511"
+    },
+    {
+     "section": "1520420-06",
+     "title": "Active Adventures-Pre Kindergaten",
+     "dates": "02/03/2027 -02/24/2027",
+     "times": "3:10 pm - 4:10 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "4-5.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514169967"
+    },
+    {
+     "section": "1520420-07",
+     "title": "Active Adventures-Toddlers",
+     "dates": "03/03/2027 -03/31/2027*",
+     "times": "2:00 pm - 2:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "1.6-2.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514170461"
+    },
+    {
+     "section": "1520420-08",
+     "title": "Active Adventures-Preschoolers",
+     "dates": "03/03/2027 -03/31/2027*",
+     "times": "2:35 pm - 3:05 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "3-4.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514171343"
+    },
+    {
+     "section": "1520420-09",
+     "title": "Active Adventures-Pre Kindergaten",
+     "dates": "03/03/2027 -03/31/2027*",
+     "times": "3:10 pm - 4:10 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "4-5.99",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514172392"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Active Agility",
+   "activity_number": "1520430",
+   "description": "Active Agility is a play-based program that develops preschool and youth speed, agility, balance, coordination, and strength through fun drills, ladder exercises, cone activities, and reaction-based games.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1520430-01",
+     "title": "Active Agility",
+     "dates": "01/04/2027 -01/25/2027",
+     "times": "4:00 pm - 5:00 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "3-4",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514292022"
+    },
+    {
+     "section": "1520430-02",
+     "title": "Active Agility",
+     "dates": "02/01/2027 -02/22/2027",
+     "times": "4:00 pm - 5:00 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "3-4",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514294251"
+    },
+    {
+     "section": "1520430-03",
+     "title": "Active Agility",
+     "dates": "03/01/2027 -03/29/2027",
+     "times": "4:00 pm - 5:00 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "3-4",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514296117"
+    },
+    {
+     "section": "1520430-04",
+     "title": "Active Agility-PreK",
+     "dates": "01/04/2027 -01/25/2027",
+     "times": "5:10 pm - 5:40 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "4-5",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514296783"
+    },
+    {
+     "section": "1520430-05",
+     "title": "Active Agility-PreK",
+     "dates": "02/01/2027 -02/22/2027",
+     "times": "5:10 pm - 5:40 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "4-5",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514297957"
+    },
+    {
+     "section": "1520430-06",
+     "title": "Active Agility-PreK",
+     "dates": "03/01/2027 -03/29/2027",
+     "times": "5:10 pm - 5:40 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "4-5",
+     "cost": "$80.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514298944"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Kindertots",
+   "activity_number": "1521030",
+   "description": "Kindertots allows a two-year old’s natural curiosity to flourish in a multitude of ways with an emphasis on movement exploration. Young children enjoy a challenge, and when they are given the opportunity to test their abilities, it is both developmentally appropriate as well as safe.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1521030-03",
+     "title": "Kindertots Dance",
+     "dates": "01/06/2027 -02/03/2027",
+     "times": "5:00 pm - 5:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "2-2.99",
+     "cost": "$75.00/$85.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513140709"
+    },
+    {
+     "section": "1521030-04",
+     "title": "Kindertots Dance",
+     "dates": "02/10/2027 -03/10/2027",
+     "times": "5:00 pm - 5:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "2-2.99",
+     "cost": "$75.00/$85.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513142897"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Kinderdance",
+   "activity_number": "1521040",
+   "description": "Kinderdance provides children with the potential to be creative, express themselves through movement while building strong muscles and social skills. Our age appropriate educational concepts reinforce what children are learning at home and in preschool, which builds self-confidence and self-esteem, making for very happy children.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1521040-01",
+     "title": "Kinderdance",
+     "dates": "01/06/2027 -02/03/2027",
+     "times": "5:45 pm - 6:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$100.00/$110.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513146840"
+    },
+    {
+     "section": "1521040-02",
+     "title": "Kinderdance",
+     "dates": "02/10/2027 -03/10/2027",
+     "times": "5:45 pm - 6:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$100.00/$110.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513148218"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Spring Break Camp - Bally Sports Group",
+   "activity_number": "1530160",
+   "description": "Campers will have a ball participating in a variety of exciting sports and camp activities at the Hilliard Spring Break Camp! Children will be introduced to sports and engage in activities in a fun and encouraging way! Sports include soccer, basketball, flag football, ultimate Frisbee, volleyball, floor hockey and much more! Camp will also feature traditional camp games such as kickball, dodgeball, capture the flag, and more. Our coaches are trained to provide constant encouragement, constructive feedback, and to implement modifications for each skill level. Our camp will promote sportsmanship",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530160-01",
+     "title": "Spring Break Camp - Bally Sports Group",
+     "dates": "03/22/2027 -03/26/2027",
+     "times": "9:00 am - 3:00 pm",
+     "days": "M, Tu, W, Th, F",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$170.00/$185.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514120676"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Jewelry Making Club",
+   "activity_number": "1530305",
+   "description": "Join others who love the same hobby of creating fun bracelets of all kinds. Hang out, listen to music, meet new friends, and learn how to make old and new designs. Beaded bracelets, friendship bracelets, clay bead bracelets, and more.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530305-01",
+     "title": "Jewelry Making Club",
+     "dates": "02/20/2027 -02/27/2027",
+     "times": "1:00 pm - 3:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "8-12.99",
+     "cost": "$30.00/$40.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513548640"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Watercolor For Kids",
+   "activity_number": "1530340",
+   "description": "Nurture your child's creative side!! This watercolor class builds foundational artistic skills and allows individual expression in a fun environment. While learning, each student will create their own unique masterpiece!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530340-01",
+     "title": "Watercolor For Kids",
+     "dates": "01/19/2027 -02/09/2027",
+     "times": "6:30 pm - 8:00 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "5-11.99",
+     "cost": "$140.00/$150.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514092030"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Young Chef Academy",
+   "activity_number": "1530520",
+   "description": "Discover the joys of cooking! Dive into hands-on cooking and baking, create delicious tastings, and learn essential culinary skills like following a recipe, meal prepping, food safety, and kitchen techniques. Please note: Due to the nature of the program, we cannot guarantee the absence of allergens like nuts, gluten, and dairy in the kitchen.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530520-01",
+     "title": "Young Chef Academy",
+     "dates": "01/16/2027 -01/16/2027",
+     "times": "10:00 am -11:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "7-13",
+     "cost": "$60.00/$65.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=512583473"
+    },
+    {
+     "section": "1530520-02",
+     "title": "Young Chef Academy",
+     "dates": "02/20/2027 -02/20/2027",
+     "times": "10:00 am -11:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "7-13",
+     "cost": "$60.00/$65.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=512585247"
+    },
+    {
+     "section": "1530520-03",
+     "title": "Young Chef Academy",
+     "dates": "03/20/2027 -03/20/2027",
+     "times": "10:00 am -11:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "7-13",
+     "cost": "$60.00/$65.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=512585628"
+    },
+    {
+     "section": "1530520-04",
+     "title": "Young Chef Academy",
+     "dates": "04/17/2027 -04/17/2027",
+     "times": "10:00 am -11:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "7-13",
+     "cost": "$60.00/$65.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=512585992"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Spring Break Camp with Young Chefs Academy",
+   "activity_number": "1530530",
+   "description": "Young Chefs Academy provides hands-on culinary education where children build confidence, creativity, kitchen safety, cooking skills, and teamwork while learning to prepare delicious recipes in a fun environment.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530530-01",
+     "title": "Spring Break Camp with Young Chefs Academy",
+     "dates": "03/22/2027 -03/25/2027",
+     "times": "10:00 am -12:00 pm",
+     "days": "M, Tu, W, Th",
+     "location": "The Well",
+     "ages": "7-13.99",
+     "cost": "$320.00/$330.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513717583"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Skin Care, Nails, and Home-made Spa Workshop",
+   "activity_number": "1530601",
+   "description": "Get ready for a fun day of making your own sugar scrubs and face masks, getting a mini manicure, and learning cool tips to take care of your skin! Plus, you’ll mix up a fancy layered juice drink to enjoy! It’s hands-on, creative, and all about feeling good and having fun with friends!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530601-01",
+     "title": "Skin Care, Nails, and Home-made Spa Workshop",
+     "dates": "01/27/2027 -01/27/2027",
+     "times": "6:00 pm - 8:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "8-12.99",
+     "cost": "$20.00/$25.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513543953"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Kidz Home Alone",
+   "activity_number": "1530602",
+   "description": "Through interactive activities and real-life scenarios, children learn to stay home alone safely, follow household rules, make responsible decisions, and feel more confident and prepared.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530602-01",
+     "title": "Kidz Home Alone",
+     "dates": "01/14/2027 -01/21/2027",
+     "times": "4:00 pm - 6:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "9-12.99",
+     "cost": "$100.00/$115.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513580252"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Better Babysitters",
+   "activity_number": "1530605",
+   "description": "Tweens ages 10–13 learn childcare basics, CPR, first aid, emergency response, and babysitting responsibilities through hands-on activities. Each student receives a first aid kit.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530605-01",
+     "title": "Better Babysitters",
+     "dates": "02/04/2027 -02/25/2027",
+     "times": "4:00 pm - 6:30 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "10-13.99",
+     "cost": "$130.00/$150.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513596940"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Plant and Grow",
+   "activity_number": "1530801",
+   "description": "Celebrate Earth Day by getting your hands dirty (in the best way)! In this fun, hands-on activity, kids will plant their very own succulent to take home and care for. Learn cool facts about plants, decorate your pot, and find out how even small things—like a tiny plant—can help the planet grow greener.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530801-01",
+     "title": "Plant and Grow",
+     "dates": "04/22/2027 -04/22/2027",
+     "times": "6:00 pm - 7:30 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$10.00/$15.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513551699"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Spanish Beginners",
+   "activity_number": "1530920",
+   "description": "Students in this class focus on verbal communication with native pronunciation while learning everyday communication in reading and writing, through fun and engaging student-to-student activities.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1530920-01",
+     "title": "Spanish Beginners",
+     "dates": "01/09/2027 -02/20/2027",
+     "times": "10:15 am -11:45 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$140.00/$150.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514149078"
+    },
+    {
+     "section": "1530920-02",
+     "title": "Spanish for Homeschoolers",
+     "dates": "01/06/2027 -02/17/2027",
+     "times": "11:00 am -12:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$140.00/$150.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514154584"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "KD Combo",
+   "activity_number": "1531010",
+   "description": "Learn fundamental dance skills and terms, progressing to more complex movements. Including Ballet, Tap, Jazz, and Creative Movement, blending age-appropriate education with enjoyable activities. Children dance, jump, glide, and use their imagination with a program certified teacher. Prerequisite: 5-year-old students requires completion of one session of Kinder dance for ages 3-5. Ballet shoes and tap shoes required. Recommended attire: leotard and tights or shorts/t-shirt/exercise clothing.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1531010-01",
+     "title": "Kinderdance Combo",
+     "dates": "01/06/2027 -02/03/2027",
+     "times": "6:35 pm - 7:20 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "5-7.99",
+     "cost": "$100.00/$110.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=510558328"
+    },
+    {
+     "section": "1531010-02",
+     "title": "Kinderdance Combo",
+     "dates": "02/10/2027 -03/10/2027",
+     "times": "6:35 pm - 7:20 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "5-7.99",
+     "cost": "$100.00/$110.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=510558379"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Future Fashion Stars",
+   "activity_number": "1531020",
+   "description": "The GOOD VIBE CLUB - cozy sweats & awesome accessories Do you have a passion for fashion? Do you like being creative? How about having FUN with friends while you MAKE SOMETHING AWESOME!!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1531020-01",
+     "title": "Future Fashion Stars",
+     "dates": "01/16/2027 -02/06/2027",
+     "times": "1:00 pm - 3:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "7-11.99",
+     "cost": "$237.00/$245.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514125922"
+    },
+    {
+     "section": "1531020-02",
+     "title": "Future Fashion Stars - Parisian Chic",
+     "dates": "02/13/2027 -03/06/2027",
+     "times": "1:00 pm - 3:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "7-11.99",
+     "cost": "$237.00/$245.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514128040"
+    },
+    {
+     "section": "1531020-03",
+     "title": "Future Fashion Stars - Fashion Fancy",
+     "dates": "04/03/2027 -04/24/2027",
+     "times": "1:00 pm - 4:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "7-11.99",
+     "cost": "$237.00/$245.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=514129037"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "KPOP DANCE",
+   "activity_number": "1531050",
+   "description": "Learn dance basics, choreography, and body coordination set to K-pop music! Each class consists of a warm-up, dance routine, and freestyle dance party. Families will be invited to a mini recital on the last day of class.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1531050-01",
+     "title": "KPOP DANCE",
+     "dates": "01/11/2027 -03/08/2027*",
+     "times": "6:30 pm - 7:15 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "5-11.99",
+     "cost": "$84.00/$90.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513709287"
+    }
+   ]
+  },
+  {
+   "category": "Art, Culture & Enrichment",
+   "name": "Drama Kids- Its Showtime!",
+   "activity_number": "1531600",
+   "description": "This high-energy drama class invites kids to explore their creativity while building confidence, communication, and collaboration skills. Through theatre games, storytelling, improvisation, and expressive movement, students strengthen their voices, imagination, and stage presence…while also developing important life skills like leadership and teamwork. No prior experience is necessary; just curiosity and a positive attitude! Families will celebrate their child’s journey at a no-pressure showcase that highlights the kids’ growth, creativity, and fun!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=ENRICH&display=detail",
+   "sections": [
+    {
+     "section": "1531600-01",
+     "title": "Drama Kids- Its Showtime!",
+     "dates": "01/13/2027 -03/03/2027",
+     "times": "6:00 pm - 7:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "6-12",
+     "cost": "$160.00/$170.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513192324"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Boxing",
+   "activity_number": "4350400001",
+   "description": "a technique-focused workout rooted in traditional boxing training. Participants learn proper stance, footwork, and punch combinations while building strength, speed, and endurance. This all-levels class emphasizes form, discipline, and conditioning—offering a powerful, full-body workout without contact or sparring.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "4350400001-02",
+     "title": "Boxing",
+     "dates": "10/27/2026 -12/08/2026*",
+     "times": "6:30 pm - 7:15 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$60.00/$66.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=465011386"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Qi Gong",
+   "activity_number": "435040003",
+   "description": "A gentle, low-impact class combining slow, flowing movements, breathwork, and mindful focus to improve balance, mobility, energy, and overall well-being. Suitable for all levels.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "435040003-02",
+     "title": "Qi Gong",
+     "dates": "11/04/2026 -12/16/2026*",
+     "times": "9:15 am -10:15 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$48.00/$54.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=465014211"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Tai Chi",
+   "activity_number": "43504002",
+   "description": "Tai Chi is a gentle, low-impact class that combines slow, flowing movements with deep breathing and focused intention. Rooted in ancient Chinese tradition, this all-levels practice promotes balance, flexibility, strength, and relaxation. Ideal for reducing stress and improving overall well-being, Tai Chi is perfect for anyone seeking mindful movement and improved body awareness.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "43504002-01",
+     "title": "Tai Chi",
+     "dates": "10/09/2026 -12/04/2026*",
+     "times": "10:30 am -11:15 am",
+     "days": "F",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$72.00/$80.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464993248"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Golden Hour Rooftop Yoga",
+   "activity_number": "4350601",
+   "description": "Unwind with a gentle rooftop yoga flow at sunset, blending breath and movement to release tension and ease into a calm, grounded evening.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "4350601-01",
+     "title": "Golden Hour Rooftop Yoga",
+     "dates": "09/23/2026 -09/23/2026",
+     "times": "6:30 pm - 7:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "12-100",
+     "cost": "$25.00/$30.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464379878"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Pause & Restore Mini Wellness Retreat",
+   "activity_number": "4550610",
+   "description": "Take time to pause from daily stressors and restore your mind and body. This mini retreat includes guided breathwork, a gentle yoga flow with lovely savasana offerings. Time to connect with yourself and others. Journaling prompts, light bites and a special take-home gift to support your moments of pause after the retreat.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "4550610-01",
+     "title": "Pause & Restore Mini Wellness Retreat",
+     "dates": "10/10/2026 -10/10/2026",
+     "times": "9:00 am -12:30 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "18-999",
+     "cost": "$89.00/$102.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=465026819"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Deep Stretch Yoga",
+   "activity_number": "5350120",
+   "description": "Rise early and give your body the reset it deserves. This Deep Stretch Yoga class targets large muscle groups through long-held poses to release deep layers of tension, lengthen muscles, and promote full-body relaxation through intentional breathwork. Each class begins with mindful warm-ups, progresses through focused stretching sequences to improve flexibility and mobility, leaving you feeling open and ready to take on your day",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "5350120-2026",
+     "title": "Deep Stretch Yoga",
+     "dates": "06/10/2026 -12/16/2026*",
+     "times": "5:45 am - 6:45 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=465363217"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Intermediate Mat Pilates",
+   "activity_number": "535019",
+   "description": "Intermediate Pilates is the next level above intro to Pilates and is made for people who have taken Pilates before and feel ready to challenge themselves beyond the basics. It is a low-impact form of exercise that targets the core with lots of options for modification!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "535019-2026",
+     "title": "Intermediate Mat Pilates",
+     "dates": "05/22/2026 -12/18/2026*",
+     "times": "10:15 am -11:15 am",
+     "days": "F",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=460837702"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Youth Fitness Floor Readiness Check",
+   "activity_number": "5350301",
+   "description": "",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "5350301-Tues 6pm",
+     "title": "Fitness Readiness Check",
+     "dates": "04/28/2026 -09/10/2026",
+     "times": "6:00 pm - 6:45 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "11-11.99",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=457789753"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Box and Build",
+   "activity_number": "53504001",
+   "description": "A dynamic, full-body workout that combines rhythmic boxing-inspired movements with strength and conditioning exercises",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504001-1",
+     "title": "Box and Build",
+     "dates": "05/04/2026 -12/28/2026*",
+     "times": "9:15 am -10:00 am",
+     "days": "M",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447291139"
+    },
+    {
+     "section": "53504001-Thursday",
+     "title": "Box and Build",
+     "dates": "09/03/2026 -12/17/2026*",
+     "times": "9:15 am -10:00 am",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=510068019"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "POUND",
+   "activity_number": "53504002",
+   "description": "A full-body cardio jam session inspired by the energizing fun of playing the drums.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504002-01",
+     "title": "POUND",
+     "dates": "05/04/2026 -12/28/2026",
+     "times": "5:30 pm - 6:15 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "14+",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447293448"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Gentle Yoga Tuesdays",
+   "activity_number": "53504003",
+   "description": "A slow-paced, mindful class that focuses on relaxation, flexibility, and mobility.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504003-02",
+     "title": "Gentle Yoga Tuesdays",
+     "dates": "05/05/2026 -12/29/2026*",
+     "times": "9:30 am -10:15 am",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447295094"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Gentle Yoga Mondays",
+   "activity_number": "53504004",
+   "description": "A slow-paced, mindful class that focuses on relaxation, flexibility, and mobility.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504004-02",
+     "title": "Gentle Yoga Mondays",
+     "dates": "03/09/2026 -12/28/2026",
+     "times": "10:30 am -11:15 am",
+     "days": "M",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447299281"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Line Dance Gold",
+   "activity_number": "53504007",
+   "description": "A fun, low-impact group exercise class that combines simple line dance routines with upbeat music",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504007-1",
+     "title": "Line Dance Gold",
+     "dates": "05/05/2026 -12/29/2026*",
+     "times": "9:30 am -10:15 am",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447311000"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Generation POUND for Kids",
+   "activity_number": "53504008",
+   "description": "Get ready to rock out while you work out! Generation POUND® is a high-energy Family program that fuses music, movement, and creativity. Kids will explore rhythm, discover new ways to move, and embrace their inner rock star through interactive activities and fitness fun.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504008-01",
+     "title": "Generation POUND for Kids",
+     "dates": "05/05/2026 -12/29/2026*",
+     "times": "5:30 pm - 6:15 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "3.8-150",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447313044"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "HighFitness",
+   "activity_number": "53504009",
+   "description": "A fun, music-driven, multi-level HIIT class that blends cardio, strength, and interval training into one high-energy workout. Using simple, athletic movements with both high- and low-impact options, participants of all fitness levels can challenge themselves at their own pace while improving endurance, strength, and overall fitness.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504009-1",
+     "title": "HighFitness",
+     "dates": "05/06/2026 -12/30/2026*",
+     "times": "9:15 am -10:00 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447314598"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "ZUMBA Gold",
+   "activity_number": "53504010",
+   "description": "A fun, low-impact dance fitness class designed for active older adults and beginners.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504010-1",
+     "title": "ZUMBA Gold",
+     "dates": "05/06/2026 -12/30/2026*",
+     "times": "9:30 am -10:15 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447318614"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Barbell Burn",
+   "activity_number": "53504011",
+   "description": "A high-rep strength class using a barbell and great music to create muscle fatigue and build total-body strength. All levels welcome with adjustable weights and intensity options",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504011-2",
+     "title": "Barbell Burn",
+     "dates": "08/18/2026 -12/15/2026*",
+     "times": "6:30 pm - 7:15 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=497653711"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "ZUMBA Wednesdays",
+   "activity_number": "53504012",
+   "description": "A fun, high-energy dance workout that blends Latin and international rhythms for a full-body cardio party!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504012-1",
+     "title": "ZUMBA Wednesdays",
+     "dates": "05/06/2026 -12/30/2026*",
+     "times": "6:30 pm - 7:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447321069"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Chair Yoga",
+   "activity_number": "53504013",
+   "description": "A gentle, accessible form of yoga performed while seated or using a chair for support",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504013-1",
+     "title": "Chair Yoga",
+     "dates": "05/07/2026 -12/17/2026",
+     "times": "9:30 am -10:15 am",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447322195"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Intro to Mat Pilates",
+   "activity_number": "53504014",
+   "description": "A gentle, core-focused class that builds strength, stability, and flexibility through controlled movements.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504014-1",
+     "title": "Intro. to Mat Pilates",
+     "dates": "05/01/2026 -12/18/2026*",
+     "times": "9:15 am -10:00 am",
+     "days": "F",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447324317"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Functional Fitness Gold",
+   "activity_number": "53504015",
+   "description": "A low-impact strength and conditioning class designed to enhance everyday movement and function.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504015-1",
+     "title": "Functional Fitness Gold",
+     "dates": "05/01/2026 -12/18/2026",
+     "times": "9:30 am -10:15 am",
+     "days": "F",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447326193"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Kind Body Yoga Flow",
+   "activity_number": "53504017",
+   "description": "This is a 60 minute vinyasa class designed for beginners and intermediate students who want to move with intention, breathe deeply, and build confidence on the mat. You will move through mindful, breath led sequences with supportive cues. Expect some gentle strength building, mobility work, grounding transitions, and ending with some restorative stretches and relaxing savasana to integrate the practice and leave you feeling centered, refreshed and connected. This class is perfect for anyone seeking a welcoming, supportive environment to explore yoga at a gentle, nourishing pace.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504017-2026",
+     "title": "Kind Body Yoga Flow",
+     "dates": "05/16/2026 -12/19/2026*",
+     "times": "9:15 am -10:15 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=459987051"
+    },
+    {
+     "section": "53504017-Thursday",
+     "title": "Kind Body Yoga Flow",
+     "dates": "08/27/2026 -12/17/2026*",
+     "times": "5:15 pm - 6:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=508724258"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "ZUMBA Mondays",
+   "activity_number": "53504022",
+   "description": "A fun, high-energy dance workout that blends Latin and international rhythms for a full-body cardio party!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504022-1",
+     "title": "ZUMBA Mondays",
+     "dates": "07/13/2026 -12/28/2026",
+     "times": "7:00 pm - 8:00 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=483649588"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "SOULKickboxing",
+   "activity_number": "53504023",
+   "description": "This high-energy cardio kickboxing class combines punches, kicks, athletic drills, and motivating music for a fun, full-body workout.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504023-2026",
+     "title": "SOULKickboxing",
+     "dates": "07/16/2026 -12/17/2026",
+     "times": "12:15 pm -12:45 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=483652260"
+    },
+    {
+     "section": "53504023-Saturday",
+     "title": "SOULKickboxing",
+     "dates": "07/18/2026 -12/26/2026*",
+     "times": "9:15 am - 9:45 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=483653501"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Walk With A Doc",
+   "activity_number": "53504111",
+   "description": "Walk With A Doc These community walking groups are a safe, fun, and FREE place to go for a walk, learn about health from a local healthcare professional, and meet new people. The program was started right here in Columbus and has expanded throughout the world. Please park at the Well parking lot located at 3993 Cosgray Rd, Hilliard, OH 43026.Healthcare professionals from The Ohio State University Wexner Medical Center",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504111-December",
+     "title": "WWAD December",
+     "dates": "12/19/2026 -12/19/2026",
+     "times": "9:00 am -10:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509472023"
+    },
+    {
+     "section": "53504111-November",
+     "title": "WWAD November",
+     "dates": "11/21/2026 -11/21/2026",
+     "times": "9:00 am -10:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509471457"
+    },
+    {
+     "section": "53504111-October",
+     "title": "WWAD October",
+     "dates": "10/17/2026 -10/17/2026",
+     "times": "9:00 am -10:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509471183"
+    },
+    {
+     "section": "53504111-September",
+     "title": "WWAD September",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "9:00 am -10:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509469702"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Strength Express",
+   "activity_number": "5350416",
+   "description": "Build total-body strength in just 30 minutes using functional, compound movements that improve mobility and everyday performance.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "5350416-1",
+     "title": "Strength Express",
+     "dates": "04/23/2026 -12/17/2026*",
+     "times": "6:30 pm - 7:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=447327494"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Midday Yoga Flow",
+   "activity_number": "5350419",
+   "description": "Step away from your desk and into a 45-minute vinyasa flow that melts away morning stress, moves your body with intention, and sends you back to your afternoon refreshed and recharged. Each class begins with mindful warm-ups, moves through fluid seated, standing, and balancing postures, and ends with a relaxing Savasana. Designed for all levels—beginners welcome—this full-body practice links breath to dynamic movement, building strength, flexibility, and stamina while leaving stress at the door.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "5350419-2026",
+     "title": "Midday Yoga Flow",
+     "dates": "06/09/2026 -12/15/2026*",
+     "times": "12:15 pm - 1:00 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=465360440"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "The Well 1 Year Anniversary - Group Exercise Demo Day",
+   "activity_number": "53504199",
+   "description": "",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "53504199-Barbell Burn (Strength)",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "10:00 am -10:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509479882"
+    },
+    {
+     "section": "53504199-Deep Stretch Yoga",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "9:30 am - 9:50 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509478929"
+    },
+    {
+     "section": "53504199-High Fitness (HIIT)",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "9:30 am - 9:50 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509479427"
+    },
+    {
+     "section": "53504199-Kind Body Yoga",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "10:00 am -10:30 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509480742"
+    },
+    {
+     "section": "53504199-POUND",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "10:30 am -10:50 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509481122"
+    },
+    {
+     "section": "53504199-SOULKickboxing",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "9:00 am - 9:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509474774"
+    },
+    {
+     "section": "53504199-Strength Express",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "10:30 am -10:50 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509481545"
+    },
+    {
+     "section": "53504199-Yoga Flow",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "11:00 am -11:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509483862"
+    },
+    {
+     "section": "53504199-ZUMBA",
+     "title": "Group Exercise Demo Day",
+     "dates": "09/19/2026 -09/19/2026",
+     "times": "11:00 am -11:20 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=509483216"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Yoga Flow",
+   "activity_number": "5350420",
+   "description": "Wake up and move, stretch, and breathe through a series of flowing yoga poses designed to build strength, flexibility, balance, andmindfulness. All levels class",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "5350420-2026",
+     "title": "Yoga Flow",
+     "dates": "06/22/2026 -12/14/2026",
+     "times": "5:45 am - 6:45 am",
+     "days": "M",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=466418745"
+    }
+   ]
+  },
+  {
+   "category": "Fitness & Wellness",
+   "name": "Pilates Fusion",
+   "activity_number": "5350425",
+   "description": "Breathe emphasis with traditional yoga poses in combination with Pilates movements.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=FIT&display=detail",
+   "sections": [
+    {
+     "section": "5350425-1",
+     "title": "Pilates Fusion",
+     "dates": "09/01/2026 -12/15/2026",
+     "times": "5:30 pm - 6:15 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Check Availability",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=497655705"
+    }
+   ]
+  },
+  {
+   "category": "Senior Center (HSC 55+)",
+   "name": "Holiday Lunches",
+   "activity_number": "456123",
+   "description": "Dress in your favorite costume and enjoy this holiday lunch with special treats and a costume contest! Pre-paid registration required. No meal tickets or to-go meals.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=HSC&display=detail",
+   "sections": [
+    {
+     "section": "456123-13",
+     "title": "Fall Lunch",
+     "dates": "10/29/2026 -10/29/2026",
+     "times": "11:30 am -12:30 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "55-109",
+     "cost": "$10.00/$10.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=462846458"
+    },
+    {
+     "section": "456123-15",
+     "title": "Noon Year's Eve Brunch",
+     "dates": "12/29/2026 -12/29/2026",
+     "times": "11:30 am - 1:00 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "55-109",
+     "cost": "$10.00/$10.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=462847553"
+    }
+   ]
+  },
+  {
+   "category": "Senior Center (HSC 55+)",
+   "name": "Friday Fun Days",
+   "activity_number": "5560201",
+   "description": "Kick off the weekend with pizza, pop, and plenty of laughs! Each Friday features a new, engaging activity—perfect for friends, families, or anyone looking to end the week on a high note.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=HSC&display=detail",
+   "sections": [
+    {
+     "section": "5560201-15",
+     "title": "Friday Fun Days - Halloween Party",
+     "dates": "10/23/2026 -10/23/2026",
+     "times": "4:30 pm - 6:30 pm",
+     "days": "F",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$10.00/$12.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=462881274"
+    }
+   ]
+  },
+  {
+   "category": "Senior Center (HSC 55+)",
+   "name": "55+ Day Trip 2026",
+   "activity_number": "5560702",
+   "description": "",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=HSC&display=detail",
+   "sections": [
+    {
+     "section": "5560702-53",
+     "title": "Pyramid Hill Sculpture Park & Jungle Jim’s",
+     "dates": "09/21/2026 -09/21/2026",
+     "times": "8:30 am - 5:30 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$15.00/$15.00",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=502638033"
+    },
+    {
+     "section": "5560702-54",
+     "title": "Sunwatch Indian Village",
+     "dates": "09/24/2026 -09/24/2026",
+     "times": "8:30 am - 5:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$18.00/$18.00",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=502640941"
+    },
+    {
+     "section": "5560702-55",
+     "title": "Malabar Farms - Wagon and House Tour",
+     "dates": "09/30/2026 -09/30/2026",
+     "times": "9:00 am - 6:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$14.00/$14.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=502642684"
+    },
+    {
+     "section": "5560702-56",
+     "title": "Age of Steam Roundhouse Museum",
+     "dates": "10/01/2026 -10/01/2026",
+     "times": "8:30 am - 5:30 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$22.00/$22.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=516716352"
+    },
+    {
+     "section": "5560702-57",
+     "title": "Yellow Springs & Great Council State Park",
+     "dates": "10/07/2026 -10/07/2026",
+     "times": "9:30 am - 4:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$7.00/$7.00",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=516717940"
+    },
+    {
+     "section": "5560702-58",
+     "title": "Bob Evans Festival",
+     "dates": "10/09/2026 -10/09/2026",
+     "times": "8:30 am - 4:30 pm",
+     "days": "F",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$12.00/$12.00",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=516719977"
+    },
+    {
+     "section": "5560702-59",
+     "title": "Apple Butter Stirrin’ Festival",
+     "dates": "10/16/2026 -10/16/2026",
+     "times": "8:30 am - 5:00 pm",
+     "days": "F",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$18.00/$18.00",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=516720381"
+    },
+    {
+     "section": "5560702-60",
+     "title": "Great Southern Metro Park",
+     "dates": "10/19/2026 -10/19/2026",
+     "times": "9:30 am - 4:00 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$6.00/$6.00",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=516720823"
+    },
+    {
+     "section": "5560702-61",
+     "title": "Ohio Wildlife Center",
+     "dates": "10/21/2026 -10/21/2026",
+     "times": "9:00 am - 4:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$14.00/$14.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=516721300"
+    },
+    {
+     "section": "5560702-62",
+     "title": "U.S. Grant’s Boyhood Home & Schoolhouse",
+     "dates": "10/28/2026 -10/28/2026",
+     "times": "8:30 am - 5:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$12.00/$12.00",
+     "availability": "Waitlist",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=516721734"
+    }
+   ]
+  },
+  {
+   "category": "Senior Center (HSC 55+)",
+   "name": "Euchre Party - 55612",
+   "activity_number": "",
+   "description": "Join us for a fun Euchre afternoon featuring a friendly tournament, dinner, and prizes! Registration starts December 14 at 9 a.m.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=HSC&display=detail",
+   "sections": [
+    {
+     "section": "55612-04",
+     "title": "Euchre Party",
+     "dates": "01/21/2027 -01/21/2027",
+     "times": "2:30 pm - 5:30 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$10.00/$10.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=518970010"
+    }
+   ]
+  },
+  {
+   "category": "Seasonal",
+   "name": "Cookie Creations",
+   "activity_number": "4520808",
+   "description": "Make, Bake & Take sugar cookies in holiday shapes. Drop off your child and let them experience creating delicious holiday cookies.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SEASONAL&display=detail",
+   "sections": [
+    {
+     "section": "4520808-01",
+     "title": "Cookie Creations",
+     "dates": "12/09/2026 -12/09/2026",
+     "times": "10:00 am -11:30 am",
+     "days": "W",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$20.00/$25.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458359159"
+    }
+   ]
+  },
+  {
+   "category": "Seasonal",
+   "name": "Pumpkin Painting",
+   "activity_number": "4530310",
+   "description": "Get ready for a fun-filled fall adventure! Join us for a Pumpkin Painting Party, where kids ages 6–11 can let their creativity shine. Each child will receive their own pumpkin to decorate using paint, stickers, and all kinds of colorful craft supplies. No carving—just safe, mess-friendly fun!We'll have music, light snacks, and a festive atmosphere perfect for young artists. Come dressed in play clothes and bring your imagination—we’ll take care of the rest!",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SEASONAL&display=detail",
+   "sections": [
+    {
+     "section": "4530310-02",
+     "title": "Pumpkin Painting Party",
+     "dates": "10/21/2026 -10/21/2026",
+     "times": "6:00 pm - 7:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$20.00/$25.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458348608"
+    }
+   ]
+  },
+  {
+   "category": "Seasonal",
+   "name": "Ice, Ice Cookies",
+   "activity_number": "4530808",
+   "description": "Dive into the holiday spirit by creating delightful sugar cookies in festive shapes. They will love learning how to transform the dough into delicious treats ready to share with loved ones.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SEASONAL&display=detail",
+   "sections": [
+    {
+     "section": "4530808-01",
+     "title": "Ice, Ice, Cookies",
+     "dates": "12/17/2026 -12/17/2026",
+     "times": "6:00 pm - 8:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "6-12.99",
+     "cost": "$20.00/$25.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458347169"
+    }
+   ]
+  },
+  {
+   "category": "Seasonal",
+   "name": "Sensory Santa",
+   "activity_number": "4571211",
+   "description": "Santa enjoys visiting with everyone! He has a very tight schedule but has reserved a special time to visit in a small quaint room for sensory friendly friends. Please register for one 10-minute time slot. Registrants may take their own photos as they visit with Santa.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SEASONAL&display=detail",
+   "sections": [
+    {
+     "section": "4571211-01",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "12:30 pm -12:40 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619656"
+    },
+    {
+     "section": "4571211-02",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "12:40 pm -12:50 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619686"
+    },
+    {
+     "section": "4571211-03",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "12:50 pm - 1:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619716"
+    },
+    {
+     "section": "4571211-04",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "1:00 pm - 1:10 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619746"
+    },
+    {
+     "section": "4571211-05",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "1:10 pm - 1:20 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619776"
+    },
+    {
+     "section": "4571211-06",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "1:20 pm - 1:30 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619806"
+    },
+    {
+     "section": "4571211-07",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "1:30 pm - 1:40 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619836"
+    },
+    {
+     "section": "4571211-08",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "1:40 pm - 1:50 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619866"
+    },
+    {
+     "section": "4571211-09",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "1:50 pm - 2:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619896"
+    },
+    {
+     "section": "4571211-10",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "2:00 pm - 2:10 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619926"
+    },
+    {
+     "section": "4571211-11",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "2:10 pm - 2:20 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619956"
+    },
+    {
+     "section": "4571211-12",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "2:20 pm - 2:30 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458619986"
+    },
+    {
+     "section": "4571211-13",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "2:30 pm - 2:40 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620016"
+    },
+    {
+     "section": "4571211-14",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "2:40 pm - 2:50 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620046"
+    },
+    {
+     "section": "4571211-15",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "2:50 pm - 3:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620076"
+    },
+    {
+     "section": "4571211-16",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "3:00 pm - 3:10 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620106"
+    },
+    {
+     "section": "4571211-17",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "3:10 pm - 3:20 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620136"
+    },
+    {
+     "section": "4571211-18",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "3:20 pm - 3:30 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620166"
+    },
+    {
+     "section": "4571211-19",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "3:30 pm - 3:40 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Full",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620196"
+    },
+    {
+     "section": "4571211-20",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "3:40 pm - 3:50 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620226"
+    },
+    {
+     "section": "4571211-21",
+     "title": "Sensory Santa",
+     "dates": "12/05/2026 -12/05/2026",
+     "times": "3:50 pm - 4:00 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$0.00/$0.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=458620256"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Little Ballers Basketball",
+   "activity_number": "152140",
+   "description": "Bally Sports Group provides children with a fun and educational first basketball experience! Players are taught the fundamentals of dribbling, shooting, passing, rebounding, defense, and the concept of game play.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "152140-01",
+     "title": "Little Ballers Basketball",
+     "dates": "01/09/2027 -02/13/2027",
+     "times": "9:00 am -10:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "4-6.99",
+     "cost": "$90.00/$99.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=507998681"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Learn to LAX",
+   "activity_number": "1531416",
+   "description": "The Learn to LAX program is a no pad, no contact beginner clinic designed to introduce participants to the sport of lacrosse. Focused on the fundamentals, experience the sport of lacrosse in a safe practice and controlled game environment.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "1531416-01",
+     "title": "Learn to LAX",
+     "dates": "01/05/2027 -01/26/2027",
+     "times": "6:00 pm - 7:00 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$40.00/$44.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=512041203"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Pickleball - Intermediate",
+   "activity_number": "1551402",
+   "description": "In this open-play offering, pickleball players will increase skills, strategy and consistency while playing with a variety of partners and competitors.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "1551402-07",
+     "title": "Adult Pickleball",
+     "dates": "03/02/2027 -04/22/2027",
+     "times": "1:00 pm - 3:00 pm",
+     "days": "Tu, Th",
+     "location": "The Well",
+     "ages": "",
+     "cost": "$30.00/$33.00",
+     "availability": "Unavailable",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=513008576"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Amazing Athletes Tots",
+   "activity_number": "4511408",
+   "description": "Amazing Athletes is a developmental physical fitness program for children. Our fun, active classes encourage kids to explore and develop a variety of athletic skills through the introduction of 10 different sports.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4511408-01",
+     "title": "Amazing Athletes Tots",
+     "dates": "10/01/2026 -11/19/2026",
+     "times": "10:00 am -10:30 am",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "1.5-3",
+     "cost": "$126.00/$139.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464661047"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Karate Zoo Martial Arts",
+   "activity_number": "4521402",
+   "description": "KZ Martial Arts builds upon the skills presented in our preschool program and presents new areas for training as we explore the traditions and fundamentals of martial arts! Covering 12 different skill-specific areas, the class curriculum represents martial arts in a structured and engaging way through the use of fun, active drills mixed with traditional training methods.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4521402-01",
+     "title": "Karate Zoo Martial Arts",
+     "dates": "10/06/2026 -11/24/2026",
+     "times": "7:00 pm - 7:30 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "7-12.99",
+     "cost": "$126.00/$139.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464661503"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Karate Zoo",
+   "activity_number": "4521403",
+   "description": "This high-energy progression-based program teaches the fundamentals of martial arts in a safe and nurturing environment. We use our Muscle Zoo characters to teach karate skills and values like discipline, patience, and respect.Section 01 Ages 3-4Section 02 Ages 5-6",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4521403-01",
+     "title": "Karate Zoo",
+     "dates": "10/06/2026 -11/24/2026",
+     "times": "6:00 pm - 6:30 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "3-4.99",
+     "cost": "$126.00/$139.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464661755"
+    },
+    {
+     "section": "4521403-02",
+     "title": "Karate Zoo",
+     "dates": "10/06/2026 -11/24/2026",
+     "times": "6:30 pm - 7:00 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "5-6.99",
+     "cost": "$126.00/$139.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464661800"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Amazing Athletes",
+   "activity_number": "4521404",
+   "description": "Amazing Athletes is a developmental physical fitness program for children. Our fun, active classes encourage kids to explore and develop a variety of athletic skills through the introduction of 10 different sports.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4521404-01",
+     "title": "Amazing Athletes",
+     "dates": "10/01/2026 -11/19/2026",
+     "times": "10:30 am -11:00 am",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "3-5.99",
+     "cost": "$126.00/$139.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464661235"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Shooting Stars Basketball",
+   "activity_number": "452142",
+   "description": "Bally Sports Group provides children with a fun and educational basketball experience! Players are taught the fundamentals of dribbling, shooting, passing, rebounding, defense, and the concept of game play.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "452142-01",
+     "title": "Shooting Stars Basketball",
+     "dates": "11/07/2026 -12/19/2026*",
+     "times": "11:20 am -12:20 pm",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "6.5-8.99",
+     "cost": "$90.00/$99.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464660354"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Little Ballers Basketball",
+   "activity_number": "452144",
+   "description": "Bally Sports Group provides children with a fun and educational first basketball experience! Players are taught the fundamentals of dribbling, shooting, passing, rebounding, defense, and the concept of game play.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "452144-01",
+     "title": "Little Ballers Basketball",
+     "dates": "11/07/2026 -12/19/2026*",
+     "times": "9:00 am -10:00 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "Ages 4-6",
+     "cost": "$90.00/$99.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464660162"
+    },
+    {
+     "section": "452144-02",
+     "title": "Little Ballers Basketball",
+     "dates": "11/07/2026 -12/19/2026*",
+     "times": "10:10 am -11:10 am",
+     "days": "Sa",
+     "location": "The Well",
+     "ages": "Ages 4-6",
+     "cost": "$90.00/$99.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464660210"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Excel Volleyball Development League",
+   "activity_number": "453141",
+   "description": "This league is for boys and girls ages 7-14 of all skill levels. It is designed to develop the basic skills of volleyball (passing, setting, serving, blocking, and hitting) and game play. Each week will feature 30 minutes of practice, followed by a game. Games begin during the second class meeting. All participants receive a team shirt.Section 01- Ages 7-10Section 02-Ages 11-14",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "453141-01",
+     "title": "Excel Volleyball Development League (Ages 7-10)",
+     "dates": "11/05/2026 -12/10/2026*",
+     "times": "6:00 pm - 7:00 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "7-10.99",
+     "cost": "$130.00/$143.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464662160"
+    },
+    {
+     "section": "453141-02",
+     "title": "Excel Volleyball Developmental League (Ages 11-14)",
+     "dates": "11/05/2026 -12/10/2026*",
+     "times": "7:10 pm - 8:10 pm",
+     "days": "Th",
+     "location": "The Well",
+     "ages": "11-14.99",
+     "cost": "$130.00/$143.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464662207"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Excel Girls Volleyball League",
+   "activity_number": "453142",
+   "description": "This league is for girls ages 7-14 years old of all skill levels. The focus will be fundamentals, skills, communication, along with developing the team concepts of volleyball and communication. There will be practice on Thursday nights and games on Saturday beginning September 26th. Every girl will receive a team t-shirt. Section 01- Ages 7-10- Meeting Times: Thursdays (6:00-7:00p), Saturdays (11:00a-12:00p)Section 02- Ages 11-14- Meeting Times: Thursdays (7:10-8:10p), Saturdays (12:10p-1:10p)",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "453142-01",
+     "title": "Excel Girls Volleyball League (Ages 7-10)",
+     "dates": "09/24/2026 -10/24/2026",
+     "times": "6:00 pm - 7:00 pm",
+     "days": "Th, Sa",
+     "location": "The Well",
+     "ages": "7-10.99",
+     "cost": "$155.00/$171.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464662254"
+    },
+    {
+     "section": "453142-02",
+     "title": "Excel Girls Volleyball League (Ages 11-14)",
+     "dates": "09/24/2026 -10/24/2026",
+     "times": "7:10 pm - 8:10 pm",
+     "days": "Th, Sa",
+     "location": "The Well",
+     "ages": "11-14.99",
+     "cost": "$155.00/$171.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464662304"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Karate",
+   "activity_number": "4541401",
+   "description": "Participants learn practical skills for self-defense from an array of Arts (Karate, Aikido, Judo, Jujitsu, Iaido). Each class begins with stretching's and warm-ups and then may include drills, kata, sparring, and general self-defense.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4541401-01",
+     "title": "Karate",
+     "dates": "09/30/2026 -11/11/2026",
+     "times": "6:00 pm - 8:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "9-99.99",
+     "cost": "$75.00/$83.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464660630"
+    },
+    {
+     "section": "4541401-02",
+     "title": "Karate",
+     "dates": "10/21/2026 -11/11/2026",
+     "times": "6:00 pm - 8:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "9-99.99",
+     "cost": "$50.00/$55.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464660677"
+    },
+    {
+     "section": "4541401-03",
+     "title": "Karate",
+     "dates": "11/18/2026 -01/06/2027*",
+     "times": "6:00 pm - 8:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "9-99.99",
+     "cost": "$75.00/$83.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464660724"
+    },
+    {
+     "section": "4541401-04",
+     "title": "Karate",
+     "dates": "12/16/2026 -01/06/2027",
+     "times": "6:00 pm - 8:00 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "9-99.99",
+     "cost": "$50.00/$55.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464660771"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Adult Pickleball",
+   "activity_number": "4551402",
+   "description": "In this open-play offering, pickleball players will increase skills, strategy and consistency while playing with a variety of partners and competitors.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4551402-07",
+     "title": "Adult Pickleball",
+     "dates": "11/02/2026 -12/23/2026",
+     "times": "11:00 am - 1:00 pm",
+     "days": "M, W",
+     "location": "The Well",
+     "ages": "16-99.99",
+     "cost": "$30.00/$33.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464662833"
+    },
+    {
+     "section": "4551402-11",
+     "title": "Adult Pickleball",
+     "dates": "11/03/2026 -12/22/2026",
+     "times": "1:00 pm - 3:00 pm",
+     "days": "Tu, Th",
+     "location": "The Well",
+     "ages": "16-99.99",
+     "cost": "$30.00/$33.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464663013"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Beginner Adult Pickleball Clinic",
+   "activity_number": "4551409",
+   "description": "This clinic is designed to provide beginner level players the opportunity to develop and improve by learning the proper technique of hitting a fore hand, backhand, serve, dink. Players will also review the rules of the game and play for about 20 minutes.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4551409-01",
+     "title": "Beginner Adult Pickleball Clinic",
+     "dates": "10/12/2026 -10/12/2026",
+     "times": "12:30 pm - 2:30 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "18-99.99",
+     "cost": "$40.00/$44.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464639959"
+    },
+    {
+     "section": "4551409-02",
+     "title": "Beginner Adult Pickleball Clinic",
+     "dates": "10/28/2026 -10/28/2026",
+     "times": "12:30 pm - 2:30 pm",
+     "days": "W",
+     "location": "The Well",
+     "ages": "18-99.99",
+     "cost": "$40.00/$44.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464639962"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Adult Pickleball Beginner Play & Learn",
+   "activity_number": "4551410",
+   "description": "These sessions are for those new to play or players needing additional instruction. Participants receive instructions on how to score, understand and know the rules, perform a legal serve and provide playing strategies. This is designed as a fun learning experience.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4551410-01",
+     "title": "Adult Pickleball Beginner Play & Learn",
+     "dates": "11/02/2026 -11/16/2026",
+     "times": "12:30 pm - 2:30 pm",
+     "days": "M",
+     "location": "The Well",
+     "ages": "18-99.99",
+     "cost": "$83.00/$92.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464640181"
+    }
+   ]
+  },
+  {
+   "category": "Sports",
+   "name": "Adult Pickleball Intermediate Play & Learn",
+   "activity_number": "4551411",
+   "description": "These sessions are for players who can consistently hit the ball 3-4 times. Instructor will introduce new strategies and shots that increase your skills to level-up your game. This is designed as a competitive fun learning experience.",
+   "category_url": "https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=AR&category=SPORTS&display=detail",
+   "sections": [
+    {
+     "section": "4551411-01",
+     "title": "Adult Pickleball Intermediate Play & Learn",
+     "dates": "11/03/2026 -11/17/2026",
+     "times": "12:30 pm - 2:30 pm",
+     "days": "Tu",
+     "location": "The Well",
+     "ages": "18-99.99",
+     "cost": "$83.00/$92.00",
+     "availability": "Available",
+     "section_url": "https://webtrac.hilliardohio.gov/webtrac/web/iteminfo.html?Module=AR&FMID=464640283"
+    }
+   ]
+  }
+ ]
+}
