@@ -159,7 +159,12 @@ async function crawlWebtracLive() {
       const r = await fetch(WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail&page=' + page, { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
       if (!r.ok) throw new Error('WebTrac HTTP ' + r.status + ' on ' + code + ' page ' + page);
       const html = await r.text();
-      if (page === 1 && !/result-content/.test(html)) throw new Error('WebTrac returned no results markup for ' + code + ' (' + html.length + ' bytes) — likely requires a browser session');
+      if (page === 1 && !/result-content/.test(html)) {
+        // A real WebTrac page with an empty category still carries the search UI; a bot
+        // block or login wall does not.
+        if (/Program Search|Search Results|arwebsearch/i.test(html)) { pagesRead[code] = '0 results'; break; }
+        throw new Error('WebTrac returned no results markup for ' + code + ' (' + html.length + ' bytes) — likely requires a browser session');
+      }
       const got = parseWebtracPage(html, code).filter(p => !seen.has(p.activity_number + '|' + p.name));
       if (!got.length) break;
       got.forEach(p => { seen.add(p.activity_number + '|' + p.name); programs.push(p); });
