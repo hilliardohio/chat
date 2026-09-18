@@ -44,15 +44,25 @@
   .acct b{font-size:12.5px;text-transform:uppercase}
   .burger{display:none;margin-left:auto;background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:4px;padding:6px 10px;font-size:13px}
 
-  /* ---------- hero ---------- */
-  .hero{background:var(--navy);margin:8px auto 0;max-width:1160px;border-radius:2px;min-height:270px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.06),transparent 45%),radial-gradient(circle at 80% 80%,rgba(255,255,255,.05),transparent 40%)}
-  .hero img{width:min(380px,70vw);height:auto;position:relative;filter:brightness(0) invert(1)}
-  .hero p{position:relative;color:#fff;margin:14px 0 0;font-weight:600;text-align:center;padding:0 16px}
-  .hero .inner{padding:34px 16px;text-align:center}
-  .dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:6px}
-  .dots i{width:7px;height:7px;border-radius:50%;background:#7f8fb0;display:block}
-  .dots i:first-child{background:#fff}
+  /* ---------- hero carousel (mirrors the WebTrac splash banner) ---------- */
+  .hero{background:var(--navy);margin:8px auto 0;max-width:1160px;border-radius:2px;height:320px;position:relative;overflow:hidden}
+  .slide{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;display:block;text-decoration:none;color:#fff}
+  .slide.on{opacity:1;z-index:1}
+  .slide img.photo{width:100%;height:100%;object-fit:cover}
+  .slide.logo{display:flex;align-items:center;justify-content:center;text-align:center}
+  .slide.logo::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.06),transparent 45%),radial-gradient(circle at 80% 80%,rgba(255,255,255,.05),transparent 40%)}
+  .slide.logo img{width:min(380px,70vw);height:auto;position:relative;filter:brightness(0) invert(1)}
+  .slide.logo p{position:relative;margin:14px 0 0;font-weight:600;padding:0 16px}
+  .slide .cap{position:absolute;left:0;right:0;bottom:0;padding:40px 28px 30px;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+  .slide .cap b{display:block;font-size:24px;line-height:1.2}
+  .slide .cap span{font-size:14px}
+  .hero .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(74,127,193,.9);color:#fff;font-size:22px;line-height:40px;text-align:center;cursor:pointer;padding:0}
+  .hero .arrow:hover{background:var(--blue)}
+  .hero .prev{left:16px}.hero .next{right:16px}
+  .dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:2}
+  .dots button{width:9px;height:9px;border-radius:50%;background:#7f8fb0;border:0;padding:0;cursor:pointer}
+  .dots button.on{background:#fff}
+  @media (max-width:760px){ .hero{height:220px} .slide .cap b{font-size:18px} .slide .cap{padding:30px 16px 22px} }
 
   /* ---------- Ask Ellie search ---------- */
   .search{margin:10px 0 0}
@@ -233,13 +243,29 @@
   </div>
 </div>
 
-<!-- ================= HERO ================= -->
-<section class="hero" aria-label="Hilliard Recreation and Parks">
-  <div class="inner">
-    <img src="https://recandparks.hilliardohio.gov/wp-content/uploads/2025/09/Recreation-and-Parks-logo.svg" alt="Hilliard Recreation and Parks">
-    <p>25+ parks, a brand-new wellness campus, and endless ways to connect, play, and thrive.</p>
+<!-- ================= HERO (rotating banner) ================= -->
+<section class="hero" id="hero" aria-roledescription="carousel" aria-label="Hilliard Recreation and Parks highlights">
+  <div class="slide logo on" role="group" aria-label="1 of 4">
+    <div>
+      <img src="https://recandparks.hilliardohio.gov/wp-content/uploads/2025/09/Recreation-and-Parks-logo.svg" alt="Hilliard Recreation and Parks">
+      <p>25+ parks, a brand-new wellness campus, and endless ways to connect, play, and thrive.</p>
+    </div>
   </div>
-  <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <a class="slide" role="group" aria-label="2 of 4" href="https://hilliardohio.gov/your-hilliard/" target="_blank" rel="noopener">
+    <img class="photo" src="https://webtrac.hilliardohio.gov/webtrac/static/images/2026/RecTrac%20Photos%20Labeled/Splash%20Page/YourHilliard.webp" alt="" loading="lazy">
+    <div class="cap"><b>Your Hilliard</b><span>Your community program guide — click to learn more →</span></div>
+  </a>
+  <a class="slide" role="group" aria-label="3 of 4" href="https://hilliardohio.gov/annual-events" target="_blank" rel="noopener">
+    <img class="photo" src="https://hilliardohio.gov/wp-content/uploads/elementor/thumbs/C1_Hilliard_July4__HIA3063-rg1a6bdb6c3jz8s2vi8br51nt1rxh9mqupqhdjied4.jpg" alt="" loading="lazy">
+    <div class="cap"><b>Special Events</b><span>See what's happening in Hilliard — click to view all events →</span></div>
+  </a>
+  <a class="slide" role="group" aria-label="4 of 4" href="https://recandparks.hilliardohio.gov/volunteer" target="_blank" rel="noopener">
+    <img class="photo" src="https://hilliardohio.gov/wp-content/uploads/elementor/thumbs/Group-photo-rg1a6g2i4i9zlal9429glluyrz4rjr5ejczwrxbfi0.jpg" alt="" loading="lazy">
+    <div class="cap"><b>Volunteering</b><span>Give back to your community — click to get involved →</span></div>
+  </a>
+  <button type="button" class="arrow prev" id="heroPrev" aria-label="Previous slide">‹</button>
+  <button type="button" class="arrow next" id="heroNext" aria-label="Next slide">›</button>
+  <div class="dots" id="heroDots" aria-hidden="true"></div>
 </section>
 
 <main class="wrap">
@@ -384,7 +410,7 @@ const TILES = [
 const GUIDES = [
   'On this page your name is Ellie, the Hilliard Recreation & Parks assistant. Refer to yourself as Ellie (never Clark). The City’s general assistant, Ask Clark at https://hilliardohio.github.io/chat/, handles everything outside Recreation & Parks.',
   'You are answering on the Hilliard Recreation & Parks program search page. Stay on Recreation & Parks topics: programs, classes, lessons, camps, leagues, aquatics and pools, The Well and Outdoor Aquatics memberships, HSC 55+ / Hilliard Social Center programs, facility, shelter and park rentals, parks and trails, special events, registration, fees and residency (resident vs. non-resident rate). If asked about something outside Recreation & Parks (trash, taxes, permits, zoning, police, council), answer in one sentence that this search covers Recreation & Parks only and point them to Ask Clark, the City’s main assistant, at https://hilliardohio.github.io/chat/ or hilliardohio.gov — do not answer the off-topic question.',
-  'For any question about a program, class, lesson, camp, league or event, ALWAYS call search_programs with the resident’s words before answering, then list what it returns with a "Register" Markdown link for each. Never invent a program, date, fee or availability.',
+  'For any question about a program, class, lesson, camp, league or event, ALWAYS call search_programs with the resident’s words before answering, then list what it returns with a "Register" Markdown link for each. The tool already leaves out Full and Unavailable sections; if it reports hidden sections, mention in one short sentence that some sections are full or not yet open and offer to show them. Never invent a program, date, fee or availability.',
   'Keep answers compact for a search box: lead with the matching programs, one per line, then at most one sentence of guidance. Prefer links on the WebTrac registration site (webtrac.hilliardohio.gov) and recandparks.hilliardohio.gov over general city pages.',
   'Useful links when they fit (copy exactly): Online registration home https://webtrac.hilliardohio.gov/webtrac/web/splash.html ; The Well memberships https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=PM&category=Well&display=Detail ; Outdoor pool memberships https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=PM&category=POOL&display=Detail ; Facility rentals https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&module=FR ; Shelter houses https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&Location=MUNI&module=FR ; The Well rentals https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&Location=Well&module=FR ; Adult leagues https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=LS&display=detail ; Facility calendar https://webtrac.hilliardohio.gov/webtrac/web/search.html?type=EV&module=Event ; Residency verification https://recandparks.hilliardohio.gov/verification-pass-information ; Your Hilliard program guide https://recandparks.hilliardohio.gov/program-guide ; Rec & Parks events https://recandparks.hilliardohio.gov/events ; Rec & Parks contact https://recandparks.hilliardohio.gov/contact-us (614) 876-5200.'
 ];
@@ -418,6 +444,29 @@ const GUIDES = [
     const s = document.createElement('span'); s.textContent = label;
     a.append(img, s); tiles.appendChild(a);
   });
+})();
+
+/* ---------- hero carousel: auto-rotates every 6 s, pauses on hover/focus ---------- */
+(function carousel(){
+  const hero = document.getElementById('hero');
+  const slides = [...hero.querySelectorAll('.slide')];
+  const dots = document.getElementById('heroDots');
+  let i = 0, timer = null;
+  slides.forEach((_, n) => { const d = document.createElement('button'); d.type = 'button'; d.addEventListener('click', () => { go(n); restart(); }); dots.appendChild(d); });
+  function go(n){
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('on', k === i));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+  }
+  function restart(){ clearInterval(timer); timer = setInterval(() => go(i + 1), 6000); }
+  document.getElementById('heroPrev').addEventListener('click', () => { go(i - 1); restart(); });
+  document.getElementById('heroNext').addEventListener('click', () => { go(i + 1); restart(); });
+  hero.addEventListener('mouseenter', () => clearInterval(timer));
+  hero.addEventListener('mouseleave', restart);
+  hero.addEventListener('focusin', () => clearInterval(timer));
+  hero.addEventListener('focusout', restart);
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ go(0); return; }
+  go(0); restart();
 })();
 
 /* ---------- nav (mobile) ---------- */
