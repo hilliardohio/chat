@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hilliard Recreation & Parks — Programs, Memberships & Rentals</title>
+<meta name="description" content="Find and register for City of Hilliard Recreation & Parks programs, memberships, rentals and leagues. Ask Ellie to search the catalog for you.">
+<link rel="icon" href="https://webtrac.hilliardohio.gov/webtrac/static/images/favicons/favicon-144x144.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#172b54; --navy-2:#1d3566; --blue:#4a7fc1; --sky:#4599c0; --teal:#5aa59a;
+    --gold:#f2c94c; --coral:#e07a5f; --bg:#f7f7f7; --card:#ffffff; --ink:#1f2937; --muted:#5b6b7f;
+    --line:#dfe5ec; --radius:6px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font:15px/1.5 "Open Sans",Helvetica,Arial,sans-serif}
+  a{color:var(--blue)}
+  img{display:block;max-width:100%}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 16px}
+  .sr{position:absolute;left:-9999px}
+
+  /* ---------- top bar (WebTrac) ---------- */
+  .topbar{background:var(--navy);color:#fff;position:sticky;top:0;z-index:50}
+  .topbar .wrap{display:flex;align-items:center;gap:8px;min-height:52px}
+  .topbar .logo img{height:26px;width:auto}
+  .nav{display:flex;align-items:center;gap:2px;margin-left:16px;flex:1;flex-wrap:wrap}
+  .nav a, .nav summary{color:#fff;text-decoration:none;font-weight:700;font-size:12.5px;letter-spacing:.02em;text-transform:uppercase;padding:14px 12px;display:block;white-space:nowrap;cursor:pointer;list-style:none}
+  .nav summary::-webkit-details-marker{display:none}
+  .nav summary::after{content:" ▾";font-size:11px}
+  .nav details{position:relative}
+  .nav details[open] summary{background:var(--navy-2)}
+  .menu{position:absolute;left:0;top:100%;background:#fff;color:var(--ink);min-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:0 0 var(--radius) var(--radius);padding:8px 0;z-index:60;display:grid;grid-template-columns:1fr 1fr}
+  .menu.one{grid-template-columns:1fr;min-width:220px}
+  .menu h4{grid-column:1/-1;margin:6px 14px 2px;font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .menu a{color:var(--ink);text-transform:none;font-weight:400;font-size:13.5px;padding:6px 14px}
+  .menu a:hover{background:#eef3f9}
+  .acct{display:flex;gap:22px;margin-left:auto}
+  .acct a{color:#fff;text-decoration:none;font-size:12px;line-height:1.2}
+  .acct small{display:block;color:#b9c4d8;font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+  .acct b{font-size:12.5px;text-transform:uppercase}
+  .burger{display:none;margin-left:auto;background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:4px;padding:6px 10px;font-size:13px}
+
+  /* ---------- hero carousel (mirrors the WebTrac splash banner) ---------- */
+  .hero{background:var(--navy);margin:8px auto 0;max-width:1160px;border-radius:2px;height:320px;position:relative;overflow:hidden}
+  .slide{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;display:block;text-decoration:none;color:#fff}
+  .slide.on{opacity:1;z-index:1}
+  .slide img.photo{width:100%;height:100%;object-fit:cover}
+  .slide.logo{display:flex;align-items:center;justify-content:center;text-align:center}
+  .slide.logo::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.06),transparent 45%),radial-gradient(circle at 80% 80%,rgba(255,255,255,.05),transparent 40%)}
+  .slide.logo img{width:min(380px,70vw);height:auto;position:relative;filter:brightness(0) invert(1)}
+  .slide.logo p{position:relative;margin:14px 0 0;font-weight:600;padding:0 16px}
+  .slide .cap{position:absolute;left:0;right:0;bottom:0;padding:40px 28px 30px;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+  .slide .cap b{display:block;font-size:24px;line-height:1.2}
+  .slide .cap span{font-size:14px}
+  .hero .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(74,127,193,.9);color:#fff;font-size:22px;line-height:40px;text-align:center;cursor:pointer;padding:0}
+  .hero .arrow:hover{background:var(--blue)}
+  .hero .prev{left:16px}.hero .next{right:16px}
+  .dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:2}
+  .dots button{width:9px;height:9px;border-radius:50%;background:#7f8fb0;border:0;padding:0;cursor:pointer}
+  .dots button.on{background:#fff}
+  @media (max-width:760px){ .hero{height:220px} .slide .cap b{font-size:18px} .slide .cap{padding:30px 16px 22px} }
+
+  /* ---------- Ask Ellie search ---------- */
+  .search{margin:10px 0 0}
+  .searchbar{display:flex;gap:0;background:#fff;border:1px solid #9aa9bd;border-radius:4px;overflow:hidden}
+  .searchbar input{flex:1;border:0;padding:12px 14px;font:inherit;font-size:15px;outline:none;min-width:0}
+  .searchbar button{border:0;background:var(--navy);color:#fff;font:inherit;font-weight:700;padding:0 18px;cursor:pointer;white-space:nowrap}
+  .searchbar button:disabled{opacity:.55;cursor:default}
+  .searchbar .askbtn{display:flex;align-items:center;gap:8px;padding:4px 14px 4px 6px;background:var(--navy)}
+  .searchbar .askbtn img{width:40px;height:40px;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#f7d46a}
+  .searchbar .askbtn:hover{background:var(--navy-2)}
+  .chatrow{display:flex;gap:12px;align-items:flex-start;padding:12px 12px 0}
+  .mascot{flex:0 0 200px;display:flex;flex-direction:column;align-items:center;padding-top:4px}
+  .mascot img{width:200px;height:auto;filter:drop-shadow(0 6px 14px rgba(0,0,0,.22))}
+  .mascot .cap{margin-top:8px;font-size:12px;color:var(--muted);text-align:center;line-height:1.4;max-width:190px}
+  .thread{flex:1;min-width:0}
+  @media (max-width:760px){ .chatrow{flex-direction:column;align-items:center} .mascot{flex:0 0 auto;padding:0} .mascot img{width:120px} .mascot .cap{display:none} .searchbar .askbtn span{display:none} }
+  .searchbar input:focus{box-shadow:inset 0 0 0 2px rgba(74,127,193,.35)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+  .two button{border:0;color:#fff;font:inherit;font-weight:700;font-size:13.5px;text-align:left;padding:8px 14px;border-radius:3px;cursor:pointer}
+  .two .dark{background:var(--navy)} .two .light{background:var(--blue)}
+  .two button:hover{filter:brightness(1.08)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chips button{background:#fff;border:1px solid #c9d3df;color:var(--navy);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+  .chips button:hover{background:#eef3f9;border-color:var(--blue)}
+  .hint{font-size:12px;color:var(--muted);margin:6px 2px 0}
+
+  .answers{display:none;background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin-top:10px;overflow:hidden}
+  .answers.open{display:block}
+  .answers header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#eef3f9;border-bottom:1px solid var(--line);font-size:13px}
+  .answers header img{width:26px;height:26px;border-radius:50%;object-fit:cover;background:#dbe4f0}
+  .answers header b{color:var(--navy)}
+  .answers header .sp{flex:1}
+  .answers header button{background:none;border:1px solid #c9d3df;border-radius:4px;font:inherit;font-size:12px;padding:3px 9px;cursor:pointer;color:var(--muted)}
+  .thread{max-height:440px;overflow:auto;padding:0 0 12px}
+  .msg{max-width:88%;padding:9px 13px;border-radius:12px;margin:0 0 10px;white-space:pre-wrap;word-wrap:break-word;line-height:1.5}
+  .msg.user{background:var(--navy);color:#fff;margin-left:auto;border-bottom-right-radius:3px}
+  .msg.bot{background:#f1f4f8;color:var(--ink);border-bottom-left-radius:3px}
+  .msg.bot a{color:#1f5fa8;font-weight:600}
+  .msg .tag{display:inline-block;font-size:11px;background:#dbe8f7;color:#1f4f86;border-radius:4px;padding:1px 6px;margin-bottom:5px}
+  .typing{font-size:13px;color:var(--muted);font-style:italic;margin:0 0 8px}
+  .answers .foot{font-size:11.5px;color:var(--muted);padding:6px 12px 10px;border-top:1px solid var(--line)}
+
+  /* ---------- Trending programs (Rec & Parks site) ---------- */
+  .trending{background:var(--navy);margin-top:20px;padding:28px 0 26px;position:relative;overflow:hidden}
+  .trending::before{content:"";position:absolute;inset:-40%;background:repeating-radial-gradient(circle at 15% 30%,transparent 0 60px,rgba(255,255,255,.035) 60px 62px),repeating-radial-gradient(circle at 85% 70%,transparent 0 70px,rgba(255,255,255,.03) 70px 72px)}
+  .trending .panel{position:relative;background:#fff;border-radius:10px;padding:26px 24px 22px}
+  .bar{display:flex;width:310px;height:6px;margin-bottom:14px}
+  .bar i{flex:1;display:block}.bar i:nth-child(1){background:var(--sky)}.bar i:nth-child(2){background:var(--gold)}.bar i:nth-child(3){background:var(--coral)}
+  .trending h2{font:800 30px/1.15 Montserrat,"Open Sans",sans-serif;color:var(--navy);margin:0 0 18px}
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .card{display:block;text-decoration:none;color:#fff;background:var(--navy);border-radius:8px;overflow:hidden;box-shadow:0 4px 14px rgba(23,43,84,.18);transition:transform .15s,box-shadow .15s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(23,43,84,.3)}
+  .card img{width:100%;aspect-ratio:248/85;object-fit:cover}
+  .card .body{display:grid;grid-template-columns:44px 1fr;gap:6px 10px;padding:12px 12px 14px;align-items:start}
+  .card .mo{font:600 12px Montserrat,sans-serif;color:#c9d4ea;text-align:center;line-height:1.1}
+  .card .day{font:800 24px/1 Montserrat,sans-serif;text-align:center;display:block;margin-top:2px}
+  .card .time{font-size:12px;color:#c9d4ea}
+  .card .title{font:700 13.5px/1.25 Montserrat,sans-serif;text-transform:uppercase;margin:2px 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .where{font:700 11.5px Montserrat,sans-serif;color:#c9d4ea}
+  .card .ask{grid-column:1/-1;margin-top:6px;font-size:11.5px;color:#c9d4ea;text-decoration:underline;background:none;border:0;padding:0;text-align:left;cursor:pointer;font-family:inherit}
+  .card .ask:hover{color:#fff}
+  .more{text-align:center;margin-top:20px}
+  .more a{display:inline-block;background:var(--gold);color:var(--navy);text-decoration:none;font:600 14px Montserrat,sans-serif;padding:10px 20px;border-radius:4px}
+
+  /* ---------- tile grid (WebTrac) ---------- */
+  .section-h{display:flex;justify-content:space-between;align-items:baseline;margin:22px 0 10px}
+  .section-h h2{font-size:20px;color:var(--navy);margin:0}
+  .section-h a{font-size:13px}
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .tile{position:relative;display:block;aspect-ratio:290/190;overflow:hidden;background:#cfd8e3;border-radius:2px}
+  .tile img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+  .tile:hover img{transform:scale(1.04)}
+  .tile span{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 8px;color:#fff;font-weight:700;font-size:13px;background:linear-gradient(transparent,rgba(0,0,0,.72))}
+
+  /* ---------- footer (WebTrac) ---------- */
+  footer{background:var(--navy);color:#fff;margin-top:34px;padding:30px 0 18px}
+  footer .wrap{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
+  footer h4{margin:0 0 8px;font-size:15px}
+  footer .social{display:flex;gap:14px}
+  footer .social a{color:#fff;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.35);border-radius:4px;padding:4px 9px}
+  footer .contact{font-size:13.5px;line-height:1.7}
+  footer .contact a{color:#fff}
+  footer .legal{grid-column:1/-1;text-align:center;font-size:12.5px;margin-top:10px}
+  footer .legal a{color:#fff}
+  .sub{background:var(--bg);text-align:center;font-size:12px;color:var(--muted);padding:12px 16px 20px}
+  .sub a{color:var(--navy)}
+
+  @media (max-width:980px){
+    .cards{grid-template-columns:repeat(3,1fr)}
+    .tiles{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:760px){
+    .nav{display:none;position:absolute;left:0;right:0;top:52px;background:var(--navy);flex-direction:column;align-items:stretch;padding:6px 0 10px;margin:0}
+    .nav.show{display:flex}
+    .nav a,.nav summary{padding:11px 18px}
+    .menu{position:static;box-shadow:none;background:var(--navy-2);color:#fff;grid-template-columns:1fr;border-radius:0}
+    .menu a{color:#fff}.menu h4{color:#b9c4d8}
+    .acct{display:none}
+    .burger{display:block}
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .tiles{grid-template-columns:repeat(2,1fr)}
+    .two{grid-template-columns:1fr}
+    footer .wrap{grid-template-columns:1fr}
+    .trending h2{font-size:24px}
+  }
+  @media (max-width:440px){
+    .cards{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<div class="topbar">
+  <div class="wrap">
+    <a class="logo" href="https://hilliardohio.gov" aria-label="City of Hilliard">
+      <img src="https://webtrac.hilliardohio.gov/webtrac/static/images/Hilliard-Logo-2C-White.png" alt="City of Hilliard">
+    </a>
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="https://webtrac.hilliardohio.gov/webtrac/web/splash.html">Home</a>
+      <details>
+        <summary>Browse</summary>
+        <div class="menu">
+          <h4>Programs by age group</h4>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=AR&type=ADULT">Adult 18+</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?arwebsearch_buttonsearch=yes&display=Detail&search=yes&module=AR&type=ALL">All Ages</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=AR&type=FAMILY">Family</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=AR&type=PRE">Preschool Under 5</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=AR&type=SR">HSC 55+</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=AR&type=TEEN">Teen 13-17</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=AR&type=YOUTH">Youth 6-12</a>
+          <h4>Programs by type</h4>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&module=AR&subtype=ADAPT">Adaptive</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=AQUA&display=detail&module=AR">Aquatics</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=ENRICH&display=Detail&module=AR">Art, Culture &amp; Enrichment</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&keyword=camp&module=AR">Camps</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=FIT&display=detail&module=AR">Fitness</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&module=AR&subtype=WELLFIT">Membership Fitness</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=SEASONAL&display=Detail&module=AR">Seasonal</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=SPORTS&display=Detail&module=AR">Sports</a>
+          <h4>Rentals</h4>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&keyword=birthday&module=AR">Birthday Party Package</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&Location=HSP&module=FR">Hilliard's Station Park</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&Location=MUNI&module=FR">Shelter Houses</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&Location=Well&module=FR">The Well Rentals</a>
+          <h4>Memberships</h4>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=PM">Membership Search</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/renewal.html?module=PM">Membership Renewal</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=HSC&display=Detail&module=PM">Hilliard Social Center (55+)</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=POOL&display=Detail&module=PM">Outdoor Aquatics</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?category=Well&display=Detail&module=PM">The Well Memberships</a>
+          <h4>Leagues</h4>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&module=LS">League Search</a>
+        </div>
+      </details>
+      <details>
+        <summary>Calendars</summary>
+        <div class="menu one">
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?type=EV&module=Event">Facility Calendar</a>
+          <a href="https://webtrac.hilliardohio.gov/webtrac/web/search.html?type=AR&module=Event">Program Calendar</a>
+        </div>
+      </details>
+      <a href="https://www.governmentjobs.com/careers/cityofhilliard" target="_blank" rel="noopener">Join the Team</a>
+      <details>
+        <summary>Am I a Resident?</summary>
+        <div class="menu one">
+          <a href="https://recandparks.hilliardohio.gov/verification-pass-information" target="_blank" rel="noopener">Residency Verification Information</a>
+          <a href="https://maps.hilliardohio.gov/portal/apps/instant/sidebar/index.html?appid=6c7209bfe1864069a25b13f4d5a9c3bf" target="_blank" rel="noopener">Verification Map</a>
+        </div>
+      </details>
+      <a href="https://webtrac.hilliardohio.gov/webtrac/web/contactus.html">Contact Us</a>
+    </nav>
+    <div class="acct">
+      <a href="https://webtrac.hilliardohio.gov/webtrac/web/cart.html"><small>Checkout</small><b>🛒 Cart</b></a>
+      <a href="https://webtrac.hilliardohio.gov/webtrac/web/login.html"><small>My account</small><b>👤 Sign in / Register</b></a>
+    </div>
+  </div>
+</div>
+
+<!-- ================= HERO (rotating banner) ================= -->
+<section class="hero" id="hero" aria-roledescription="carousel" aria-label="Hilliard Recreation and Parks highlights">
+  <div class="slide logo on" role="group" aria-label="1 of 4">
+    <div>
+      <img src="https://recandparks.hilliardohio.gov/wp-content/uploads/2025/09/Recreation-and-Parks-logo.svg" alt="Hilliard Recreation and Parks">
+      <p>25+ parks, a brand-new wellness campus, and endless ways to connect, play, and thrive.</p>
+    </div>
+  </div>
+  <a class="slide" role="group" aria-label="2 of 4" href="https://hilliardohio.gov/your-hilliard/" target="_blank" rel="noopener">
+    <img class="photo" src="https://webtrac.hilliardohio.gov/webtrac/static/images/2026/RecTrac%20Photos%20Labeled/Splash%20Page/YourHilliard.webp" alt="" loading="lazy">
+    <div class="cap"><b>Your Hilliard</b><span>Your community program guide — click to learn more →</span></div>
+  </a>
+  <a class="slide" role="group" aria-label="3 of 4" href="https://hilliardohio.gov/annual-events" target="_blank" rel="noopener">
+    <img class="photo" src="https://hilliardohio.gov/wp-content/uploads/elementor/thumbs/C1_Hilliard_July4__HIA3063-rg1a6bdb6c3jz8s2vi8br51nt1rxh9mqupqhdjied4.jpg" alt="" loading="lazy">
+    <div class="cap"><b>Special Events</b><span>See what's happening in Hilliard — click to view all events →</span></div>
+  </a>
+  <a class="slide" role="group" aria-label="4 of 4" href="https://recandparks.hilliardohio.gov/volunteer" target="_blank" rel="noopener">
+    <img class="photo" src="https://hilliardohio.gov/wp-content/uploads/elementor/thumbs/Group-photo-rg1a6g2i4i9zlal9429glluyrz4rjr5ejczwrxbfi0.jpg" alt="" loading="lazy">
+    <div class="cap"><b>Volunteering</b><span>Give back to your community — click to get involved →</span></div>
+  </a>
+  <button type="button" class="arrow prev" id="heroPrev" aria-label="Previous slide">‹</button>
+  <button type="button" class="arrow next" id="heroNext" aria-label="Next slide">›</button>
+  <div class="dots" id="heroDots" aria-hidden="true"></div>
+</section>
+
+<main class="wrap">
+
+  <!-- ================= ASK CLARK SEARCH ================= -->
+  <section class="search" aria-label="Search programs">
+    <form class="searchbar" id="askForm" autocomplete="off">
+      <label class="sr" for="q">Search programs, activities, facilities</label>
+      <input id="q" type="text" placeholder="Tell us about what classes you are looking for at The Well" maxlength="500">
+      <button type="submit" id="askBtn" class="askbtn" aria-label="Ask Ellie" title="Ask Ellie"><img src="ellie-avatar.png" alt=""><span>Ask Ellie</span></button>
+    </form>
+    <div class="two">
+      <button type="button" class="dark" id="btnWebtrac">Find Programs &amp; Activities</button>
+      <button type="button" class="light" id="btnSite">Search Rec &amp; Parks Website</button>
+    </div>
+    <div class="chips" id="chips">
+      <button type="button" data-q="Swim lessons for kids">Swim lessons</button>
+      <button type="button" data-q="Youth basketball programs">Youth basketball</button>
+      <button type="button" data-q="Yoga and fitness classes at The Well">Yoga &amp; fitness</button>
+      <button type="button" data-q="How much is a membership to The Well and how do I sign up?">The Well membership</button>
+      <button type="button" data-q="How do I rent a park shelter house?">Shelter rental</button>
+      <button type="button" data-q="Programs for adults 55 and over at the Hilliard Social Center">HSC 55+</button>
+      <button type="button" data-q="Youth camps coming up">Youth camps</button>
+      <button type="button" data-q="Am I a resident for the resident rate?">Am I a resident?</button>
+    </div>
+    <p class="hint">Ask Ellie searches the live Recreation &amp; Parks catalog and links you straight to registration. Availability changes daily — the Register link always shows current status.</p>
+
+    <section class="answers" id="answers" aria-live="polite" aria-label="Ask Ellie results">
+      <header>
+        <img src="ellie-avatar.png" alt="" onerror="this.style.display='none'">
+        <b>Ask Ellie</b> <span>· Recreation &amp; Parks search</span>
+        <span class="sp"></span>
+        <button type="button" id="clearBtn">Clear</button>
+        <button type="button" id="closeBtn">Close</button>
+      </header>
+      <div class="chatrow">
+        <aside class="mascot" aria-label="Ellie, the Recreation &amp; Parks assistant">
+          <img src="ellie.png" alt="Ellie, the Hilliard Recreation &amp; Parks assistant, wearing an Ask Ellie sign" width="200">
+          <div class="cap">Ellie searches the live program catalog at The Well and the parks and links you straight to registration.</div>
+        </aside>
+        <div class="thread" id="thread"></div>
+      </div>
+      <div class="foot">Automated informational assistant — program details come from the WebTrac catalog; confirm dates, fees and availability on the registration page. Questions? Hilliard Recreation &amp; Parks, (614) 876-5200.</div>
+    </section>
+  </section>
+
+</main>
+
+<!-- ================= TRENDING PROGRAMS ================= -->
+<section class="trending" aria-labelledby="trendH">
+  <div class="wrap">
+    <div class="panel">
+      <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h2 id="trendH">Trending Programs</h2>
+      <div class="cards" id="cards"></div>
+      <div class="more"><a href="https://recandparks.hilliardohio.gov/events" target="_blank" rel="noopener">View more programs</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUICK LINK TILES ================= -->
+<main class="wrap" aria-label="Browse">
+  <div class="section-h">
+    <h2>Browse Programs, Memberships &amp; Rentals</h2>
+    <a href="https://webtrac.hilliardohio.gov/webtrac/web/splash.html">Go to online registration →</a>
+  </div>
+  <div class="tiles" id="tiles"></div>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="contact">
+      <h4>Hilliard Recreation &amp; Parks</h4>
+      3993 Cosgray Rd, Hilliard, OH 43026<br>
+      <a href="tel:+16148765200">(614) 876-5200</a> · <a href="https://recandparks.hilliardohio.gov/contact-us" target="_blank" rel="noopener">Contact Us</a> · <a href="https://recandparks.hilliardohio.gov/program-guide" target="_blank" rel="noopener">Your Hilliard program guide</a>
+    </div>
+    <div>
+      <h4>Follow us on Social Media</h4>
+      <div class="social">
+        <a href="https://www.facebook.com/HilliardRecandParks" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.linkedin.com/company/city-of-hilliard" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.youtube.com/@cityofhilliard" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://www.instagram.com/hilliardrecandparks" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+    <div class="legal"><a href="https://webtrac.hilliardohio.gov/webtrac/web/splash.html?ccode=REFND&type=privacy">Privacy Statement</a></div>
+  </div>
+</footer>
+<div class="sub">
+  <a href="https://webtrac.hilliardohio.gov/webtrac/web/splash.html?type=browsers">Supported Browsers</a><br>
+  ©2026 <a href="https://www.vermontsystems.com" target="_blank" rel="noopener">Vermont Systems, Inc.</a> · Online registration powered by WebTrac · Search by Ask Ellie, City of Hilliard
+</div>
+
+<script>
+"use strict";
+
+/* ======== CONFIGURE: the Ask Clark / Ask Ellie Cloudflare Worker (same as index.html) ======== */
+const BACKEND = 'https://hilliard-assistant.ralley.workers.dev';
+const WT = 'https://webtrac.hilliardohio.gov/webtrac/web/';
+const RP = 'https://recandparks.hilliardohio.gov/';
+/* ================================================================================= */
+
+/* ---------- Trending Programs (from recandparks.hilliardohio.gov, Sept 18 2026) ----------
+   Each entry mirrors a card on the Rec & Parks home page: the category art is the same
+   image the site uses, and the link goes to the site's event page. Update this list when
+   the site's Trending Programs change. */
+const TRENDING = [
+  { mo:'Sep', day:'19', time:'8:00 am – 12:00 pm', title:'Junior Lifeguard', where:'The Well', cat:'aquatics', slug:'junior-lifeguard-2' },
+  { mo:'Sep', day:'19', time:'10:00 am – 12:30 pm', title:'Veteran’s Day Lunch', where:'', cat:'youth', slug:'veterans-day-lunch-2' },
+  { mo:'Oct', day:'9',  time:'10:30 – 11:15 am', title:'Tai Chi', where:'The Well', cat:'fitness', slug:'tai-chi-3' },
+  { mo:'Oct', day:'10', time:'9:00 am – 12:30 pm', title:'Pause and Restore Mini Wellness Retreat', where:'The Well', cat:'adult', slug:'pause-and-restore-mini-wellness-retreat' },
+  { mo:'Oct', day:'14', time:'7:00 – 8:00 pm', title:'Coming Home to Yourself: Mindfulness & Meditation', where:'The Well', cat:'adult', slug:'coming-home-to-yourself-mindfilness-meditation' },
+  { mo:'Oct', day:'24', time:'1:00 – 3:00 pm', title:'Halloween Carnival', where:'The Well', cat:'family', slug:'halloween-carnival-3' },
+  { mo:'Oct', day:'29', time:'11:30 am – 1:00 pm', title:'Fall Lunch', where:'The Well', cat:'hsc', slug:'fall-lunch' },
+  { mo:'Nov', day:'7',  time:'8:00 am – 12:00 pm', title:'Junior Lifeguard', where:'The Well', cat:'aquatics', slug:'junior-lifeguard-3' },
+  { mo:'Nov', day:'7',  time:'1:00 – 3:00 pm', title:'Future Fashion Stars – Pop Star', where:'The Well', cat:'youth', slug:'future-fashion-stars-pop-star' },
+  { mo:'Nov', day:'13', time:'11:00 am – 1:00 pm', title:'Veteran’s Day Lunch', where:'The Well', cat:'hsc', slug:'veterans-day-lunch' }
+];
+const CAT_IMG = c => RP + 'wp-content/uploads/2026/04/' + c + '-event.webp';
+
+/* ---------- Quick-link tiles (same images and links as the WebTrac splash page) ---------- */
+const SP = 'https://webtrac.hilliardohio.gov/webtrac/static/images/2026/RecTrac%20Photos%20Labeled/Splash%20Page/';
+const TILES = [
+  ['The Well Memberships',         WT + 'search.html?module=PM&category=Well&display=Detail', SP + 'The%20Well%20Memberships%20button%20resized.webp'],
+  ['Outdoor Pool Memberships',     WT + 'search.html?module=PM&category=POOL&display=Detail', SP + 'Outdoor%20Pools%20button%20resized.webp'],
+  ['Facility Calendar',            WT + 'search.html?type=EV&module=Event',                   SP + 'Activity%20Calendar%20button%20resized.webp'],
+  ['Facility Rentals',             WT + 'search.html?display=Detail&module=FR',               SP + 'Rentals%20button.jpg'],
+  ['Adult Programs',               WT + 'search.html?module=AR&type=ADULT&display=detail',    SP + 'Adult%20Programs%20button%20resized.webp'],
+  ['Youth Programs',               WT + 'search.html?module=AR&type=YOUTH&display=detail',    SP + 'Youth%20Programs%20button%20resized.webp'],
+  ['Aquatic Programs',             WT + 'search.html?module=AR&category=AQUA&display=detail', SP + 'Aquatic%20Programs%20button%20resized.webp'],
+  ['HSC 55+ Programs',             WT + 'search.html?module=AR&type=SR&display=detail',       SP + 'HSC%20button%20resized.webp'],
+  ['Fitness & Wellness Programs',  WT + 'search.html?module=AR&category=FIT&display=detail',  SP + 'Fitness%20and%20Wellness%20Programs%20button%20resized.webp'],
+  ['Youth Camps',                  WT + 'search.html?subtype=CAMP&display=Detail&module=AR',  SP + 'Youth%20Camps%20button%20resized.webp'],
+  ['Adult Leagues',                WT + 'search.html?module=LS&display=detail',               SP + 'Adult%20Leagues%20button%20resized.webp'],
+  ['Your Hilliard',                RP + 'program-guide',                                      SP + 'YourHilliard.webp']
+];
+
+/* ---------- Rec & Parks scope for Ask Ellie ----------
+   These go to the Worker as "guides" (priority instructions), so the same backend that
+   powers hilliardohio.github.io/chat answers here with a Recreation & Parks focus. */
+const GUIDES = [
+  'On this page your name is Ellie, the Hilliard Recreation & Parks assistant. Refer to yourself as Ellie (never Clark). The City’s general assistant, Ask Clark at https://hilliardohio.github.io/chat/, handles everything outside Recreation & Parks.',
+  'You are answering on the Hilliard Recreation & Parks program search page. Stay on Recreation & Parks topics: programs, classes, lessons, camps, leagues, aquatics and pools, The Well and Outdoor Aquatics memberships, HSC 55+ / Hilliard Social Center programs, facility, shelter and park rentals, parks and trails, special events, registration, fees and residency (resident vs. non-resident rate). If asked about something outside Recreation & Parks (trash, taxes, permits, zoning, police, council), answer in one sentence that this search covers Recreation & Parks only and point them to Ask Clark, the City’s main assistant, at https://hilliardohio.github.io/chat/ or hilliardohio.gov — do not answer the off-topic question.',
+  'For any question about a program, class, lesson, camp, league or event, ALWAYS call search_programs with the resident’s words before answering, then list what it returns with a "Register" Markdown link for each. The tool already leaves out Full and Unavailable sections; if it reports hidden sections, mention in one short sentence that some sections are full or not yet open and offer to show them. Never invent a program, date, fee or availability.',
+  'Keep answers compact for a search box: lead with the matching programs, one per line, then at most one sentence of guidance. Prefer links on the WebTrac registration site (webtrac.hilliardohio.gov) and recandparks.hilliardohio.gov over general city pages.',
+  'Useful links when they fit (copy exactly): Online registration home https://webtrac.hilliardohio.gov/webtrac/web/splash.html ; The Well memberships https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=PM&category=Well&display=Detail ; Outdoor pool memberships https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=PM&category=POOL&display=Detail ; Facility rentals https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&module=FR ; Shelter houses https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=Detail&Location=MUNI&module=FR ; The Well rentals https://webtrac.hilliardohio.gov/webtrac/web/search.html?display=detail&Location=Well&module=FR ; Adult leagues https://webtrac.hilliardohio.gov/webtrac/web/search.html?module=LS&display=detail ; Facility calendar https://webtrac.hilliardohio.gov/webtrac/web/search.html?type=EV&module=Event ; Residency verification https://recandparks.hilliardohio.gov/verification-pass-information ; Your Hilliard program guide https://recandparks.hilliardohio.gov/program-guide ; Rec & Parks events https://recandparks.hilliardohio.gov/events ; Rec & Parks contact https://recandparks.hilliardohio.gov/contact-us (614) 876-5200.'
+];
+
+/* ---------- render trending cards & tiles ---------- */
+(function renderTrending(){
+  const box = document.getElementById('cards');
+  TRENDING.forEach(t => {
+    const a = document.createElement('a');
+    a.className = 'card'; a.href = RP + 'event/' + t.slug; a.target = '_blank'; a.rel = 'noopener';
+    const img = document.createElement('img'); img.src = CAT_IMG(t.cat); img.alt = t.cat.toUpperCase() + ' program'; img.loading = 'lazy';
+    const body = document.createElement('div'); body.className = 'body';
+    const d = document.createElement('div'); d.className = 'mo'; d.textContent = t.mo;
+    const day = document.createElement('b'); day.className = 'day'; day.textContent = t.day; d.appendChild(day);
+    const r = document.createElement('div');
+    const time = document.createElement('div'); time.className = 'time'; time.textContent = t.time;
+    const title = document.createElement('div'); title.className = 'title'; title.textContent = t.title;
+    const where = document.createElement('div'); where.className = 'where'; where.textContent = t.where;
+    r.append(time, title, where);
+    const ask = document.createElement('button'); ask.type = 'button'; ask.className = 'ask'; ask.textContent = 'Ask Ellie about this →';
+    ask.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); ask_('Tell me about the ' + t.title + ' program on ' + t.mo + ' ' + t.day + (t.where ? ' at ' + t.where : '') + ' — dates, ages, cost and how to register.'); });
+    body.append(d, r, ask);
+    a.append(img, body);
+    box.appendChild(a);
+  });
+  const tiles = document.getElementById('tiles');
+  TILES.forEach(([label, href, src]) => {
+    const a = document.createElement('a'); a.className = 'tile'; a.href = href;
+    if(!href.startsWith(WT)){ a.target = '_blank'; a.rel = 'noopener'; }
+    const img = document.createElement('img'); img.src = src; img.alt = ''; img.loading = 'lazy';
+    const s = document.createElement('span'); s.textContent = label;
+    a.append(img, s); tiles.appendChild(a);
+  });
+})();
+
+/* ---------- hero carousel: auto-rotates every 6 s, pauses on hover/focus ---------- */
+(function carousel(){
+  const hero = document.getElementById('hero');
+  const slides = [...hero.querySelectorAll('.slide')];
+  const dots = document.getElementById('heroDots');
+  let i = 0, timer = null;
+  slides.forEach((_, n) => { const d = document.createElement('button'); d.type = 'button'; d.addEventListener('click', () => { go(n); restart(); }); dots.appendChild(d); });
+  function go(n){
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('on', k === i));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+  }
+  function restart(){ clearInterval(timer); timer = setInterval(() => go(i + 1), 6000); }
+  document.getElementById('heroPrev').addEventListener('click', () => { go(i - 1); restart(); });
+  document.getElementById('heroNext').addEventListener('click', () => { go(i + 1); restart(); });
+  hero.addEventListener('mouseenter', () => clearInterval(timer));
+  hero.addEventListener('mouseleave', restart);
+  hero.addEventListener('focusin', () => clearInterval(timer));
+  hero.addEventListener('focusout', restart);
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ go(0); return; }
+  go(0); restart();
+})();
+
+/* ---------- nav (mobile) ---------- */
+document.getElementById('burger').addEventListener('click', function(){
+  const nav = document.getElementById('nav');
+  const open = nav.classList.toggle('show');
+  this.setAttribute('aria-expanded', String(open));
+});
+document.addEventListener('click', e => {
+  document.querySelectorAll('.nav details[open]').forEach(d => { if(!d.contains(e.target)) d.removeAttribute('open'); });
+});
+
+/* ---------- Ask Ellie chat (same protocol as the Ask Clark index.html) ---------- */
+let history = [];
+const $ = id => document.getElementById(id);
+
+function linkify(text){
+  const frag = document.createDocumentFragment();
+  const md = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  let last = 0, m;
+  while((m = md.exec(text)) !== null){
+    frag.appendChild(autolink(text.slice(last, m.index)));
+    const a = document.createElement('a');
+    a.href = m[2]; a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener';
+    frag.appendChild(a);
+    last = m.index + m[0].length;
+  }
+  frag.appendChild(autolink(text.slice(last)));
+  return frag;
+}
+const URL_RE = /(https?:\/\/[^\s<]+|(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s<]*)?)/gi;
+const URL_TRAIL = /[)\].,;:!?'"]+$/;
+function autolink(text){
+  const frag = document.createDocumentFragment();
+  let last = 0, m;
+  URL_RE.lastIndex = 0;
+  while((m = URL_RE.exec(text)) !== null){
+    frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+    let raw = m[1], trail = '';
+    const tm = raw.match(URL_TRAIL);
+    if(tm){ trail = raw.slice(raw.length - tm[0].length); raw = raw.slice(0, raw.length - tm[0].length); }
+    const a = document.createElement('a');
+    a.href = raw.startsWith('http') ? raw : 'https://' + raw;
+    a.textContent = raw; a.target = '_blank'; a.rel = 'noopener';
+    frag.appendChild(a);
+    if(trail) frag.appendChild(document.createTextNode(trail));
+    last = m.index + m[1].length;
+  }
+  frag.appendChild(document.createTextNode(text.slice(last)));
+  return frag;
+}
+function stripMd(t){
+  // Light clean-up of markdown the model may emit (bold/bullets) so it reads well as text.
+  return String(t).replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^\s*[-*•]\s+/gm, '• ');
+}
+function addMsg(role, text, tagLabel){
+  const wrap = $('thread');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if(tagLabel){
+    const t = document.createElement('span'); t.className = 'tag'; t.textContent = tagLabel;
+    div.appendChild(t); div.appendChild(document.createElement('br'));
+  }
+  div.appendChild(role === 'bot' ? linkify(stripMd(text)) : document.createTextNode(text));
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+function openPanel(){
+  const p = $('answers');
+  if(!p.classList.contains('open')){
+    p.classList.add('open');
+    if(!history.length) addMsg('bot', "Hi! I'm Ellie. Ask me about Hilliard Recreation & Parks programs, memberships, rentals and events — for example “swim lessons for a 4 year old”, “adult pickleball league” or “how do I rent a shelter house?” I search the live registration catalog and link you to sign up.");
+  }
+}
+function ask_(q){ $('q').value = q; send(); }
+
+async function send(){
+  const input = $('q');
+  const q = input.value.trim();
+  if(!q) return;
+  openPanel();
+  input.value = '';
+  addMsg('user', q);
+  const btn = $('askBtn');
+  btn.disabled = true;
+  const typing = document.createElement('div');
+  typing.className = 'typing'; typing.textContent = 'Ellie is searching the program catalog…';
+  $('thread').appendChild(typing);
+  $('thread').scrollTop = $('thread').scrollHeight;
+
+  try{
+    history.push({role:'user', content: q});
+    let messages = history.slice(-12);
+    let answer = null;
+    for(let turn = 0; turn < 4; turn++){
+      const resp = await fetch(BACKEND + '/api/chat', {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({messages, guides: GUIDES, staffToken: ''})
+      });
+      const data = await resp.json();
+      if(!resp.ok){
+        typing.remove();
+        addMsg('bot', 'Sorry — ' + ((data.error && data.error.message) || 'I hit a connection problem. Please try again.'));
+        history.pop();
+        return;
+      }
+      if(data.stop_reason === 'tool_use'){
+        // Program search runs inside the Worker. Only the City's browser-side GIS tools
+        // ever come back to the page, and they aren't part of this search — say so and
+        // let the model finish its answer.
+        messages = messages.concat([{role:'assistant', content: data.content}]);
+        const results = data.content.filter(b => b.type === 'tool_use').map(b => ({
+          type:'tool_result', tool_use_id: b.id,
+          content: JSON.stringify({ unavailable: true, reason: 'This tool is not available on the Recreation & Parks search page; suggest https://hilliardohio.github.io/chat/ instead.' })
+        }));
+        messages = messages.concat([{role:'user', content: results}]);
+        continue;
+      }
+      answer = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+      break;
+    }
+    typing.remove();
+    if(answer === null) answer = 'Sorry — I couldn’t finish that search. Please try again.';
+    history.push({role:'assistant', content: answer});
+    addMsg('bot', answer);
+    postLog(q, answer);
+  }catch(err){
+    typing.remove();
+    addMsg('bot', 'Sorry — I couldn’t reach the answer service. Please check your connection and try again, or call Hilliard Recreation & Parks at (614) 876-5200.');
+    history.pop();
+  }finally{
+    btn.disabled = false;
+    input.focus();
+  }
+}
+function postLog(question, answer){
+  fetch(BACKEND + '/api/log', {
+    method: 'POST', headers: {'content-type': 'application/json'},
+    body: JSON.stringify({question, answer, topic: 'Parks/Rec', source: 'AI (Rec & Parks page)'})
+  }).catch(() => {});
+}
+
+/* ---------- wiring ---------- */
+$('askForm').addEventListener('submit', e => { e.preventDefault(); send(); });
+$('chips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-q]'); if(b) ask_(b.getAttribute('data-q'));
+});
+$('btnWebtrac').addEventListener('click', () => {
+  const q = $('q').value.trim();
+  location.href = q ? WT + 'search.html?module=AR&display=detail&keyword=' + encodeURIComponent(q)
+                    : WT + 'search.html?module=AR&display=detail';
+});
+$('btnSite').addEventListener('click', () => {
+  const q = $('q').value.trim();
+  window.open(q ? RP + '?s=' + encodeURIComponent(q) : RP, '_blank', 'noopener');
+});
+$('clearBtn').addEventListener('click', () => { history = []; $('thread').textContent = ''; $('answers').classList.remove('open'); openPanel(); });
+$('closeBtn').addEventListener('click', () => { $('answers').classList.remove('open'); });
+// ?q=... in the URL runs a search on load (lets other pages deep-link a question here).
+(function(){ const q = new URLSearchParams(location.search).get('q'); if(q){ $('q').value = q; send(); } })();
+</script>
+</body>
+</html>

@@ -205,7 +205,18 @@ function sectionFitsAge(s, age) {
   if (plus) return age >= Number(plus[1]);
   return null;
 }
-async function searchPrograms(env, query) {
+/* Availability as WebTrac labels it: Available, Waitlist, Check Availability, Full,
+   Unavailable (registration not open or closed). By default only sections a resident can
+   act on today are returned; the full/unavailable ones are counted so the answer can say
+   they exist without listing them. */
+function sectionOpen(sec) {
+  const a = String((sec && sec.availability) || '').trim().toLowerCase();
+  if (!a) return true;                       // unknown -> let the register link decide
+  if (a === 'full' || a.startsWith('unavail') || a.startsWith('closed') || a.startsWith('cancel')) return false;
+  return true;                               // available, waitlist, check availability
+}
+async function searchPrograms(env, query, opts) {
+  const includeFull = !!(opts && opts.include_full);
   try {
     const cat = await getPrograms(env);
     const { literal, broad, age } = programTerms(query);
@@ -233,7 +244,19 @@ async function searchPrograms(env, query) {
       }
       return s;
     };
-    const ranked = (cat.programs || []).map(p => ({ p, s: scoreOf(p) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 10);
+    // Score on the whole program (a full class is still the right program), then keep
+    // only the sections the resident can register for unless they asked for everything.
+    let hiddenSections = 0, hiddenPrograms = 0;
+    const visible = (cat.programs || []).map(p => {
+      if (includeFull) return p;
+      const secs = p.sections || [];
+      const open = secs.filter(sectionOpen);
+      hiddenSections += secs.length - open.length;
+      return Object.assign({}, p, { sections: open, all_sections: secs.length });
+    });
+    const scored = visible.map(p => ({ p, s: scoreOf(p) })).filter(x => x.s > 0);
+    if (!includeFull) hiddenPrograms = scored.filter(x => !(x.p.sections || []).length && x.p.all_sections).length;
+    const ranked = scored.filter(x => includeFull || (x.p.sections || []).length).sort((a, b) => b.s - a.s).slice(0, 10);
     const terms = literal.concat(broad);
     const catHit = (cat.categories || []).find(c => terms.some(t => c.name.toLowerCase().includes(t)));
     const ageHit = (cat.age_groups || []).find(a => terms.some(t => a.name.toLowerCase().includes(t)));
@@ -255,7 +278,10 @@ async function searchPrograms(env, query) {
       keyword_search_url: (cat.keyword_search_url_pattern || '').replace('{KEYWORD}', encodeURIComponent(String(query || '').trim())),
       registration_home: cat.registration_home,
       categories: (cat.categories || []).map(c => c.name + ' — ' + c.url),
-      note: 'Availability shown is from the catalog snapshot dated ' + cat.generated + '; the register_url shows live status. Costs are resident / non-resident.'
+      only_open_sections: !includeFull,
+      hidden_full_or_unavailable_sections: includeFull ? 0 : hiddenSections,
+      matching_programs_with_no_open_sections: includeFull ? 0 : hiddenPrograms,
+      note: 'Availability shown is from the catalog snapshot dated ' + cat.generated + '; the register_url shows live status. Costs are resident / non-resident.' + (includeFull ? '' : ' Full and Unavailable sections were left out; call again with include_full=true if the resident wants them.')
     };
   } catch (e) {
     return { unavailable: true, reason: (e && e.message) || 'error', staff_note: 'This is a publishing problem with the catalog file, not a WebTrac outage — see reason.', registration_home: 'https://webtrac.hilliardohio.gov/webtrac/web/splash.html' };
@@ -264,7 +290,10 @@ async function searchPrograms(env, query) {
 const PROGRAMS_TOOL = {
   name: 'search_programs',
   description: 'Search the City of Hilliard Recreation & Parks program catalog (classes, swim lessons, camps, fitness, sports leagues, senior programs at The Well and parks) and return matching programs with dates, times, ages, cost and a direct registration link on the WebTrac registration site. Use for any question about classes, lessons, camps, leagues, programs, or how to register.',
-  input_schema: { type: 'object', properties: { query: { type: 'string', description: 'What they are looking for, e.g. "swim lessons for a 4 year old", "yoga", "youth basketball", "senior programs"' } }, required: ['query'] }
+  input_schema: { type: 'object', properties: {
+    query: { type: 'string', description: 'What they are looking for, e.g. "swim lessons for a 4 year old", "yoga", "youth basketball", "senior programs"' },
+    include_full: { type: 'boolean', description: 'Default false: sections that are Full or Unavailable (registration closed / not open) are left out and only counted. Set true only when the resident explicitly asks to see full, closed or waitlisted-only classes.' }
+  }, required: ['query'] }
 };
 
 /* ---------------- Meeting agendas & minutes (iCompass / CivicWeb Portal) ----------------
@@ -1307,7 +1336,7 @@ RULES:
 - ENGINEERING STANDARDS: For questions about engineering, design, or construction standards — roadway/pavement design, sanitary sewer or water main design, stormwater management/detention, erosion & sediment control, traffic control devices, street lighting, green infrastructure, landscaping/tree standards, development plan submittal requirements, standard construction drawings, or street naming/addressing — use the ENGINEERING DESIGN & CONSTRUCTION STANDARDS section of the knowledge base: briefly summarize what the standards say or which chapter applies, link to the manual, and refer detailed or project-specific questions to the Engineering Division. Note these are technical standards intended for engineers, developers, and contractors.
 - PLANNING & ZONING PROJECTS: when a resident asks about a named project or development, wants a list of applications of a given type (e.g. "list the PUDs in Hilliard", "what conditional-use applications were approved", "rezonings on Cemetery Rd"), or uses a project/case keyword that is not a street address, use the search_projects tool with concise keywords. Present results as a clean list: project name — application type — zoning — location — approval date, followed by the record/case number. IMPORTANT: when a result has a "url", render its record number as a Markdown link using exactly this syntax, including the literal square brackets and parentheses: "[PZ-26-14](THE_URL)" — replacing the label with the result's "record" value and THE_URL with its "url" value copied verbatim. If a result has no "url", write its record number (or case number) as plain text with no link. Never invent a URL for a record. If the result notes more matches than shown, say so and offer to narrow the search. Cite the source as the City's Planning & Zoning application master list and note the official record is on the OpenGov portal / Planning Division. For a specific ADDRESS, still use lookup_zoning; you may use both when a resident asks about a property AND its planning history.
 - MEETINGS, AGENDAS & MINUTES: for any question about a public meeting — what's on an agenda ("tonight", "next week", a date), when a board meets, a case number like BZA-26-31, or what was decided — call lookup_meeting_agenda with the resident's words. Present the meeting as a heading (body — date — time — location), then the substantive agenda items as a list. Skip procedural items (Call to Order, Pledge, Roll Call, Adjournment) unless asked. For each case give the case number, address and a one-line summary of the request from details, and render its staff-report attachment as a Markdown link labeled with the case number (literal brackets and parentheses, URL verbatim). Always link the full agenda (agenda_url) and, if present, the packet and minutes. If source is a snapshot, say the agenda was current as of that date. If a meeting has no agenda published yet, say so and give the meeting link. Never invent an agenda item, case, date or outcome; minutes are the only source for what was decided, and if minutes_url is absent say the minutes aren't posted yet.
-- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Always say availability changes daily and the link shows current status. If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
+- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Always say availability changes daily and the link shows current status. By default the tool leaves out Full and Unavailable sections; if hidden_full_or_unavailable_sections or matching_programs_with_no_open_sections is greater than zero, add one sentence such as "3 other sections are full or not open for registration" and offer to list them (call again with include_full=true if they ask). If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
 - ADDRESS NOT IN CITY LAYER: if a lookup_zoning result's found_via says the address was found in Franklin County Auditor records (not the City parcel layer), tell the resident the address was located in Franklin County Auditor records, state the matched address, give the auditor_link (their parcel page on the Auditor site), and — if tax_district is not CITY OF HILLIARD — explain the property is outside Hilliard's zoning jurisdiction. Always include the auditor_link when a resident asks about property records or when a property isn't in the City layer.
 - ADDRESS NOT FOUND (CRITICAL): if lookup_zoning returns an error with address_not_found, the address does not exist in City or County records. Say so plainly, repeat the address you were given, and — if street_on_file is present — tell the resident the street exists but its addresses run from street_on_file.low to street_on_file.high, so the house number should be re-checked. NEVER produce a zoning letter, a zoning classification, a parcel ID, an owner, a map, or a permit list for a different property, and never call lookup_permits. Do not silently correct the address to a nearby or similar one. Ask the resident to confirm the correct address instead.
 - ZONING CLASSIFICATION SOURCE: the district code, its full name, and the code_url come from the lookup_zoning result. Never state, imply, or guess which ordinance created or rezoned a property's district — that information is not returned by any tool. If a resident asks about the rezoning history of a property, tell them the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) has the rezoning record, and offer to search the Planning & Zoning application master list with search_projects.
@@ -1558,7 +1587,7 @@ export default {
             let out;
             if (b.name === 'lookup_permits') out = await lookupPermitsOpenGov(env, b.input && b.input.address);
             else if (b.name === 'search_projects') out = await searchProjects(env, b.input && b.input.query);
-            else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query);
+            else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query, b.input);
             else if (b.name === 'lookup_meeting_agenda') out = await lookupMeetingAgenda(env, b.input || {});
             // Re-check isStaff here, not just at tool-list assembly: a tool name in the
             // conversation history must never be enough to reach the drafting library.
@@ -1726,16 +1755,13 @@ export default {
           return json(out, 200, env);
         }
         if (a === 'crawl_programs') {
-          // Rebuild the recreation catalog straight from WebTrac and keep it in KV.
-          const t0 = Date.now();
-          try {
-            const data = await crawlWebtracLive();
-            await env.KV.put('programs:data', JSON.stringify(data));
-            await env.KV.delete('programs:cache');
-            return json({ ok: true, ms: Date.now() - t0, programs: data.programs.length, sections: data.programs.reduce((n, p) => n + p.sections.length, 0), pages_read: data.pages_read, generated: data.generated }, 200, env);
-          } catch (e) {
-            return json({ ok: false, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'WebTrac could not be crawled from the Worker; the published programs.json remains in use.' }, 200, env);
-          }
+          // Rebuild the recreation catalog straight from WebTrac and keep it in KV
+          // (the same routine the daily Cron Trigger runs).
+          return json(await refreshProgramCatalog(env, 'admin'), 200, env);
+        }
+        if (a === 'crawl_status') {
+          // When the catalog was last rebuilt, by whom, and whether it worked.
+          return json({ last_crawl: JSON.parse((await env.KV.get('programs:lastCrawl')) || 'null') }, 200, env);
         }
         if (a === 'refresh_caches') {
           // Drop cached copies of the published data files so a freshly uploaded
@@ -1806,8 +1832,36 @@ export default {
       console.log('Worker error', err.stack || err.message);
       return json({ error: { message: 'Server error' } }, 500, env);
     }
+  },
+
+  // Cron Trigger (schedule in wrangler.jsonc "triggers.crons"): rebuilds the recreation
+  // program catalog from WebTrac so availability, new sessions and cancelled classes are
+  // picked up without anyone pressing the /admin button. waitUntil keeps the crawl alive
+  // past the handler's return; the crawl itself takes ~8 s.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(refreshProgramCatalog(env, 'cron ' + (event && event.cron)));
   }
 };
+
+/* Shared by the /admin button and the Cron Trigger: crawl WebTrac, store the catalog in
+   KV, drop the 15-minute cache, and record the outcome so /admin can show it. A failed
+   crawl leaves the previous catalog in place — residents never see an empty catalog. */
+async function refreshProgramCatalog(env, trigger) {
+  const t0 = Date.now();
+  let result;
+  try {
+    const data = await crawlWebtracLive();
+    if (!data.programs || !data.programs.length) throw new Error('crawl returned no programs — kept the previous catalog');
+    await env.KV.put('programs:data', JSON.stringify(data));
+    await env.KV.delete('programs:cache');
+    result = { ok: true, trigger, ms: Date.now() - t0, programs: data.programs.length, sections: data.programs.reduce((n, p) => n + p.sections.length, 0), pages_read: data.pages_read, generated: data.generated };
+  } catch (e) {
+    result = { ok: false, trigger, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'WebTrac could not be crawled from the Worker; the previous catalog (or programs.json) remains in use.' };
+  }
+  try { await env.KV.put('programs:lastCrawl', JSON.stringify(Object.assign({ at: new Date().toISOString() }, result))); } catch (e) {}
+  console.log('program catalog refresh', JSON.stringify(result));
+  return result;
+}
 
 /* ---------------- admin page ---------------- */
 const ADMIN_HTML = `<!DOCTYPE html>
