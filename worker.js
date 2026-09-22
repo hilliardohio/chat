@@ -151,6 +151,53 @@ function parseWebtracPage(html, code) {
   }
   return out;
 }
+/* Adult sports leagues live in WebTrac's separate League Search (module=LS), not in the
+   activity categories, so a category-only crawl never sees "Volleyball Co-Rec Fall".
+   Each league is one block with a single row: Description, Category (e.g. "Co-Rec
+   Volleyball"), Dates, Max Teams, Current Teams, Games, Price Res/Non-Res, Details link. */
+const LEAGUE_CATEGORY = 'Adult Sports Leagues';
+const LEAGUE_URL = WEBTRAC + 'search.html?module=LS&display=detail';
+function parseWebtracLeagues(html) {
+  const out = [];
+  const blocks = html.split(/<div[^>]*class="[^"]*result-content[^"]*"/i).slice(1);
+  for (const blk of blocks) {
+    const h2 = (blk.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i) || [])[1]; if (!h2) continue;
+    const name = htmlText(h2).replace(/\s+/g, ' ').replace(/\s*-\s*\d{4,}\s*$/, '').trim();
+    const desc = htmlText((blk.match(/result-header__description[^>]*>([\s\S]*?)<\/div>/i) || [])[1] || '').replace(/\s+/g, ' ').trim();
+    const sections = [];
+    for (const row of blk.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)) {
+      const tds = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(c => c[1]);
+      if (tds.length < 9) continue;
+      const fm = (row[1].match(/iteminfo\.html\?[^"']*FMID=(\d+)/i) || [])[1];
+      const maxTeams = parseInt(wtCell(tds[4], 'Max Teams'), 10), curTeams = parseInt(wtCell(tds[5], 'Current Teams'), 10);
+      const teams = isNaN(maxTeams) ? '' : (isNaN(curTeams) ? maxTeams + ' teams' : curTeams + ' of ' + maxTeams + ' teams registered');
+      const availability = (!isNaN(maxTeams) && !isNaN(curTeams)) ? (curTeams >= maxTeams ? 'Full' : 'Available') : 'Check availability';
+      const games = wtCell(tds[6], 'Games');
+      sections.push({ section: wtCell(tds[1], 'Description'), title: wtCell(tds[2], 'Category') + (teams ? ' — ' + teams : ''), dates: wtCell(tds[3], 'Dates'), times: '', days: games ? games + ' games' : '', location: '', ages: 'Adult 18+', cost: wtCell(tds[7], 'Price Res/Non-Res') + ' per team', availability, teams_max: isNaN(maxTeams) ? undefined : maxTeams, teams_registered: isNaN(curTeams) ? undefined : curTeams, section_url: fm ? WEBTRAC + 'iteminfo.html?Module=LS&FMID=' + fm : LEAGUE_URL });
+    }
+    const sport = (sections[0] && sections[0].title.split(' — ')[0]) || '';
+    out.push({ category: LEAGUE_CATEGORY, name, activity_number: '', description: (desc || ('Adult sports league: ' + (sport || name) + '.')) + ' Team registration (the price is per team) through the WebTrac League Search; schedules and standings are posted there once play starts.', category_url: LEAGUE_URL, league: true, sections });
+  }
+  return out;
+}
+async function crawlWebtracLeagues(programs, pagesRead) {
+  const seen = new Set();
+  for (let page = 1; page <= 10; page++) {
+    const r = await fetch(LEAGUE_URL + '&page=' + page, { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
+    if (!r.ok) throw new Error('WebTrac HTTP ' + r.status + ' on League Search page ' + page);
+    const html = await r.text();
+    if (page === 1 && !/result-content/.test(html)) {
+      if (/League Search|Search Results|lswebsearch/i.test(html)) { pagesRead.LEAGUES = '0 results'; return; }
+      throw new Error('WebTrac returned no results markup for the League Search (' + html.length + ' bytes)');
+    }
+    const got = parseWebtracLeagues(html).filter(p => !seen.has(p.name));
+    if (!got.length) break;
+    got.forEach(p => { seen.add(p.name); programs.push(p); });
+    const sh = html.match(/Showing results (\d+)-(\d+) of (\d+)/);
+    pagesRead.LEAGUES = page + (sh ? ' (' + sh[3] + ' results)' : '');
+    if (sh && +sh[2] >= +sh[3]) break;
+  }
+}
 async function crawlWebtracLive() {
   const programs = []; const pagesRead = {};
   for (const code of Object.keys(WT_CATS)) {
@@ -173,13 +220,15 @@ async function crawlWebtracLive() {
       if (sh && +sh[2] >= +sh[3]) break;
     }
   }
+  // Leagues are a bonus: a League Search hiccup must not sink the activity catalog.
+  try { await crawlWebtracLeagues(programs, pagesRead); } catch (e) { pagesRead.LEAGUES = 'error: ' + (e && e.message); }
   return {
     generated: new Date().toISOString().slice(0, 10),
     source: 'City of Hilliard Recreation & Parks online registration (RecTrac/WebTrac), crawled live by the assistant',
     note: 'Availability and waitlists change daily — always send people to the section_url or category_url for current status and to register. Cost is resident/non-resident.',
     registration_home: WEBTRAC + 'splash.html',
     keyword_search_url_pattern: WEBTRAC + 'search.html?module=AR&keyword={KEYWORD}&display=detail',
-    categories: Object.entries(WT_CATS).map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail' })),
+    categories: Object.entries(WT_CATS).map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail' })).concat([{ code: 'LS', name: LEAGUE_CATEGORY, url: LEAGUE_URL }]),
     age_groups: [['ADULT', 'Adult 18+'], ['ALL', 'All Ages'], ['FAMILY', 'Family'], ['PRE', 'Preschool Under 5'], ['SR', 'Senior 55+'], ['TEEN', 'Teen 13-17'], ['YOUTH', 'Youth 6-12']].map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&type=' + code + '&display=detail' })),
     programs, pages_read: pagesRead
   };
@@ -187,7 +236,7 @@ async function crawlWebtracLive() {
 const PROGRAM_STOP = new Set(['the','a','an','and','or','for','of','to','in','on','at','is','are','be','class','classes','program','programs','register','registration','sign','up','well','hilliard','any','there','what','when','does','do','have','offer','offers','me','my','i','year','years','old','age','ages','yo','son','daughter']);
 // Synonyms only broaden to a category word, never to a sibling activity — "pickleball"
 // must not surface volleyball just because both are sports.
-const PROGRAM_SYNONYMS = { swim: 'aquatics', swimming: 'aquatics', pool: 'aquatics', lessons: 'aquatics', senior: 'senior', seniors: 'senior', older: 'senior', '55': 'senior', kid: 'youth', kids: 'youth', child: 'youth', children: 'youth', toddler: 'preschool', workout: 'fitness', exercise: 'fitness', gym: 'fitness', league: 'sports', craft: 'enrichment', crafts: 'enrichment', paint: 'enrichment', painting: 'enrichment', pottery: 'enrichment', music: 'enrichment', dance: 'enrichment', summer: 'camp' };
+const PROGRAM_SYNONYMS = { swim: 'aquatics', swimming: 'aquatics', pool: 'aquatics', lessons: 'aquatics', senior: 'senior', seniors: 'senior', older: 'senior', '55': 'senior', kid: 'youth', kids: 'youth', child: 'youth', children: 'youth', toddler: 'preschool', workout: 'fitness', exercise: 'fitness', gym: 'fitness', league: 'leagues', leagues: 'leagues', team: 'leagues', teams: 'leagues', corec: 'co-rec', coed: 'co-rec', craft: 'enrichment', crafts: 'enrichment', paint: 'enrichment', painting: 'enrichment', pottery: 'enrichment', music: 'enrichment', dance: 'enrichment', summer: 'camp' };
 function programTerms(q) {
   const raw = String(q || '').toLowerCase().replace(/(\d+)\s*(?:-|to)\s*(\d+)/g, '$1 $2').split(/[^a-z0-9+]+/).filter(w => w.length > 1 && !PROGRAM_STOP.has(w));
   const literal = raw.filter(w => !/^\d+$/.test(w));
@@ -250,7 +299,9 @@ async function searchPrograms(env, query, opts) {
     const visible = (cat.programs || []).map(p => {
       if (includeFull) return p;
       const secs = p.sections || [];
-      const open = secs.filter(sectionOpen);
+      // Leagues stay listed even when every team slot is taken: residents ask what
+      // leagues exist and when the next season is, and the row says "Full" plainly.
+      const open = p.league ? secs : secs.filter(sectionOpen);
       hiddenSections += secs.length - open.length;
       return Object.assign({}, p, { sections: open, all_sections: secs.length });
     });
@@ -289,7 +340,7 @@ async function searchPrograms(env, query, opts) {
 }
 const PROGRAMS_TOOL = {
   name: 'search_programs',
-  description: 'Search the City of Hilliard Recreation & Parks program catalog (classes, swim lessons, camps, fitness, sports leagues, senior programs at The Well and parks) and return matching programs with dates, times, ages, cost and a direct registration link on the WebTrac registration site. Use for any question about classes, lessons, camps, leagues, programs, or how to register.',
+  description: 'Search the City of Hilliard Recreation & Parks program catalog (classes, swim lessons, camps, fitness, adult sports leagues such as volleyball/basketball/softball, senior programs at The Well and parks) and return matching programs with dates, times, ages, cost and a direct registration link on the WebTrac registration site. Use for any question about classes, lessons, camps, leagues, programs, or how to register.',
   input_schema: { type: 'object', properties: {
     query: { type: 'string', description: 'What they are looking for, e.g. "swim lessons for a 4 year old", "yoga", "youth basketball", "senior programs"' },
     include_full: { type: 'boolean', description: 'Default false: sections that are Full or Unavailable (registration closed / not open) are left out and only counted. Set true only when the resident explicitly asks to see full, closed or waitlisted-only classes.' }
@@ -1336,7 +1387,7 @@ RULES:
 - ENGINEERING STANDARDS: For questions about engineering, design, or construction standards — roadway/pavement design, sanitary sewer or water main design, stormwater management/detention, erosion & sediment control, traffic control devices, street lighting, green infrastructure, landscaping/tree standards, development plan submittal requirements, standard construction drawings, or street naming/addressing — use the ENGINEERING DESIGN & CONSTRUCTION STANDARDS section of the knowledge base: briefly summarize what the standards say or which chapter applies, link to the manual, and refer detailed or project-specific questions to the Engineering Division. Note these are technical standards intended for engineers, developers, and contractors.
 - PLANNING & ZONING PROJECTS: when a resident asks about a named project or development, wants a list of applications of a given type (e.g. "list the PUDs in Hilliard", "what conditional-use applications were approved", "rezonings on Cemetery Rd"), or uses a project/case keyword that is not a street address, use the search_projects tool with concise keywords. Present results as a clean list: project name — application type — zoning — location — approval date, followed by the record/case number. IMPORTANT: when a result has a "url", render its record number as a Markdown link using exactly this syntax, including the literal square brackets and parentheses: "[PZ-26-14](THE_URL)" — replacing the label with the result's "record" value and THE_URL with its "url" value copied verbatim. If a result has no "url", write its record number (or case number) as plain text with no link. Never invent a URL for a record. If the result notes more matches than shown, say so and offer to narrow the search. Cite the source as the City's Planning & Zoning application master list and note the official record is on the OpenGov portal / Planning Division. For a specific ADDRESS, still use lookup_zoning; you may use both when a resident asks about a property AND its planning history.
 - MEETINGS, AGENDAS & MINUTES: for any question about a public meeting — what's on an agenda ("tonight", "next week", a date), when a board meets, a case number like BZA-26-31, or what was decided — call lookup_meeting_agenda with the resident's words. Present the meeting as a heading (body — date — time — location), then the substantive agenda items as a list. Skip procedural items (Call to Order, Pledge, Roll Call, Adjournment) unless asked. For each case give the case number, address and a one-line summary of the request from details, and render its staff-report attachment as a Markdown link labeled with the case number (literal brackets and parentheses, URL verbatim). Always link the full agenda (agenda_url) and, if present, the packet and minutes. If source is a snapshot, say the agenda was current as of that date. If a meeting has no agenda published yet, say so and give the meeting link. Never invent an agenda item, case, date or outcome; minutes are the only source for what was decided, and if minutes_url is absent say the minutes aren't posted yet.
-- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Always say availability changes daily and the link shows current status. By default the tool leaves out Full and Unavailable sections; if hidden_full_or_unavailable_sections or matching_programs_with_no_open_sections is greater than zero, add one sentence such as "3 other sections are full or not open for registration" and offer to list them (call again with include_full=true if they ask). If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
+- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Adult sports leagues (category "Adult Sports Leagues", e.g. Volleyball Co-Rec Fall) come from the same tool: for those the cost is PER TEAM, the section title shows how many teams are registered of the maximum, and the Register link goes to the league page on WebTrac where a team captain registers the team — say so. Always say availability changes daily and the link shows current status. By default the tool leaves out Full and Unavailable sections; if hidden_full_or_unavailable_sections or matching_programs_with_no_open_sections is greater than zero, add one sentence such as "3 other sections are full or not open for registration" and offer to list them (call again with include_full=true if they ask). If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
 - ADDRESS NOT IN CITY LAYER: if a lookup_zoning result's found_via says the address was found in Franklin County Auditor records (not the City parcel layer), tell the resident the address was located in Franklin County Auditor records, state the matched address, give the auditor_link (their parcel page on the Auditor site), and — if tax_district is not CITY OF HILLIARD — explain the property is outside Hilliard's zoning jurisdiction. Always include the auditor_link when a resident asks about property records or when a property isn't in the City layer.
 - ADDRESS NOT FOUND (CRITICAL): if lookup_zoning returns an error with address_not_found, the address does not exist in City or County records. Say so plainly, repeat the address you were given, and — if street_on_file is present — tell the resident the street exists but its addresses run from street_on_file.low to street_on_file.high, so the house number should be re-checked. NEVER produce a zoning letter, a zoning classification, a parcel ID, an owner, a map, or a permit list for a different property, and never call lookup_permits. Do not silently correct the address to a nearby or similar one. Ask the resident to confirm the correct address instead.
 - ZONING CLASSIFICATION SOURCE: the district code, its full name, and the code_url come from the lookup_zoning result. Never state, imply, or guess which ordinance created or rezoned a property's district — that information is not returned by any tool. If a resident asks about the rezoning history of a property, tell them the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) has the rezoning record, and offer to search the Planning & Zoning application master list with search_projects.
