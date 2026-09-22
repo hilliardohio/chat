@@ -35,6 +35,6 @@
   // Only the browser origin allowed to call the API. GLOBAL_DAILY_LIMIT and IP_HOURLY_LIMIT
   // are deliberately absent -- they are unset on the live Worker, so the code defaults apply.
   "vars": {
-    "ALLOWED_ORIGIN": "https://hilliardohio.github.io,https://recandparks.hilliardohio.gov"
+    "ALLOWED_ORIGIN": "https://hilliardohio.github.io,https://recandparks.hilliardohio.gov,https://www.ralley.us,https://ralley.us"
   }
 }
