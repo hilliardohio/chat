@@ -1386,6 +1386,14 @@ ${kb}`;
 }
 
 /* ---------------- helpers ---------------- */
+function allowOriginFor(request, env) {
+  const list = String(env.ALLOWED_ORIGIN || '*').split(',').map(x => x.trim().replace(/\/$/, '')).filter(Boolean);
+  if (list.length < 2) return env;
+  const origin = (request.headers.get('Origin') || '').replace(/\/$/, '');
+  const pick = list.includes(origin) ? origin : list[0];
+  // A derived object: bindings (KV, secrets) still resolve through the prototype.
+  return Object.assign(Object.create(env), { ALLOWED_ORIGIN: pick });
+}
 function corsHeaders(env) {
   return {
     'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*',
@@ -1434,6 +1442,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
+    // ALLOWED_ORIGIN may list several origins separated by commas (GitHub Pages plus the
+    // Rec & Parks WordPress site). Echo back the one that matches this request; a request
+    // from anywhere else gets the first entry, which the browser will then refuse.
+    env = allowOriginFor(request, env);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(env) });
 
@@ -1609,6 +1621,18 @@ export default {
           convo = convo.concat([{ role: 'user', content: results }]);
         }
         return json(last, 200, env);
+      }
+
+      if (path === '/api/programs' && request.method === 'GET') {
+        // Public, read-only copy of the recreation catalog (the same data search_programs
+        // uses) so the Rec & Parks WordPress site can build program pages from it.
+        try {
+          const cat = await getPrograms(env);
+          let last = null; try { last = JSON.parse((await env.KV.get('programs:lastCrawl')) || 'null'); } catch (e) {}
+          return new Response(JSON.stringify(Object.assign({}, cat, { last_crawl: last })), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=900', ...corsHeaders(env) } });
+        } catch (e) {
+          return json({ unavailable: true, reason: (e && e.message) || 'error' }, 503, env);
+        }
       }
 
       if (path === '/api/log' && request.method === 'POST') {
