@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Permit Assistant · City of Hilliard, OH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  /* Matches the OpenGov public portal (hilliardoh.portal.opengov.com): DM Sans, white bar,
+     photo hero with a centered search box, white cards on a light page. */
+  :root{
+    --ink:#1f2933; --muted:#5f6b76; --line:#e3e7eb; --page:#f5f7f9; --card:#fff;
+    --brand:#1d4f91; --brand-dark:#153a6b; --accent:#2e7d4f; --soft:#eef3fa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"DM Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--page);font-size:15px;line-height:1.5}
+  a{color:var(--brand)}
+  .bar{background:#fff;border-bottom:1px solid var(--line)}
+  .bar .in{max-width:1080px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:12px}
+  .bar img{width:34px;height:34px;border-radius:50%}
+  .bar .org{font-size:17px;font-weight:500}
+  .bar nav{margin-left:auto;display:flex;gap:18px;font-size:14px}
+  .bar nav a{color:var(--ink);text-decoration:none}
+  .bar nav a:hover{color:var(--brand)}
+  .hero{background:linear-gradient(rgba(16,36,64,.62),rgba(16,36,64,.62)),url('https://viewpointcloud.blob.core.windows.net/profile-pictures/old_hilliard_arch_Fri_Aug_06_2021_13:28:19_GMT+0000_(Greenwich_Mean_Time).jpg') center/cover,#1d4f91;color:#fff;text-align:center;padding:54px 20px 60px}
+  .hero h1{font-size:34px;font-weight:700;letter-spacing:-.3px}
+  .hero p{margin-top:6px;font-size:16px;opacity:.95}
+  .ask{max-width:640px;margin:22px auto 0;display:flex;background:#fff;border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.18);overflow:hidden}
+  .ask input{flex:1;border:0;padding:15px 16px;font:inherit;font-size:15.5px;color:var(--ink);outline:none;min-width:0}
+  .ask button{border:0;background:var(--accent);color:#fff;font:inherit;font-weight:700;padding:0 22px;cursor:pointer}
+  .ask button:disabled{opacity:.6;cursor:default}
+  .chips{max-width:760px;margin:14px auto 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .chips button{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:16px;padding:5px 13px;font:inherit;font-size:13px;cursor:pointer}
+  .chips button:hover{background:rgba(255,255,255,.28)}
+  main{max-width:1080px;margin:0 auto;padding:26px 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:8px;display:none}
+  .panel.open{display:block}
+  .panel .hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+  .panel .hd img{width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--soft)}
+  .panel .hd b{font-size:15px}
+  .panel .hd span{font-size:12.5px;color:var(--muted)}
+  .panel .hd button{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 10px;font:inherit;font-size:12.5px;cursor:pointer;color:var(--muted)}
+  #thread{padding:14px 16px;max-height:62vh;overflow-y:auto}
+  .msg{margin:8px 0;padding:11px 14px;border-radius:10px;white-space:pre-wrap;word-wrap:break-word;max-width:86%}
+  .msg.user{background:var(--brand);color:#fff;margin-left:auto}
+  .msg.bot{background:var(--soft);border:1px solid #dde6f2}
+  .msg.bot a{font-weight:600}
+  .typing{color:var(--muted);font-style:italic;font-size:13.5px;padding:6px 2px}
+  .follow{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+  .follow input{flex:1;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font:inherit;min-width:0}
+  .follow button{border:0;background:var(--accent);color:#fff;border-radius:6px;font:inherit;font-weight:700;padding:0 18px;cursor:pointer}
+  .note{font-size:12px;color:var(--muted);padding:0 16px 12px}
+  h2.sec{font-size:19px;font-weight:700;margin:30px 0 4px}
+  p.sub{color:var(--muted);margin-bottom:14px}
+  .deps{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .dep{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px 16px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:6px}
+  .dep b{color:var(--brand);font-weight:700}
+  .dep span{font-size:13px;color:var(--muted)}
+  .dep:hover{border-color:var(--brand)}
+  footer{text-align:center;font-size:12px;color:var(--muted);padding:10px 20px 30px}
+  /* ?embed=1 — just the assistant, for an iframe on a portal page */
+  body.embed{background:transparent}
+  body.embed .bar, body.embed .hero, body.embed .browse, body.embed footer{display:none}
+  body.embed main{padding:0;max-width:none}
+  body.embed .panel{display:block}
+  body.embed #thread{max-height:none;min-height:120px}
+  @media (max-width:640px){ .hero h1{font-size:26px} .bar nav{display:none} .msg{max-width:96%} }
+</style>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <img src="https://viewpointcloud.blob.core.windows.net/profile-pictures/Hilliard-logo-circle_Fri_Apr_26_2024_17:58:58_GMT+0000_(Coordinated_Universal_Time).jpg" alt="">
+  <div class="org">City of Hilliard, OH</div>
+  <nav>
+    <a href="https://hilliardoh.portal.opengov.com/" target="_top">Permit Portal</a>
+    <a href="https://hilliardoh.portal.opengov.com/search" target="_top">Search Records</a>
+    <a href="https://hilliardohio.github.io/chat/" target="_top">Ask Clark</a>
+  </nav>
+</div></div>
+
+<section class="hero">
+  <h1>What are you planning to do?</h1>
+  <p>Describe your project and Clark will point you to the right application, the zoning rules that apply, and what to submit.</p>
+  <form class="ask" id="askForm" autocomplete="off">
+    <input id="q" type="text" placeholder="e.g. “build a 12×16 deck behind my house” or “open a coffee shop on Main St”" aria-label="Describe your project">
+    <button id="askBtn" type="submit">Ask</button>
+  </form>
+  <div class="chips" id="chips">
+    <button type="button" data-q="I want to build a deck on the back of my house.">Deck</button>
+    <button type="button" data-q="I want to put up a 6 foot privacy fence in my back yard.">Fence</button>
+    <button type="button" data-q="I want to put a shed in my back yard.">Shed</button>
+    <button type="button" data-q="I want to install an in-ground swimming pool.">Pool</button>
+    <button type="button" data-q="I want to put solar panels on my roof.">Solar</button>
+    <button type="button" data-q="I'm replacing my furnace and air conditioner.">Furnace / AC</button>
+    <button type="button" data-q="I want to widen my driveway.">Driveway</button>
+    <button type="button" data-q="I want to open a business in an existing storefront.">Open a business</button>
+    <button type="button" data-q="I want to put up a sign for my business.">Sign</button>
+    <button type="button" data-q="I want to run a small business out of my home.">Home business</button>
+  </div>
+</section>
+
+<main>
+  <div class="panel" id="panel" aria-live="polite">
+    <div class="hd">
+      <img src="clark.png" alt="">
+      <div><b>Ask Clark</b><br><span>Permit &amp; zoning assistant · answers from the City’s portal pages and zoning code</span></div>
+      <button type="button" id="resetBtn">New question</button>
+    </div>
+    <div id="thread"></div>
+    <form class="follow" id="followForm" autocomplete="off">
+      <input id="q2" type="text" placeholder="Ask a follow-up, or add your address for district-specific rules…" aria-label="Follow-up question">
+      <button id="askBtn2" type="submit">Send</button>
+    </form>
+    <div class="note">Clark gives general guidance from the City’s published requirements and the Planning &amp; Zoning Code. Staff review decides every application — an application is not a permit.</div>
+  </div>
+
+  <div class="browse">
+    <h2 class="sec">Discover Online Services</h2>
+    <p class="sub">Or browse applications by department on the permit portal.</p>
+    <div class="deps" id="deps"></div>
+  </div>
+</main>
+<footer>City of Hilliard · 3800 Municipal Way · (614) 876-7361 · Portal powered by OpenGov · Assistant by Ask Clark</footer>
+
+<script>
+"use strict";
+const BACKEND = 'https://hilliard-assistant.ralley.workers.dev';
+const OG_API = 'https://api-east.viewpointcloud.com/v2/hilliardoh/';
+const PARAMS = new URLSearchParams(location.search);
+const EMBED = PARAMS.get('embed') === '1';
+const TYPE_ID = Number(PARAMS.get('type')) || null;
+if(EMBED) document.body.classList.add('embed');
+const $ = id => document.getElementById(id);
+let history = [];
+let typeName = '';
+
+/* ---------- Portal scope for Clark ----------
+   Sent to the Worker as "guides" (priority instructions): the same backend as
+   hilliardohio.github.io/chat answers here with a permits-and-zoning focus. */
+function guides(){
+  const g = [
+    'You are answering on the City of Hilliard permit portal assistant (next to hilliardoh.portal.opengov.com). Your name is Clark. Focus on permits, applications, zoning and building rules, inspections, contractor registration and code complaints. For other City topics give a one-sentence answer or point to Ask Clark at https://hilliardohio.github.io/chat/.',
+    'For any project or activity, follow the PROJECTS, PERMITS & HOW TO PROCEED rule exactly: call find_permit_type AND search_zoning_code in the same turn before answering; add lookup_zoning when an address is given. Never name an application without its apply link from find_permit_type.',
+    'Layout for this page: start with one line "You will need:" followed by the applications as "- [Name](apply_url) — what it covers"; then "Rules to know:" with 2-5 short dashes each ending in the code citation link; then "What to submit:" and "Fee:" from the splash page; then one line on next steps (variance/BZA if their plan exceeds a rule) and the contact. Keep it under about 220 words unless they ask for detail.',
+    'If the answer depends on the zoning district (setbacks, lot coverage, allowed uses) and no address was given, give the general rules and end by inviting them to add their street address for district-specific rules.'
+  ];
+  if(TYPE_ID) g.push('The resident opened this assistant from the portal page for record type ' + TYPE_ID + (typeName ? ' (' + typeName + ')' : '') + '. When they ask about "this permit" or "this application", call find_permit_type with record_type_id ' + TYPE_ID + '.');
+  return g;
+}
+
+/* ---------- department tiles (live from the same public API the portal uses) ---------- */
+(async function departments(){
+  if(EMBED) return;
+  try{
+    const [cats, rts] = await Promise.all([fetch(OG_API + 'categories').then(r => r.json()), fetch(OG_API + 'record_types').then(r => r.json())]);
+    const byCat = {};
+    (rts.data || []).map(x => x.attributes).filter(a => a.isEnabled).forEach(a => { (byCat[a.categoryID] = byCat[a.categoryID] || []).push(a.name.replace(/\s+/g, ' ').trim()); });
+    const box = $('deps');
+    (cats.data || []).map(c => c.attributes).filter(c => c.isEnabled).sort((a, b) => (a.orderNo || 99) - (b.orderNo || 99)).forEach(c => {
+      const a = document.createElement('a'); a.className = 'dep'; a.target = '_top';
+      a.href = 'https://hilliardoh.portal.opengov.com/categories/' + c.categoryID;
+      const b = document.createElement('b'); b.textContent = c.name.trim();
+      const s = document.createElement('span'); const list = byCat[c.categoryID] || [];
+      s.textContent = list.slice(0, 2).join(', ') + (list.length > 2 ? ' + ' + (list.length - 2) + ' more' : '');
+      a.append(b, s); box.appendChild(a);
+    });
+  }catch(e){ document.querySelector('.browse').style.display = 'none'; }
+})();
+
+/* ---------- GIS zoning lookup (runs in the visitor's browser) ---------- */
+const GIS = {
+  parcels: 'https://maps.hilliardohio.gov/arcgis/rest/services/FranklinCoImports/Franklin_County_Parcel_Features/FeatureServer/1/query',
+  zoning:  'https://maps.hilliardohio.gov/arcgis/rest/services/Hosted/Zoning_Districts_Public_View/FeatureServer/10/query',
+  // Franklin County's live parcel service (authoritative & current — the City layer above
+  // is a periodic import that lags recent sales/ownership changes). Used to refresh the
+  // property details (owner, last transfer, acreage, year built) by parcel ID.
+  countyParcels: 'https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0/query'
+};
+// Pull the current Franklin County Auditor attributes for a parcel id (or null on failure).
+async function countyParcelDetails(pid){
+  if(!pid) return null;
+  try{
+    const d = await gisQuery(GIS.countyParcels, {
+      where: "PARCELID='" + String(pid).replace(/'/g,"''") + "'",
+      outFields: 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,ACRES',
+      returnGeometry: 'false', resultRecordCount: '1'
+    });
+    return (d.features && d.features[0]) ? d.features[0].attributes : null;
+  }catch(e){ return null; }
+}
+// Route a GIS URL through the Worker (used when the visitor's network/browser blocks the
+// direct call — corporate DNS/TLS filters, VPNs, privacy extensions).
+function gisViaProxy(fullUrl){ return BACKEND + '/api/gis?u=' + encodeURIComponent(fullUrl); }
+async function gisQuery(url, params){
+  const full = url + '?' + new URLSearchParams({f:'json', ...params});
+  let d = null, directErr = null;
+  try{
+    const r = await fetch(full);
+    if(!r.ok) throw new Error('GIS server returned ' + r.status);
+    d = await r.json();
+  }catch(e){
+    // Direct call blocked/failed — retry server-side through the Worker.
+    directErr = e;
+    try{
+      const r2 = await fetch(gisViaProxy(full));
+      if(!r2.ok) throw new Error('GIS proxy returned ' + r2.status);
+      d = await r2.json();
+    }catch(e2){
+      throw new Error('could not reach the City GIS service from this network (' + (directErr.message || 'blocked') + ')');
+    }
+  }
+  if(d && d.error) throw new Error('GIS: ' + (d.error.message || JSON.stringify(d.error)));
+  return d;
+}
+function normalizeAddress(addr){
+  const s = String(addr || '').toUpperCase().replace(/[.,#]/g,' ')
+    .replace(/\b(HILLIARD|COLUMBUS|OHIO|OH|USA)\b.*$/,'')
+    .replace(/\s+/g,' ').trim();
+  // Strip a ZIP code, but NEVER the leading house number: a 5-digit house number such as
+  // "47800 Lacon" was being erased as if it were a ZIP, which silently turned a street
+  // address into a bare street name and let the geocoder match a different street.
+  const lead = (s.match(/^\d+\s*/) || [''])[0];
+  return (lead + s.slice(lead.length).replace(/\b\d{5}(-\d{4})?\b/g, '')).replace(/\s+/g,' ').trim();
+}
+const PARCEL_FIELDS = 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,Shape__Area';
+const PARCEL_SUFFIX = ['RD','ROAD','DR','DRIVE','ST','STREET','AVE','AVENUE','AV','LN','LANE','CT','COURT','BLVD','BOULEVARD','WAY','WY','CIR','CIRCLE','PL','PLACE','PKWY','PARKWAY','SQ','SQUARE','TRL','TRAIL','LOOP','RUN','XING','CROSSING'];
+function addressPatterns(address){
+  const norm = normalizeAddress(String(address || ''));
+  const m = norm.match(/^(\d+)\s+(.+)$/);
+  if(!m) return null;
+  const num = m[1], words = m[2].split(' ');
+  const core = words.filter(w => !PARCEL_SUFFIX.includes(w)).join(' ');
+  return [...new Set([num+' '+words.join(' '), num+' '+core, num+' '+words[0]])];
+}
+// The street portion of an address, normalized for comparison (suffix words dropped).
+// "47800 LACON RD" -> "LACON"; used to reject geocoder matches on a different street.
+function streetKeyOf(address){
+  const norm = normalizeAddress(String(address || ''));
+  const m = norm.match(/^(\d+)\s+(.+)$/);
+  const words = (m ? m[2] : norm).split(' ').filter(w => w && !PARCEL_SUFFIX.includes(w)
+    && !['N','S','E','W','NORTH','SOUTH','EAST','WEST'].includes(w));
+  return words.join(' ');
+}
+// When a house number isn't on file, report the numbers that DO exist on that street so the
+// resident can correct a typo — instead of silently matching a parcel somewhere else.
+async function streetNumberRange(address){
+  const street = streetKeyOf(address);
+  if(!street || street.length < 3) return null;
+  try{
+    const d = await gisQuery(GIS.parcels, {
+      where: "SITEADDRESS LIKE '% " + street.replace(/'/g,"''") + "%'",
+      outFields: 'SITEADDRESS', returnGeometry: 'false', resultRecordCount: '1000'
+    });
+    const addrs = (d.features || []).map(f => String(f.attributes.SITEADDRESS || ''))
+      .filter(a => streetKeyOf(a) === street);
+    if(!addrs.length) return null;
+    const nums = addrs.map(a => parseInt(a, 10)).filter(n => !isNaN(n));
+    const name = (addrs[0].match(/^\d+\s+(.+)$/) || [,addrs[0]])[1];
+    return nums.length ? { street: name, low: Math.min(...nums), high: Math.max(...nums), count: addrs.length } : null;
+  }catch(e){ return null; }
+}
+// Match a parcel from an address string that has a house number (City parcel layer).
+async function parcelByAddress(address){
+  const patterns = addressPatterns(address);
+  if(!patterns) return null;
+  for(const pat of patterns){
+    const d = await gisQuery(GIS.parcels, {
+      where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
+      outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', outSR: '4326', resultRecordCount: '5'
+    });
+    if(d.features && d.features.length) return d.features;
+  }
+  return null;
+}
+// Match a parcel by a lon/lat point (WGS84) via spatial intersect (City parcel layer).
+async function parcelByPoint(lon, lat){
+  const d = await gisQuery(GIS.parcels, {
+    geometry: lon+','+lat, geometryType:'esriGeometryPoint', inSR:'4326', spatialRel:'esriSpatialRelIntersects',
+    outFields: PARCEL_FIELDS, returnCentroid: 'true', returnGeometry: 'false', outSR: '4326', resultRecordCount: '3'
+  });
+  return (d.features && d.features.length) ? d.features : null;
+}
+// Franklin County's live parcel layer (county-wide, authoritative) as a fallback when the
+// City's import has no match. It doesn't return centroids, so compute one from the geometry.
+const COUNTY_FIELDS = 'PARCELID,SITEADDRESS,CVTTXDSCRP,SCHLDSCRP,OWNERNME1,OWNERNME2,PRPRTYDSCRP3,RESYRBLT,SALEDATE,SALEPRICE,PCLASS,CNVYNAME,HOMSTD,ACRES';
+function withCentroid(feats){
+  return (feats || []).map(f => {
+    if(!f.centroid && f.geometry && f.geometry.rings && f.geometry.rings.length){
+      let xs = 0, ys = 0, n = 0;
+      for(const ring of f.geometry.rings) for(const pt of ring){ xs += pt[0]; ys += pt[1]; n++; }
+      f.centroid = n ? { x: xs/n, y: ys/n } : null;
+    }
+    return f;
+  });
+}
+async function countyParcelByAddress(address){
+  const patterns = addressPatterns(address);
+  if(!patterns) return null;
+  for(const pat of patterns){
+    try{
+      const d = await gisQuery(GIS.countyParcels, {
+        where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
+        outFields: COUNTY_FIELDS, returnGeometry: 'true', outSR: '4326', resultRecordCount: '5'
+      });
+      if(d.features && d.features.length) return withCentroid(d.features);
+    }catch(e){}
+  }
+  return null;
+}
+async function countyParcelByPoint(lon, lat){
+  try{
+    const d = await gisQuery(GIS.countyParcels, {
+      geometry: lon+','+lat, geometryType:'esriGeometryPoint', inSR:'4326', spatialRel:'esriSpatialRelIntersects',
+      outFields: COUNTY_FIELDS, returnGeometry: 'true', outSR: '4326', resultRecordCount: '3'
+    });
+    return (d.features && d.features.length) ? withCentroid(d.features) : null;
+  }catch(e){ return null; }
+}
+/* Owner-of-record lookup for code enforcement notices (staff).
+   Two fields in the county record look like a mailing address and only one of them is:
+     MAILNME1/MAILNME2 — the OWNER's mailing address. This is the one a legal notice goes to.
+     PSTLADDRES        — where the TAX BILL goes, which for any mortgaged property is the
+                         escrow servicer (CoreLogic in Coppell, Texas, over and over).
+   Mailing a Chapter 917 notice to the servicer would be void service, so PSTLADDRES is
+   never used here. */
+const NOTICE_FIELDS = 'PARCELID,SITEADDRESS,OWNERNME1,OWNERNME2,MAILNME1,MAILNME2,CLASSDSCRP,RENTAL,ZIPCD';
+const ENTITY_RE = /\b(LLC|L\.?L\.?C|LTD|INC|CORP|CORPORATION|COMPANY|CO|LP|LLP|TRUST|TRUSTEE|PROPERTIES|HOLDINGS|RENTALS|INVESTMENTS|PARTNERS|PARTNERSHIP|ENTERPRISES|GROUP|ASSOCIATES|BANK|CHURCH|BOARD)\b/i;
+const RESIDENTIAL_CLASS_RE = /SINGLE FAMILY|TWO FAMILY|THREE FAMILY|CONDOMINIUM|CONDO|VACANT RES|RESIDENTIAL/i;
+function streetOnly(s){
+  return String(s || '').toUpperCase().replace(/[.,#]/g,' ').replace(/\s+/g,' ').trim();
+}
+async function lookupOwnerForNotice(address){
+  try{
+    const patterns = addressPatterns(address);
+    if(!patterns) return { error: 'Not a street address: "' + address + '". Give a house number and street.' };
+    let feats = null;
+    for(const pat of patterns){
+      const d = await gisQuery(GIS.countyParcels, {
+        where: "SITEADDRESS LIKE '" + pat.replace(/'/g,"''") + "%'",
+        outFields: NOTICE_FIELDS, returnGeometry: 'false', resultRecordCount: '5'
+      });
+      if(d.features && d.features.length){ feats = d.features; break; }
+    }
+    if(!feats) return { error: 'No parcel found for "' + address + '" in Franklin County Auditor records. Check the house number and street.', address_not_found: true };
+    const a = feats[0].attributes;
+    const owners = [...new Set([a.OWNERNME1, a.OWNERNME2].filter(Boolean))];
+    const ownerName = owners.join(' & ');
+    const propAddr = a.SITEADDRESS;
+    // No MAILNME1 means the tax record carries no separate owner mailing address, which in
+    // practice means the owner is at the property.
+    const mailStreet = a.MAILNME1 || propAddr;
+    const mailCityStateZip = a.MAILNME1 ? (a.MAILNME2 || '') : ('HILLIARD, OH ' + (a.ZIPCD || '43026'));
+    const absentee = !!(a.MAILNME1 && streetOnly(a.MAILNME1) !== streetOnly(propAddr));
+    const isEntity = ENTITY_RE.test(ownerName || '');
+    const nonResidentialClass = !!(a.CLASSDSCRP && !RESIDENTIAL_CLASS_RE.test(a.CLASSDSCRP));
+    const needsSOS = isEntity || nonResidentialClass;
+    return {
+      parcel_number: a.PARCELID,
+      property_address: propAddr,
+      owner_name: ownerName,
+      owner_mailing_street: mailStreet,
+      owner_mailing_city_state_zip: mailCityStateZip,
+      mailing_address_source: 'Franklin County Auditor owner mailing address (MAILNME)',
+      property_class: a.CLASSDSCRP || undefined,
+      auditor_rental_flag: a.RENTAL || undefined,
+      owner_occupied: !absentee,
+      absentee_owner: absentee,
+      owner_is_business_entity: isEntity,
+      non_residential_class: nonResidentialClass,
+      secretary_of_state_check_required: needsSOS,
+      secretary_of_state_note: needsSOS
+        ? 'Owner appears to be a business entity or the parcel is not classed residential. Ohio SOS registered-agent and principal-office addresses cannot be retrieved automatically — a staff member must confirm the entity at businesssearch.ohiosos.gov and add the SOS mailing address before sending.'
+        : undefined,
+      other_matches: feats.slice(1).map(f => f.attributes.SITEADDRESS),
+      source: 'Franklin County Auditor live parcel records'
+    };
+  }catch(e){
+    return { error: 'Could not reach Franklin County Auditor parcel records: ' + ((e && e.message) || 'error') };
+  }
+}
+// Search the Planning & Zoning application master list (served by the Worker from the published CSV).
+async function searchProjectsViaWorker(q){
+  try{ return await fetch(BACKEND + '/api/projects?q=' + encodeURIComponent(q || '')).then(r => r.json()); }
+  catch(e){ return { unavailable: true, reason: e.message }; }
+}
+// Resolve a place/business/landmark name (or fuzzy address) to a point via the Worker's geocoder.
+async function geocodePlace(q){
+  try{ const g = await fetch(BACKEND + '/api/geocode?q=' + encodeURIComponent(q)).then(r=>r.json()); return (g && !g.error && g.lat) ? g : null; }
+  catch(e){ return null; }
+}
+// City's public interactive zoning map — the "New Zoning Map" web map, whose top layer is the
+// Planning service (Zoning Districts + PUD Plans and Standards) over the City aerial basemap.
+const ZONING_WEBMAP = 'https://maps.hilliardohio.gov/portal/apps/mapviewer/index.html?webmap=16422dcdae2749929b88fde5f947f90b';
+// Static zoning-map image (City "Hilliard" map service: Zoning Districts + Tax Parcels + labels),
+// a deep link that opens this parcel on the live Zone Lookup map, and the full-map link.
+function zoningMapUrls(lon, lat){
+  const dlon = 0.0030, dlat = 0.0017; // ~1,700 x 1,250 ft window (4:3)
+  const bbox = [lon-dlon, lat-dlat, lon+dlon, lat+dlat].map(v => v.toFixed(6)).join(',');
+  const pt = lon.toFixed(6) + ',' + lat.toFixed(6);
+  return {
+    image_url: 'https://maps.hilliardohio.gov/arcgis/rest/services/Hilliard/MapServer/export?bbox=' + bbox +
+      '&bboxSR=4326&imageSR=102723&size=480,360&format=png&layers=show:5,3,16&transparent=false&f=image',
+    live_map_url: ZONING_WEBMAP + '&center=' + pt + '&level=18',
+    full_map_url: ZONING_WEBMAP,
+    note: 'The red dot marks the property on the map image; clicking the image opens the City zoning map centered on this parcel.'
+  };
+}
+/* Zoning district -> its name and the exact place in the Hilliard code where that
+   classification is established, so the letter can link the classification itself.
+   Chapters 1109/1111/1113/1115/1117 are codified on Municode; the Community Development
+   districts (Chapter 1116) are not yet codified and live in adopting Ordinance 25-17. */
+const MUNI_CODE = 'https://library.municode.com/oh/hilliard/codes/code_of_ordinances?nodeId=';
+const MUNI_ORD  = 'https://library.municode.com/oh/hilliard/ordinances/code_of_ordinances?nodeId=';
+const CH1109 = MUNI_CODE + 'PTELEVENPLZOCO_CH1109REDI';
+const CH1111 = MUNI_CODE + 'PTELEVENPLZOCO_CH1111BUDI';
+const CH1113 = MUNI_CODE + 'PTELEVENPLZOCO_CH1113INDI';
+const CH1115 = MUNI_CODE + 'PTELEVENPLZOCO_CH1115SPPUDI';
+const CH1117 = MUNI_CODE + 'PTELEVENPLZOCO_CH1117PLUNDEDI';
+const CH1116 = MUNI_ORD  + '1369718';
+const ZONE_INFO = {
+  'R-R':  ['Rural Residential District', CH1109], 'R-1': ['Low Density Residential District', CH1109],
+  'R-2':  ['Low/Medium Density Residential District', CH1109], 'R-3': ['Moderate Density Residential District', CH1109],
+  'R-4':  ['High Density Residential District', CH1109],
+  'B-1':  ['Neighborhood Business District', CH1111], 'B-2': ['Community Business District', CH1111],
+  'B-3':  ['Office/Institutional District', CH1111], 'B-4': ['I-270 Corridor Business District', CH1111],
+  'B-4-I-270': ['I-270 Corridor Business District', CH1111],
+  'M-1':  ['Restricted Industrial District', CH1113], 'M-2': ['General Industrial District', CH1113],
+  'S-1':  ['Support Facilities District', CH1115], 'HCD': ['Hilliard Conservation District', CH1115],
+  'OH-MD':['Old Hilliard Mixed Use District', CH1115], 'OH-RD': ['Old Hilliard Residential District', CH1115],
+  'PUD':  ['Planned Unit Development District', CH1117],
+  'DE':   ['Big Darby Employment District (Community Development District, §1116.07)', CH1116],
+  'I-1':  ['I-270 Corridor District, I-1 Natural subdistrict (§1116.08)', CH1116],
+  'I-3':  ['I-270 Corridor District, I-3 Suburban subdistrict (§1116.08)', CH1116],
+  'I-6':  ['I-270 Corridor District, I-6 Urban Core subdistrict (§1116.08)', CH1116],
+  'I-FE': ['I-270 Corridor District, I-FE Flex Employment subdistrict (§1116.08)', CH1116],
+  'I-MR': ['I-270 Corridor District, I-MR Mill Run subdistrict (§1116.08)', CH1116],
+  'Civic':['I-270 Corridor District, Civic subdistrict (§1116.08)', CH1116]
+};
+function zoneInfo(code){
+  const k = String(code || '').trim();
+  const hit = ZONE_INFO[k] || ZONE_INFO[k.toUpperCase()]
+    || ZONE_INFO[Object.keys(ZONE_INFO).find(z => z.toUpperCase() === k.toUpperCase()) || ''];
+  return hit ? { district_name: hit[0], code_url: hit[1] } : {};
+}
+// Direct link to a parcel's profile on the Franklin County Auditor site (pin = parcel digits + "00").
+function auditorLink(pid){
+  const d = String(pid || '').replace(/\D/g, '');
+  if(!d) return 'https://property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address';
+  return 'https://property.franklincountyauditor.com/_web/Datalets/Datalet.aspx?mode=profileall&UseSearch=no&pin=' + (d.length === 9 ? d + '00' : d);
+}
+window.lastZoning = null;
+async function lookupZoning(address){
+  // Clear first: a stale result from an earlier address must never supply the map for this one.
+  window.lastZoning = null;
+  try{
+    let feats = await parcelByAddress(address);
+    let resolved_place, found_via = 'City of Hilliard parcel layer';
+    // Does the query look like a street address (house number + street name)? If so, the
+    // geocoder must land on THAT street — otherwise it will happily return the same house
+    // number on a different road, and the letter would describe the wrong property.
+    // Judge "looks like a street address" from the raw text, so no normalization quirk can
+    // silently switch the guard off.
+    const wantStreet = /^\s*\d+\s+\S/.test(String(address || '')) ? streetKeyOf(address) : '';
+    const sameStreet = (fs) => !wantStreet || (fs || []).some(f => streetKeyOf(f.attributes.SITEADDRESS) === wantStreet);
+    if(!feats){
+      // No direct address match — try resolving a place/business/landmark name.
+      const g = await geocodePlace(address);
+      if(g){
+        if(g.streetAddress) feats = await parcelByAddress(g.streetAddress);
+        if(!feats) feats = await parcelByPoint(g.lon, g.lat);
+        if(feats && !sameStreet(feats)) feats = null; // geocoder drifted to another street
+        if(feats){
+          found_via = 'geocoded place name';
+          resolved_place = { query: String(address), resolved_address: g.streetAddress || feats[0].attributes.SITEADDRESS, note: 'resolved from a place/landmark name via public geocoder — confirm it is the intended property' };
+        } else {
+          // Not in the City layer — check Franklin County Auditor records at that point.
+          feats = await countyParcelByPoint(g.lon, g.lat);
+          if(feats && !sameStreet(feats)) feats = null;
+          if(feats) found_via = 'Franklin County Auditor records (address not in the City parcel layer)';
+        }
+      }
+    }
+    if(!feats){
+      // Last resort: search Franklin County Auditor records county-wide by address.
+      feats = await countyParcelByAddress(address);
+      if(feats) found_via = 'Franklin County Auditor records (address not in the City parcel layer)';
+    }
+    if(!feats){
+      // Never substitute a different property. Say the address wasn't found, and — when the
+      // street exists in Hilliard — show the house numbers that are on file for it.
+      const range = await streetNumberRange(address);
+      let msg = 'No parcel matches "' + address + '" in City of Hilliard or Franklin County Auditor records, so no zoning information can be provided for it.';
+      if(range) msg += ' ' + range.street + ' does exist in Hilliard, but the addresses on file run from ' + range.low + ' to ' + range.high + ' (' + range.count + ' parcels) — please check the house number.';
+      msg += ' Do NOT substitute a different property or guess. Ask the resident to confirm the address, or point them to the Franklin County Auditor address search at property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address, or the Planning Division at (614) 334-2366.';
+      return { error: msg, address_not_found: true, street_on_file: range || undefined };
+    }
+    const p = feats[0], c = p.centroid;
+    if(!c) return {error:'Found the parcel but could not determine its map location.'};
+    const z = await gisQuery(GIS.zoning, {
+      geometry: c.x + ',' + c.y, geometryType: 'esriGeometryPoint', inSR: '4326',
+      spatialRel: 'esriSpatialRelIntersects',
+      // post_2014 (a rezoning-ordinance number) is deliberately NOT requested: it is unreliable
+      // outside PUDs and the model was printing it as if it established the district.
+      outFields: 'zoneclassnew,title,subareatitle,file1url,file1title',
+      returnGeometry: 'false'
+    });
+    const zones = (z.features || []).map(f => {
+      const zi = zoneInfo(f.attributes.zoneclassnew);
+      return {
+        district: f.attributes.zoneclassnew,
+        district_name: zi.district_name,
+        // The code chapter (or adopting ordinance) that establishes this classification.
+        code_url: zi.code_url,
+        pud_title: f.attributes.title || undefined,
+        subarea: f.attributes.subareatitle || undefined,
+        pud_text_url: f.attributes.file1url || undefined
+      };
+    });
+    const at = p.attributes;
+    // Refresh the property details from Franklin County's live parcel service (current);
+    // fall back to the City's imported attributes only if the county lookup is unavailable.
+    const cty = await countyParcelDetails(at.PARCELID);
+    const S = cty || at;
+    const acres = (S.ACRES != null && S.ACRES !== '') ? +(+S.ACRES).toFixed(3)
+                : (at.Shape__Area ? +(at.Shape__Area / 43560).toFixed(3) : undefined);
+    const PCLASS_MAP = {R:'Residential', C:'Commercial', I:'Industrial', A:'Agricultural', E:'Exempt (government/institutional)', M:'Mineral', U:'Utility'};
+    const result = {
+      matched_address: S.SITEADDRESS || at.SITEADDRESS,
+      found_via,
+      resolved_place: resolved_place,
+      parcel_id: at.PARCELID,
+      auditor_link: auditorLink(at.PARCELID),
+      zoning_map: zoningMapUrls(c.x, c.y),
+      tax_district: S.CVTTXDSCRP || at.CVTTXDSCRP,
+      school_district: S.SCHLDSCRP || at.SCHLDSCRP,
+      zoning: zones.length ? zones : 'No Hilliard zoning polygon at this location — if tax_district is not CITY OF HILLIARD, the property is outside city zoning jurisdiction (contact Franklin County or the township).',
+      property_details_from_county_auditor_data: {
+        owner: [S.OWNERNME1, S.OWNERNME2].filter(Boolean).join(' & ') || undefined,
+        parcel_size_acres: acres,
+        legal_description_note: S.PRPRTYDSCRP3 || undefined,
+        residence_year_built: S.RESYRBLT || undefined,
+        last_transfer_date: S.SALEDATE ? new Date(S.SALEDATE).toISOString().slice(0,10) : undefined,
+        last_transfer_price: (S.SALEPRICE || S.SALEPRICE === 0) ? S.SALEPRICE : undefined,
+        property_class: PCLASS_MAP[S.PCLASS] || S.PCLASS || undefined,
+        subdivision_or_condo: S.CNVYNAME || undefined,
+        homestead_exemption: S.HOMSTD === 'Y' ? 'Yes' : (S.HOMSTD === 'N' ? 'No' : undefined),
+        data_source: cty ? 'Franklin County Auditor live parcel records (current)' : 'City of Hilliard county-data import (may lag recent sales)',
+        full_records_link: 'https://property.franklincountyauditor.com/_web/search/commonsearch.aspx?mode=address'
+      },
+      permit_history_link: 'https://hilliardoh.portal.opengov.com/search — resident can type the address under "Locations" to see every active and historical permit for this property',
+      other_address_matches: feats.slice(1).map(f => f.attributes.SITEADDRESS),
+      source: 'City of Hilliard GIS "Zoning Districts and PUDs" layer (maps.hilliardohio.gov) + Franklin County Auditor parcel data'
+    };
+    window.lastZoning = result;
+    return result;
+  }catch(e){
+    return {error:'GIS lookup failed: ' + e.message};
+  }
+}
+
+/* ---------- rendering ---------- */
+const recordHref = h => h;
+function linkify(text){
+  const frag = document.createDocumentFragment();
+  const md = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  let last = 0, m;
+  while((m = md.exec(text)) !== null){
+    frag.appendChild(autolink(text.slice(last, m.index)));
+    const a = document.createElement('a');
+    a.href = m[2]; a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener';
+    frag.appendChild(a);
+    last = m.index + m[0].length;
+  }
+  frag.appendChild(autolink(text.slice(last)));
+  return frag;
+}
+const URL_RE = /(https?:\/\/[^\s<]+|(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s<]*)?)/gi;
+const URL_TRAIL = /[)\].,;:!?'"]+$/;
+function autolink(text){
+  const frag = document.createDocumentFragment();
+  let last = 0, m;
+  URL_RE.lastIndex = 0;
+  while((m = URL_RE.exec(text)) !== null){
+    frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+    let raw = m[1], trail = '';
+    const tm = raw.match(URL_TRAIL);
+    if(tm){ trail = raw.slice(raw.length - tm[0].length); raw = raw.slice(0, raw.length - tm[0].length); }
+    const a = document.createElement('a');
+    a.href = raw.startsWith('http') ? raw : 'https://' + raw;
+    a.textContent = raw; a.target = '_blank'; a.rel = 'noopener';
+    frag.appendChild(a);
+    if(trail) frag.appendChild(document.createTextNode(trail));
+    last = m.index + m[1].length;
+  }
+  frag.appendChild(document.createTextNode(text.slice(last)));
+  return frag;
+}
+function addMsg(role, text){
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if(role === 'bot') div.appendChild(linkify(String(text).replace(/^\s*\[ZONING MAP\]\s*$/gm, '').replace(/\*\*/g, '')));
+  else div.textContent = text;
+  $('thread').appendChild(div);
+  $('thread').scrollTop = $('thread').scrollHeight;
+  resizeEmbed();
+}
+function openPanel(){
+  const p = $('panel');
+  if(!p.classList.contains('open')){
+    p.classList.add('open');
+    if(!EMBED) p.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+// In an iframe, tell the parent how tall we are (harmless if nobody listens).
+function resizeEmbed(){
+  if(!EMBED || window.parent === window) return;
+  try{ window.parent.postMessage({ source:'ask-clark-permits', height: document.body.scrollHeight }, '*'); }catch(e){}
+}
+
+/* ---------- ask ---------- */
+let busy = false;
+async function send(q){
+  q = String(q || '').trim();
+  if(!q || busy) return;
+  busy = true;
+  openPanel();
+  addMsg('user', q);
+  $('askBtn').disabled = $('askBtn2').disabled = true;
+  const typing = document.createElement('div');
+  typing.className = 'typing'; typing.textContent = 'Clark is checking the portal and the zoning code…';
+  $('thread').appendChild(typing);
+  try{
+    history.push({role:'user', content: q});
+    let messages = history.slice(-12);
+    let answer = null;
+    for(let turn = 0; turn < 4; turn++){
+      const resp = await fetch(BACKEND + '/api/chat', {
+        method: 'POST', headers: {'content-type': 'application/json'},
+        body: JSON.stringify({messages, guides: guides(), staffToken: ''})
+      });
+      const data = await resp.json();
+      if(!resp.ok){
+        typing.remove();
+        addMsg('bot', 'Sorry — ' + ((data.error && data.error.message) || 'I hit a connection problem. Please try again.'));
+        history.pop();
+        return;
+      }
+      if(data.stop_reason === 'tool_use'){
+        typing.textContent = 'Checking the City zoning map…';
+        messages = messages.concat([{role:'assistant', content: data.content}]);
+        const results = [];
+        for(const b of data.content.filter(x => x.type === 'tool_use')){
+          let out;
+          if(b.name === 'lookup_zoning') out = await lookupZoning(b.input && b.input.address);
+          else if(b.name === 'search_projects') out = await searchProjectsViaWorker(b.input && b.input.query);
+          else out = { error: 'handled server-side' };   // the Worker fills these in
+          results.push({type:'tool_result', tool_use_id: b.id, content: JSON.stringify(out)});
+        }
+        messages = messages.concat([{role:'user', content: results}]);
+        continue;
+      }
+      answer = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+      break;
+    }
+    typing.remove();
+    if(answer === null) answer = 'Sorry — I couldn’t finish that. Please try again.';
+    history.push({role:'assistant', content: answer});
+    addMsg('bot', answer);
+    postLog(q, answer);
+  }catch(err){
+    typing.remove();
+    addMsg('bot', 'Sorry — I couldn’t reach the answer service. Please try again, or call the Building Standards Division / Planning Division at (614) 876-7361.');
+    history.pop();
+  }finally{
+    busy = false;
+    $('askBtn').disabled = $('askBtn2').disabled = false;
+    resizeEmbed();
+  }
+}
+function postLog(question, answer){
+  fetch(BACKEND + '/api/log', {
+    method: 'POST', headers: {'content-type': 'application/json'},
+    body: JSON.stringify({question, answer, topic: 'Permits', source: 'AI (permit portal page' + (EMBED ? ', embedded' : '') + (TYPE_ID ? ', type ' + TYPE_ID : '') + ')'})
+  }).catch(() => {});
+}
+
+/* ---------- wiring ---------- */
+$('askForm').addEventListener('submit', e => { e.preventDefault(); const v = $('q').value; $('q').value = ''; send(v); });
+$('followForm').addEventListener('submit', e => { e.preventDefault(); const v = $('q2').value; $('q2').value = ''; send(v); });
+$('chips').addEventListener('click', e => { const b = e.target.closest('button[data-q]'); if(b) send(b.getAttribute('data-q')); });
+$('resetBtn').addEventListener('click', () => { history = []; $('thread').innerHTML = ''; greet(); if(!EMBED){ $('panel').classList.remove('open'); $('q').focus(); } });
+function greet(){
+  const intro = typeName
+    ? 'Hi! I’m Clark. You’re looking at the ' + typeName + ' application. Tell me what you’re planning — for example the size and where on the lot — and I’ll check what this application needs and which zoning rules apply.'
+    : 'Hi! I’m Clark. Tell me what you’re planning and I’ll find the right application, the zoning rules that apply, and what to submit. Adding your street address lets me check your zoning district.';
+  addMsg('bot', intro);
+}
+(async function start(){
+  if(TYPE_ID){
+    try{
+      const r = await fetch(OG_API + 'record_types/' + TYPE_ID).then(x => x.json());
+      typeName = String((r.data && r.data.attributes && r.data.attributes.name) || '').replace(/\s+/g, ' ').trim();
+    }catch(e){}
+  }
+  if(EMBED || TYPE_ID){ openPanel(); greet(); }
+  const q = PARAMS.get('q');
+  if(q) send(q);
+})();
+window.addEventListener('resize', resizeEmbed);
+</script>
+</body>
+</html>

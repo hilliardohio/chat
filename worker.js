@@ -1036,6 +1036,322 @@ const DRAFT_TOOL = {
      Header: Authorization: Token <key>   Accept: application/vnd.api+json
    Always degrades gracefully: any missing key / auth failure / error returns
    { unavailable: true }, and the letter falls back to the portal search link. */
+/* ---------------- OpenGov portal guidance: record types, splash pages, zoning code ----------------
+   The public portal (hilliardoh.portal.opengov.com) reads everything it shows from a keyless
+   public API: record_types (each type's splash page is `htmlcontent`), categories (the
+   department pages) and project_templates (the "Start a Project" questionnaires that decide
+   which record types a project needs). The Worker reads the same API live, so an edit Planning
+   or Building makes in Settings -> System -> Content shows up in answers within the hour.
+   If the API can't be reached, opengov-record-types.json on GitHub Pages is the fallback.
+   The zoning code comes from zoning-code.json (Part Eleven, captured from Municode in a browser
+   because Municode's content API needs a signed-in token). */
+const OG_PUBLIC_API = 'https://api-east.viewpointcloud.com/v2/hilliardoh/';
+const OG_PORTAL = 'https://hilliardoh.portal.opengov.com';
+const PORTAL_SNAPSHOT_URL = 'https://hilliardohio.github.io/chat/opengov-record-types.json';
+const ZONING_CODE_URL = 'https://hilliardohio.github.io/chat/zoning-code.json';
+
+function ogHtmlText(h) {
+  let s = String(h || '');
+  // Keep link targets: splash pages point at the exact Municode section or checklist PDF.
+  s = s.replace(/<a [^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (m, href, label) => {
+    const l = label.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
+    return l ? l + ' (' + href + ')' : href;
+  });
+  s = s.replace(/<\/(p|li|h\d|div|tr)>|<br\s*\/?>/gi, '\n').replace(/<\/t[dh]>/gi, ' | ').replace(/<li[^>]*>/gi, '• ');
+  s = s.replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;|&rsquo;|&lsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"')
+    .replace(/&ndash;|&mdash;/g, '-').replace(/&#\d+;/g, ' ');
+  return s.replace(/[ \t ]+/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
+}
+async function ogPublic(path) {
+  const r = await fetch(OG_PUBLIC_API + path, { headers: { Accept: 'application/vnd.api+json, application/json' } });
+  if (!r.ok) throw new Error('OpenGov public API ' + path + ' HTTP ' + r.status);
+  return r.json();
+}
+async function loadPortalLive() {
+  const [rt, cats, pts] = await Promise.all([ogPublic('record_types'), ogPublic('categories'), ogPublic('project_templates')]);
+  const catById = {};
+  (cats.data || []).forEach(c => { catById[String(c.id)] = c.attributes || {}; });
+  const record_types = (rt.data || []).map(x => x.attributes || {}).filter(a => a.isEnabled).map(a => ({
+    id: a.recordTypeID,
+    name: String(a.name || '').replace(/\s+/g, ' ').trim(),
+    department: String((catById[String(a.categoryID)] || {}).name || '').trim(),
+    categoryID: a.categoryID,
+    summary: String(a.descriptionLabel || '').trim(),
+    apply: a.ApplyAccessID,
+    url: OG_PORTAL + '/categories/' + a.categoryID + '/record-types/' + a.recordTypeID,
+    text: ogHtmlText(a.htmlcontent)
+  }));
+  const names = {};
+  record_types.forEach(r => { names[r.id] = r.name; });
+  const departments = Object.entries(catById).filter(([, c]) => c.isEnabled).map(([id, c]) => ({
+    id: Number(id), name: String(c.name || '').trim(), url: OG_PORTAL + '/categories/' + id, text: ogHtmlText(c.content)
+  }));
+  // "Start a Project" bundles: which record types a project needs, and under what answer.
+  const projects = [];
+  for (const p of (pts.data || [])) {
+    const a = p.attributes || {};
+    if (!a.isEnabled) continue;
+    const id = a.projectTemplateID;
+    let requires = [];
+    try {
+      const [comps, qs, conds] = await Promise.all([
+        ogPublic('project_template_components?projectTemplateID=' + id),
+        ogPublic('project_template_questions?projectTemplateID=' + id),
+        ogPublic('project_template_component_conditions?projectTemplateID=' + id)
+      ]);
+      const qText = {};
+      (qs.data || []).forEach(q => { qText[q.id] = String(q.attributes.body || '').trim(); });
+      requires = (comps.data || []).filter(c => c.attributes.isEnabled !== false).map(c => {
+        const cid = Number(c.id);
+        const when = (conds.data || []).map(k => k.attributes).filter(k => k.isEnabled !== false && Number(k.projectTemplateComponentID) === cid)
+          .map(k => (qText[k.projectTemplateQuestionID] || 'question ' + k.projectTemplateQuestionID) + ' = ' + (String(k.value) === 'true' ? 'Yes' : String(k.value) === 'false' ? 'No' : k.value));
+        const rid = c.attributes.recordTypeID;
+        const o = { record_type_id: rid, name: names[rid] || c.attributes.recordTypeName || c.attributes.name };
+        if (when.length) o.only_if = when.join(c.attributes.anyCondition ? ' OR ' : ' AND ');
+        return o;
+      });
+    } catch (e) { /* the bundle is a bonus; the record types still answer the question */ }
+    projects.push({ id, name: String(a.label || '').trim(), url: OG_PORTAL + '/projectTemplate/' + id + '/questionnaire', text: ogHtmlText(a.pageContent), requires });
+  }
+  return { captured: new Date().toISOString().slice(0, 10), source: 'live', record_types, departments, projects };
+}
+async function getPortalCatalog(env) {
+  try {
+    const c = await env.KV.get('portal:cache');
+    if (c) { const o = JSON.parse(c); if (Date.now() - o.ts < 60 * 60 * 1000) return o.data; }
+  } catch (e) {}
+  let data = null, liveError = '';
+  try { data = await loadPortalLive(); if (!data.record_types.length) throw new Error('no record types returned'); }
+  catch (e) {
+    liveError = (e && e.message) || 'error';
+    const r = await fetch(PORTAL_SNAPSHOT_URL, { cf: { cacheTtlByStatus: { '200-299': 600, '300-399': 0, '400-499': 0, '500-599': 0 } } });
+    if (!r.ok) throw new Error('OpenGov portal data unavailable (live: ' + liveError + '; snapshot HTTP ' + r.status + ')');
+    data = await r.json();
+    data.source = 'snapshot';
+    data.live_error = liveError;
+  }
+  try { await env.KV.put('portal:cache', JSON.stringify({ ts: Date.now(), data }), { expirationTtl: 86400 }); } catch (e) {}
+  return data;
+}
+
+/* What residents say -> the record types that handle it. Words the splash pages don't use
+   ("deck", "hot tub", "water heater") are where plain text search misses, so they map here.
+   Ids are OpenGov record-type ids; the live catalog supplies names, links and splash text. */
+const PERMIT_ALIASES = [
+  [/\bdecks?\b|\bporch|\bsunroom|\baddition|\bremodel|\brenovat|\bbasement|\bfinish(ed|ing)? (the )?basement|\bdetached garage|\bgarage\b|\bnew (home|house)|\bbuild (a )?(home|house)|\bbedroom|\bbathroom remodel|\bkitchen remodel|\bstructural|\bload.?bearing|\bwindow|\begress|\bscreened|\bthree.?season|\bmudroom/i, [6395, 6383]],
+  [/\bshed|\baccessory (building|structure)|\bpergola|\bgazebo|\bpavilion|\bpatio|\bwalkway|\bgenerator|\butility structure|\boutdoor dining|\bparking (space|lot|pad)|\bdriveway (expansion|widen)|\bwiden(ing)? (my |the )?driveway|\bhome.?based|\bhome (business|occupation)|\b(from|out of|in) (my|our) (home|house)|\bhome (salon|office|daycare|bakery)|\bchange (of|in) use|\bchickens?\b|\bcoop|\bbee(s|keeping|hive)|\bplay(set|house|ground)|\bswing ?set|\btree ?house|\bbasketball (hoop|court)|\bsport court/i, [6383]],
+  [/\bfence|\bfencing|\bprivacy (wall|screen)/i, [6460]],
+  [/\bpool|\bhot ?tub|\bspa\b|\bjacuzzi/i, [6383, 6460, 6511]],
+  [/\bsolar|\bphotovoltaic|\bpv (array|system|panel)/i, [6511, 6395, 6383]],
+  [/\bev\b|\belectric vehicle|\bcar charger|\bcharging station|\btesla/i, [6511]],
+  [/\belectric|\bwiring|\brewir|\boutlet|\bbreaker|\bpanel (upgrade|change)|\bservice (upgrade|change)|\bamp service|\blight(ing)? fixture/i, [6511]],
+  [/\bfurnace|\bhvac|\bair condition|\b(a\/?c) (unit|replacement)|\bheat pump|\bductwork|\bmini.?split|\brefrigeration/i, [6513]],
+  [/\bgas (line|pipe|piping|range|dryer|fireplace)|\bnatural gas|\bpropane/i, [6514]],
+  [/\bplumb|\bwater heater|\bsewer line|\btoilet|\bsink\b/i, [6559]],
+  [/\bsign\b|\bsigns\b|\bsignage|\bbanner|\bfeather flag|\ba.?frame|\bsandwich board|\byard sign|\bbillboard|\bmonument sign|\bwall sign/i, [6389, 6544]],
+  [/\bdriveway|\bapron|\bcurb|\bsidewalk|\bdownspout|\bcurb cut/i, [6392]],
+  [/\bright.?of.?way|\bstreet (cut|opening)|\bboring|\bdirectional drill|\bexcavat\w* (in|under) (the )?(street|road)|\butility work in/i, [6342, 6530]],
+  [/\bdemoli|\btear (it )?down|\braze/i, [6520]],
+  [/\btent|\btemporary structure|\bstage\b|\bbleacher/i, [6516]],
+  [/\bvariance|\bexception to (the )?(code|zoning)|\btaller than allowed|\bencroach|\bbza\b|\bboard of zoning appeals|\bconditional use|\bnonconform/i, [6469]],
+  [/\brezon|\blot split|\bsplit (my|the|a) lot|\bplat\b|\bsubdivi|\bpud\b|\bplanned unit|\bsite plan|\bdevelopment plan|\bplanning (and|&) zoning commission/i, [6481, 6534]],
+  [/\bfood truck|\bfood cart|\bice cream truck/i, [6484]],
+  [/\bblock party|\bclose (the|our|my) street|\bstreet closure/i, [6492]],
+  [/\bevent\b|\bfestival|\bparade|\b5k\b|\brace\b|\bwalk.?a.?thon|\bfarmers? market/i, [6540]],
+  [/\bsolicit|\bpeddl|\bdoor.?to.?door|\bvendor/i, [6487]],
+  [/\bcanvass|\bpetition|\bcampaign/i, [6496]],
+  [/\bpods?\b|\bstorage (container|unit)|\bdumpster|\bportable storage/i, [6536]],
+  [/\bre.?roof|\bshingle|\broof (replacement|repair)|\breplac\w* (my |the |a )?roof|\bnew roof/i, [6515]],
+  [/\bsprinkler|\bfire (alarm|suppression|protection)/i, [6512]],
+  [/\b(kitchen )?hood\b|\bexhaust hood|\bcommercial kitchen/i, [6510]],
+  [/\btap\b|\bwater (and|&) sewer (tap|connection)|\bconnect(ion)? to (city )?(water|sewer)/i, [6523]],
+  [/\blateral|\bsewer (repair|replacement)|\bwater service (line|repair)/i, [6489]],
+  [/\bbackflow/i, [6539]],
+  [/\bflood|\bfloodplain|\bfloodway/i, [6500]],
+  [/\bhaul|\boversize|\boverweight|\bwide load/i, [6546]],
+  [/\bhydrant/i, [6431]],
+  [/\bcomplain|\bviolation|\breport (a|my) neighbor|\bjunk (car|vehicle)|\bnuisance|\bproperty maintenance/i, [6375]],
+  [/\bgrass|\bweeds?\b|\btall grass|\bovergrown/i, [6538]],
+  [/\bcontractor (registration|license)|\bregister (as )?(a )?contractor|\bget registered/i, [6371]],
+  [/\baddress (request|assignment)|\bnew address|\bassign(ed)? (an )?address/i, [6535]],
+  [/\bzoning (verification|confirmation) letter|\bzoning letter|\bzvl\b/i, [6376]],
+  [/\bcertificate of occupancy|\boccupancy permit|\bopen(ing)?( up)? (a|an|my|our) [a-z ]{0,25}(business|store|restaurant|shop|office|cafe|salon|studio|gym|bar|clinic|daycare)|\bcoffee shop|\brestaurant|\bretail (space|store)|\bstorefront|\bnew tenant|\btenant (space|finish|build.?out)/i, [6517, 6383, 6502]],
+  [/\bcommercial (build|construct|addition|renovation|project)|\btenant (improvement|finish|build.?out)|\bbuild.?out/i, [6502, 6468, 6383]],
+  [/\bhotel|\bmotel|\bbed (and|&) breakfast|\bb&b\b|\bairbnb|\bshort.?term rental/i, [6519]],
+  [/\bmassage|\bspa establishment|\bbathhouse/i, [6518]],
+  [/\bsmall cell/i, [6497]],
+  [/\bcell (tower|phone tower)|\bwireless (tower|support structure)|\bantenna tower/i, [6499]],
+  [/\binfrastructure acceptance|\baccept(ance of)? public infrastructure/i, [6551]],
+  [/\breimburse/i, [6556]],
+  [/\baggregation|\bopt.?out/i, [6545]]
+];
+const PERMIT_STOP = new Set(['the','a','an','and','or','for','of','to','in','on','at','is','are','be','my','our','i','we','want','wants','need','needs','do','does','can','how','what','which','permit','permits','apply','application','hilliard','city','get','install','installing','build','building','put','new','add','adding','replace','replacing','would','like','have','has','it','this','that','with','about','from','will','should','there','any','me','you','your','off','back','house','foot','feet','neighbor','neighbors','yard','backyard','front','side','rear','property']);
+
+function permitTerms(q) {
+  return [...new Set(String(q || '').toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2 && !PERMIT_STOP.has(w)))];
+}
+function excerptFor(text, terms, max) {
+  const t = String(text || '');
+  if (t.length <= max) return t;
+  // Keep the lines that mention what they asked about, plus the fee lines, in order.
+  const lines = t.split('\n');
+  const keep = new Set();
+  lines.forEach((l, i) => {
+    const ll = l.toLowerCase();
+    if (/fee|\$\d/.test(ll) || terms.some(w => ll.includes(w))) { keep.add(i); if (i + 1 < lines.length) keep.add(i + 1); }
+  });
+  for (let i = 0; i < Math.min(4, lines.length); i++) keep.add(i);
+  let out = '';
+  for (const i of [...keep].sort((a, b) => a - b)) { if ((out + lines[i]).length > max) break; out += lines[i] + '\n'; }
+  return out.trim() + '\n[… more on the portal page]';
+}
+function codeLinksIn(text) {
+  return [...new Set((String(text || '').match(/https?:\/\/library\.municode\.com\/[^\s)]+/g) || []))].slice(0, 6);
+}
+
+async function findPermitType(env, input) {
+  const query = String((input && input.project) || '').slice(0, 300);
+  const wantId = input && input.record_type_id ? Number(input.record_type_id) : null;
+  try {
+    const cat = await getPortalCatalog(env);
+    const byId = {};
+    cat.record_types.forEach(r => { byId[r.id] = r; });
+    const terms = permitTerms(query);
+    const scores = new Map();
+    const bump = (id, s) => { if (byId[id]) scores.set(id, (scores.get(id) || 0) + s); };
+    if (wantId) bump(wantId, 100);
+    PERMIT_ALIASES.forEach(([re, ids]) => { if (re.test(query)) ids.forEach((id, i) => bump(id, 12 - i * 3)); });
+    const same = (a, b) => a === b || (Math.min(a.length, b.length) >= 4 && (a.startsWith(b) || b.startsWith(a)));
+    const words = s => String(s || '').toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2);
+    for (const r of cat.record_types) {
+      const N = words(r.name), S = words(r.summary), T = words(r.text.slice(0, 4000));
+      let s = 0;
+      for (const w of terms) { if (N.some(x => same(x, w))) s += 6; if (S.some(x => same(x, w))) s += 3; if (T.some(x => same(x, w))) s += 1; }
+      if (s) bump(r.id, s);
+    }
+    const sorted = [...scores.entries()].sort((a, b) => b[1] - a[1]);
+    const top = sorted.length ? sorted[0][1] : 0;
+    // Drop incidental text hits: keep what scores close to the best match.
+    const ranked = sorted.filter(([, s]) => s >= Math.max(5, top * 0.45)).slice(0, 4).map(([id]) => byId[id]);
+    const projHits = (cat.projects || []).filter(p => {
+      const n = p.name.toLowerCase();
+      return (/pool|hot ?tub|spa\b/i.test(query) && /pool/.test(n)) || (/solar|photovoltaic/i.test(query) && /solar/.test(n)) || (/\bev\b|electric vehicle|charger|charging/i.test(query) && /vehicle/.test(n));
+    });
+    const per = ranked.length > 2 ? 1800 : 3200;
+    return {
+      query,
+      data_source: cat.source === 'live' ? 'live OpenGov portal' : 'OpenGov portal snapshot dated ' + cat.captured,
+      matches: ranked.map((r, i) => ({
+        record_type: r.name,
+        department: r.department,
+        apply_url: r.url,
+        summary: r.summary,
+        splash_page: r.text ? excerptFor(r.text, terms, i === 0 ? per + 1200 : per) : '(this record type has no instructions on its portal page)',
+        code_links: codeLinksIn(r.text)
+      })),
+      start_a_project: projHits.map(p => ({
+        project: p.name, questionnaire_url: p.url,
+        record_types_it_creates: (p.requires || []).map(x => x.name + (x.only_if ? ' — only if: ' + x.only_if : '') + ' (' + ((byId[x.record_type_id] || {}).url || '') + ')')
+      })),
+      weak_match: !ranked.length || top < 6,
+      portal_home: OG_PORTAL,
+      department_pages: (cat.departments || []).map(d => d.name + ' — ' + d.url),
+      note: 'Splash-page text is what the City publishes on each application page; quote requirements and fees from it, and link apply_url. An application is not a permit.'
+    };
+  } catch (e) {
+    return { unavailable: true, reason: (e && e.message) || 'error', portal_home: OG_PORTAL };
+  }
+}
+const PERMIT_TYPE_TOOL = {
+  name: 'find_permit_type',
+  description: "Find which City of Hilliard OpenGov permit/application (record type) a project needs, and return each match's portal apply link plus the instructions the City publishes on that application's portal page (what's covered, requirements, submittal checklist, fees, code references). Also returns 'Start a Project' bundles (pools, solar, EV chargers) that list every application the project creates and when. Use for ANY question about doing work or an activity that may need a permit, license, registration or zoning approval — building, installing, replacing, putting up, opening a business, holding an event, filing a complaint — and before telling someone which application to use.",
+  input_schema: { type: 'object', properties: {
+    project: { type: 'string', description: "The work or activity in the resident's words, e.g. 'build a 12x16 deck', 'replace my furnace', 'put up a 6 ft privacy fence', 'open a coffee shop', 'food truck at a church event'" },
+    record_type_id: { type: 'number', description: 'Optional: an OpenGov record type id when the page already knows it (e.g. 6460 for Fence Permit).' }
+  }, required: ['project'] }
+};
+
+let ZONING_MEM = null;
+async function getZoningCode(env) {
+  if (ZONING_MEM && Date.now() - ZONING_MEM.ts < 6 * 3600 * 1000) return ZONING_MEM.data;
+  const r = await fetch(ZONING_CODE_URL, { cf: { cacheTtlByStatus: { '200-299': 3600, '300-399': 0, '400-499': 0, '500-599': 0 } } });
+  if (!r.ok) throw new Error('zoning-code.json is not available at ' + ZONING_CODE_URL + ' (HTTP ' + r.status + ') — upload it to the GitHub repo; if it was just committed, Pages may still be publishing.');
+  const data = await r.json();
+  ZONING_MEM = { ts: Date.now(), data };
+  return data;
+}
+// Split a section into its lettered/numbered paragraphs so a long section (1121.02 is 19k
+// characters) returns only the parts about the question.
+function codeParagraphs(text) {
+  return String(text || '').split('\n').reduce((acc, line) => {
+    if (/^\([a-z]\)\s/.test(line) || !acc.length) acc.push(line); else acc[acc.length - 1] += '\n' + line;
+    return acc;
+  }, []);
+}
+const ZONING_SYNONYMS = { deck: ['deck', 'porch', 'accessory'], shed: ['accessory', 'shed', 'storage'], garage: ['garage', 'accessory'], pool: ['pool', 'swimming'], 'hot': ['spa', 'tub'], fence: ['fence', 'fences', 'wall'], setback: ['setback', 'yard'], setbacks: ['setback', 'yard'], height: ['height'], tall: ['height'], chicken: ['chicken', 'chickens', 'coop'], chickens: ['chicken', 'coop'], bees: ['bee', 'beekeeping', 'hive'], sign: ['sign', 'signs'], signs: ['sign'], parking: ['parking', 'spaces'], driveway: ['driveway', 'parking'], business: ['home', 'occupation'], solar: ['solar', 'energy'], generator: ['generator', 'mechanical'], tree: ['tree', 'trees', 'landscape'], trees: ['tree', 'landscape'], variance: ['variance', 'appeals'], rv: ['recreational', 'vehicle', 'boat', 'trailer'], boat: ['boat', 'recreational', 'trailer'], camper: ['recreational', 'vehicle', 'trailer'] };
+async function searchZoningCode(env, input) {
+  const query = String((input && input.query) || '').slice(0, 300);
+  const secWanted = String((input && input.section) || '').match(/(\d{4}\.\d{2})(?:\s*\(?([a-z])\)?)?/i);
+  try {
+    const code = await getZoningCode(env);
+    const secs = code.sections || [];
+    if (secWanted) {
+      const s = secs.find(x => x.sec === secWanted[1]);
+      if (s) {
+        let text = s.text;
+        if (secWanted[2]) { const p = codeParagraphs(text).find(x => x.startsWith('(' + secWanted[2].toLowerCase() + ')')); if (p) text = p; }
+        return { source: code.source, captured: code.captured, sections: [{ section: '§' + s.sec + (secWanted[2] ? '(' + secWanted[2].toLowerCase() + ')' : ''), title: s.title, url: s.url, text: text.slice(0, 7000), truncated: text.length > 7000 }] };
+      }
+    }
+    const base = permitTerms(query).filter(w => !/^\d+$/.test(w));
+    const district = (String((input && input.district) || '').match(/\b([A-Z]{1,3}-\d{0,2}[A-Z]?)\b/i) || [])[1];
+    const terms = [...new Set(base.concat(...base.map(w => ZONING_SYNONYMS[w] || [])))];
+    if (!terms.length && !district) return { error: 'no search words', hint: 'pass what the resident wants to do, e.g. "shed setbacks" or "fence height front yard"' };
+    const same = (a, b) => a === b || (Math.min(a.length, b.length) >= 4 && (a.startsWith(b) || b.startsWith(a)));
+    const scored = [];
+    for (const s of secs) {
+      const T = String(s.title).toLowerCase();
+      for (const p of codeParagraphs(s.text)) {
+        const W = p.toLowerCase().split(/[^a-z0-9]+/);
+        const H = p.split('\n')[0].slice(0, 120).toLowerCase().split(/[^a-z0-9]+/);
+        let sc = 0;
+        for (const w of terms) { const hits = W.filter(x => same(x, w)).length; if (hits) sc += 2 + Math.min(hits, 4); if (T.split(/[^a-z0-9]+/).some(x => same(x, w))) sc += 5; if (H.some(x => same(x, w))) sc += 8; }
+        if (base.length > 1 && p.length < 8000 && base.every(w => W.some(x => same(x, w)))) sc += 6;
+        sc -= Math.floor(p.length / 4000) * 3;   // big tables mention everything; don't let them crowd out the rule
+        if (district && p.includes(district.toUpperCase())) sc += 4;
+        if (sc) scored.push({ s, p, sc });
+      }
+    }
+    scored.sort((a, b) => b.sc - a.sc);
+    const out = [], seen = new Map();
+    let budget = 11000;
+    for (const x of scored) {
+      if (out.length >= 5 || budget < 400) break;
+      const key = x.s.sec;
+      const cap = out.length ? 2200 : 5500;   // the best paragraph gets room for its whole rule
+      const para = x.p.length > cap ? x.p.slice(0, cap) + ' […]' : x.p;
+      if (seen.has(key)) { const o = out[seen.get(key)]; if (o.text.length < 4000) { o.text += '\n…\n' + para; budget -= para.length; } continue; }
+      seen.set(key, out.length);
+      out.push({ section: '§' + x.s.sec, title: x.s.title, url: x.s.url, text: para });
+      budget -= para.length;
+    }
+    return { source: code.source, captured: code.captured, query, district: district || undefined, sections: out, weak_match: !out.length || scored[0].sc < 6, code_home: 'https://library.municode.com/oh/hilliard/codes/code_of_ordinances?nodeId=PTELEVENPLZOCO' };
+  } catch (e) {
+    return { unavailable: true, reason: (e && e.message) || 'error', code_home: 'https://library.municode.com/oh/hilliard/codes/code_of_ordinances?nodeId=PTELEVENPLZOCO' };
+  }
+}
+const ZONING_CODE_TOOL = {
+  name: 'search_zoning_code',
+  description: "Search the text of Hilliard's Planning & Zoning Code (Codified Ordinances Part Eleven: districts, uses, setbacks, accessory buildings, fences, pools, parking, signs, landscaping, home occupations, chickens/bees, variances and procedures) and return the matching sections with their Municode links. Use after find_permit_type to tell a resident the rules their project must meet, when a splash page cites a code section, or for any 'is it allowed / how big / how far from the property line' question. Pass a section number (e.g. '1121.02(d)') to read a specific section.",
+  input_schema: { type: 'object', properties: {
+    query: { type: 'string', description: "What to look up, e.g. 'shed setback accessory building height', 'fence height front yard corner lot', 'home occupation'" },
+    section: { type: 'string', description: "Optional exact section, e.g. '1121.02(d)' or '1109.03'" },
+    district: { type: 'string', description: "Optional zoning district from lookup_zoning, e.g. 'R-2'" }
+  }, required: ['query'] }
+};
+
 const PLCE_BASE = 'https://api.plce.opengov.com/plce/v2/hilliardoh';
 // Hilliard record-number prefixes -> friendly type names (fallback when the API
 // doesn't return a resolvable record-type name).
@@ -1388,6 +1704,7 @@ RULES:
 - PLANNING & ZONING PROJECTS: when a resident asks about a named project or development, wants a list of applications of a given type (e.g. "list the PUDs in Hilliard", "what conditional-use applications were approved", "rezonings on Cemetery Rd"), or uses a project/case keyword that is not a street address, use the search_projects tool with concise keywords. Present results as a clean list: project name — application type — zoning — location — approval date, followed by the record/case number. IMPORTANT: when a result has a "url", render its record number as a Markdown link using exactly this syntax, including the literal square brackets and parentheses: "[PZ-26-14](THE_URL)" — replacing the label with the result's "record" value and THE_URL with its "url" value copied verbatim. If a result has no "url", write its record number (or case number) as plain text with no link. Never invent a URL for a record. If the result notes more matches than shown, say so and offer to narrow the search. Cite the source as the City's Planning & Zoning application master list and note the official record is on the OpenGov portal / Planning Division. For a specific ADDRESS, still use lookup_zoning; you may use both when a resident asks about a property AND its planning history.
 - MEETINGS, AGENDAS & MINUTES: for any question about a public meeting — what's on an agenda ("tonight", "next week", a date), when a board meets, a case number like BZA-26-31, or what was decided — call lookup_meeting_agenda with the resident's words. Present the meeting as a heading (body — date — time — location), then the substantive agenda items as a list. Skip procedural items (Call to Order, Pledge, Roll Call, Adjournment) unless asked. For each case give the case number, address and a one-line summary of the request from details, and render its staff-report attachment as a Markdown link labeled with the case number (literal brackets and parentheses, URL verbatim). Always link the full agenda (agenda_url) and, if present, the packet and minutes. If source is a snapshot, say the agenda was current as of that date. If a meeting has no agenda published yet, say so and give the meeting link. Never invent an agenda item, case, date or outcome; minutes are the only source for what was decided, and if minutes_url is absent say the minutes aren't posted yet.
 - RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Adult sports leagues (category "Adult Sports Leagues", e.g. Volleyball Co-Rec Fall) come from the same tool: for those the cost is PER TEAM, the section title shows how many teams are registered of the maximum, and the Register link goes to the league page on WebTrac where a team captain registers the team — say so. Always say availability changes daily and the link shows current status. By default the tool leaves out Full and Unavailable sections; if hidden_full_or_unavailable_sections or matching_programs_with_no_open_sections is greater than zero, add one sentence such as "3 other sections are full or not open for registration" and offer to list them (call again with include_full=true if they ask). If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
+- PROJECTS, PERMITS & HOW TO PROCEED: when a resident describes work or an activity they want to do (build, install, replace, put up, open a business, hold an event, file a complaint) or asks which permit or application they need, call find_permit_type with their words, and in the same turn call search_zoning_code for the rules the project must meet (setbacks, height, size, location, district uses) whenever zoning could apply. If they gave an address, also call lookup_zoning and pass its district to search_zoning_code. Then answer in this order: (1) the application(s) they need, each as a Markdown link to its apply_url labeled with the record type name — for pools, solar and EV chargers also give the start_a_project questionnaire_url, which files every needed application together; (2) the key rules from the code, each citing its section as a Markdown link to the section url (e.g. "[§1121.02(d)](url)"), stated as the code states them; (3) what to submit and the fee, taken only from the splash_page text; (4) when the project would need a variance or other approval first (e.g. Board of Zoning Appeals) and that application's link; (5) the department contact from the splash page or knowledge base. Quote fees, dimensions and requirements only from tool results — never estimate. If the splash page and the code seem to differ, give the code section and say Planning staff make the final determination. If weak_match is true, say which applications look closest and ask one short question (e.g. residential or commercial, attached or detached). Always remind them an application is not a permit and work waits for issuance.
 - ADDRESS NOT IN CITY LAYER: if a lookup_zoning result's found_via says the address was found in Franklin County Auditor records (not the City parcel layer), tell the resident the address was located in Franklin County Auditor records, state the matched address, give the auditor_link (their parcel page on the Auditor site), and — if tax_district is not CITY OF HILLIARD — explain the property is outside Hilliard's zoning jurisdiction. Always include the auditor_link when a resident asks about property records or when a property isn't in the City layer.
 - ADDRESS NOT FOUND (CRITICAL): if lookup_zoning returns an error with address_not_found, the address does not exist in City or County records. Say so plainly, repeat the address you were given, and — if street_on_file is present — tell the resident the street exists but its addresses run from street_on_file.low to street_on_file.high, so the house number should be re-checked. NEVER produce a zoning letter, a zoning classification, a parcel ID, an owner, a map, or a permit list for a different property, and never call lookup_permits. Do not silently correct the address to a nearby or similar one. Ask the resident to confirm the correct address instead.
 - ZONING CLASSIFICATION SOURCE: the district code, its full name, and the code_url come from the lookup_zoning result. Never state, imply, or guess which ordinance created or rezoned a property's district — that information is not returned by any tool. If a resident asks about the rezoning history of a property, tell them the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) has the rezoning record, and offer to search the Planning & Zoning application master list with search_projects.
@@ -1609,7 +1926,7 @@ export default {
         // here on every request. The page's staff-mode checkbox lives in the visitor's
         // own browser and is not evidence of anything.
         const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
-        const baseTools = TOOLS.concat([PROGRAMS_TOOL, MEETINGS_TOOL]);
+        const baseTools = TOOLS.concat([PROGRAMS_TOOL, MEETINGS_TOOL, PERMIT_TYPE_TOOL, ZONING_CODE_TOOL]);
         const tools = isStaff ? baseTools.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL, CREATE_GW_TOOL, INFA_TOOL]) : baseTools;
         const maxTokens = isStaff ? 8000 : MAX_TOKENS;
 
@@ -1620,9 +1937,54 @@ export default {
         // Multi-hop loop: the Worker handles lookup_permits itself (it holds the
         // OpenGov key); lookup_zoning is delegated to the browser (keyless GIS),
         // so any response containing a lookup_zoning call is returned as-is.
+        // One dispatcher for every server-side tool (also used below to fill in results the page
+        // could not run itself).
+        const runServerTool = async (b) => {
+          let out;
+          if (b.name === 'lookup_permits') out = await lookupPermitsOpenGov(env, b.input && b.input.address);
+          else if (b.name === 'search_projects') out = await searchProjects(env, b.input && b.input.query);
+          else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query, b.input);
+          else if (b.name === 'lookup_meeting_agenda') out = await lookupMeetingAgenda(env, b.input || {});
+          else if (b.name === 'find_permit_type') out = await findPermitType(env, b.input || {});
+          else if (b.name === 'search_zoning_code') out = await searchZoningCode(env, b.input || {});
+          // Re-check isStaff here, not just at tool-list assembly: a tool name in the
+          // conversation history must never be enough to reach the drafting library.
+          else if (b.name === 'draft_legislation') out = isStaff
+            ? await findLegislationModels(env, b.input && b.input.subject)
+            : { error: 'not authorized' };
+          else if (b.name === 'lookup_sos_entity') out = isStaff
+            ? await lookupSosEntity(b.input && b.input.owner_name)
+            : { error: 'not authorized' };
+          else if (b.name === 'create_grass_weed_complaint') out = isStaff
+            ? await createGrassWeedComplaint(env, b.input || {})
+            : { error: 'not authorized' };
+          else if (b.name === 'search_infrastructure_records') out = isStaff
+            ? await searchInfrastructureRecords(env, b.input || {})
+            : { error: 'not authorized' };
+          else out = { error: 'unknown tool' };
+          return out;
+        };
+        // When a turn mixed a browser tool (lookup_zoning) with server tools (find_permit_type,
+        // search_zoning_code…), the page runs only its own and answers the rest with
+        // "handled server-side". Run those here before the model sees them.
+        try {
+          const lastMsg = messages[messages.length - 1], prevMsg = messages[messages.length - 2];
+          if (lastMsg && lastMsg.role === 'user' && Array.isArray(lastMsg.content) && prevMsg && prevMsg.role === 'assistant' && Array.isArray(prevMsg.content)) {
+            const uses = {};
+            prevMsg.content.filter(b => b && b.type === 'tool_use').forEach(b => { uses[b.id] = b; });
+            for (const tr of lastMsg.content) {
+              if (tr && tr.type === 'tool_result' && uses[tr.tool_use_id] && /handled server-side|not available on the/i.test(String(tr.content || ''))) {
+                const u = uses[tr.tool_use_id];
+                if (u.name === 'lookup_zoning' || u.name === 'lookup_owner_for_notice') continue;
+                const out = await runServerTool(u);
+                if (!(out && out.error === 'unknown tool')) tr.content = JSON.stringify(out);
+              }
+            }
+          }
+        } catch (e) { console.log('prefill server tools failed', e.message); }
         let convo = messages;
         let last = null;
-        for (let hop = 0; hop < 4; hop++) {
+        for (let hop = 0; hop < 5; hop++) {
           const r = await callAnthropic(apiKey, cfg.model, system, convo, tools, maxTokens);
           if (!r.ok) {
             // Surface enough of the upstream failure to diagnose it without leaking the key.
@@ -1647,26 +2009,7 @@ export default {
           convo = convo.concat([{ role: 'assistant', content: r.data.content }]);
           const results = [];
           for (const b of toolBlocks) {
-            let out;
-            if (b.name === 'lookup_permits') out = await lookupPermitsOpenGov(env, b.input && b.input.address);
-            else if (b.name === 'search_projects') out = await searchProjects(env, b.input && b.input.query);
-            else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query, b.input);
-            else if (b.name === 'lookup_meeting_agenda') out = await lookupMeetingAgenda(env, b.input || {});
-            // Re-check isStaff here, not just at tool-list assembly: a tool name in the
-            // conversation history must never be enough to reach the drafting library.
-            else if (b.name === 'draft_legislation') out = isStaff
-              ? await findLegislationModels(env, b.input && b.input.subject)
-              : { error: 'not authorized' };
-            else if (b.name === 'lookup_sos_entity') out = isStaff
-              ? await lookupSosEntity(b.input && b.input.owner_name)
-              : { error: 'not authorized' };
-            else if (b.name === 'create_grass_weed_complaint') out = isStaff
-              ? await createGrassWeedComplaint(env, b.input || {})
-              : { error: 'not authorized' };
-            else if (b.name === 'search_infrastructure_records') out = isStaff
-              ? await searchInfrastructureRecords(env, b.input || {})
-              : { error: 'not authorized' };
-            else out = { error: 'unknown tool' };
+            const out = await runServerTool(b);
             results.push({ type: 'tool_result', tool_use_id: b.id, content: JSON.stringify(out) });
           }
           convo = convo.concat([{ role: 'user', content: results }]);
@@ -1841,9 +2184,19 @@ export default {
         if (a === 'refresh_caches') {
           // Drop cached copies of the published data files so a freshly uploaded
           // programs.json / legislation-index.json / meetings.json is used immediately.
-          for (const k of ['programs:cache', 'legis:cache', 'projects:cache', 'meetings:live']) { try { await env.KV.delete(k); } catch (e) {} }
+          for (const k of ['programs:cache', 'legis:cache', 'projects:cache', 'meetings:live', 'portal:cache']) { try { await env.KV.delete(k); } catch (e) {} }
           let programs = null; try { const c = await getPrograms(env); programs = { count: (c.programs || []).length, generated: c.generated }; } catch (e) { programs = { error: e.message }; }
           return json({ ok: true, programs }, 200, env);
+        }
+        if (a === 'test_permit_type') {
+          // Can the Worker read the OpenGov public portal API? Shows live vs snapshot.
+          if (body.fresh) { try { await env.KV.delete('portal:cache'); } catch (e) {} }
+          const out = await findPermitType(env, { project: String(body.query || 'build a deck'), record_type_id: body.record_type_id });
+          return json(out, 200, env);
+        }
+        if (a === 'test_zoning_code') {
+          const out = await searchZoningCode(env, { query: String(body.query || 'shed setback'), section: body.section, district: body.district });
+          return json(out, 200, env);
         }
         if (a === 'test_meetings') {
           const out = await lookupMeetingAgenda(env, { query: String(body.query || 'what is on the BZA agenda tonight') });

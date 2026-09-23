@@ -106,3 +106,28 @@ Install the Claude desktop app on the home machine, clone or download this repos
 folder, and point Cowork at that folder. Claude can then read and edit the same files. Pull
 the latest changes before you start and commit when you finish, so the two machines never
 drift apart.
+
+## Permit portal assistant (`permits.html`)
+
+`https://hilliardohio.github.io/chat/permits.html` is Ask Clark set up for the OpenGov permit
+portal. A resident describes a project; Clark names the application(s) with their portal
+links, the zoning rules that apply (with Municode section links), what to submit and the fee.
+
+- **Where the answers come from.** Two Worker tools:
+  - `find_permit_type` reads the portal's own public API
+    (`api-east.viewpointcloud.com/v2/hilliardoh/record_types`, `categories`,
+    `project_templates`), so the *splash page* text on each application is what Clark
+    quotes. Edit that text in OpenGov (Settings → System → Content → a department → a record
+    type) and Clark picks it up within an hour (or right away after `/admin` → Refresh caches).
+    If the API is unreachable it falls back to `opengov-record-types.json` in this repo.
+  - `search_zoning_code` searches `zoning-code.json` — Part Eleven (Planning & Zoning Code)
+    captured from Municode. Municode's API needs a signed-in token, so this is a snapshot:
+    re-capture it after a code supplement.
+- **Words residents use that the portal doesn't** ("deck", "hot tub", "water heater") map to
+  record types in `PERMIT_ALIASES` in `worker.js`. Add a line there when Clark picks the
+  wrong application.
+- **URL options:** `?type=6460` opens with that application in context (use the record-type
+  id from the portal URL); `?q=…` asks a question on load; `?embed=1` shows only the chat,
+  for an iframe.
+- **Admin tests** (`POST /admin/api`): `test_permit_type` `{query, fresh:true}` shows whether
+  the live portal API was used; `test_zoning_code` `{query | section:"1121.02(d)"}`.
