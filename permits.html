@@ -50,6 +50,9 @@
   .follow{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
   .follow input{flex:1;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font:inherit;min-width:0}
   .follow button{border:0;background:var(--accent);color:#fff;border-radius:6px;font:inherit;font-weight:700;padding:0 18px;cursor:pointer}
+  .letter{background:#fbfcfd;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:8px;padding:12px 14px;margin:10px 0;font-size:13.5px}
+  .letter .lt{font-weight:700;color:var(--brand);font-size:13.5px;letter-spacing:.3px;margin-bottom:2px}
+  .printBtn{background:var(--brand);color:#fff;border:none;border-radius:6px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
   .note{font-size:12px;color:var(--muted);padding:0 16px 12px}
   h2.sec{font-size:19px;font-weight:700;margin:30px 0 4px}
   p.sub{color:var(--muted);margin-bottom:14px}
@@ -143,6 +146,7 @@ function guides(){
     'You are answering on the City of Hilliard permit portal assistant (next to hilliardoh.portal.opengov.com). Your name is Clark. Focus on permits, applications, zoning and building rules, inspections, contractor registration and code complaints. For other City topics give a one-sentence answer or point to Ask Clark at https://hilliardohio.github.io/chat/.',
     'For any project or activity, follow the PROJECTS, PERMITS & HOW TO PROCEED rule exactly: call find_permit_type AND search_zoning_code in the same turn before answering; add lookup_zoning when an address is given. Never name an application without its apply link from find_permit_type.',
     'Layout for this page: start with one line "You will need:" followed by the applications as "- [Name](apply_url) — what it covers"; then "Rules to know:" with 2-5 short dashes each ending in the code citation link; then "What to submit:" and "Fee:" from the splash page; then one line on next steps (variance/BZA if their plan exceeds a rule) and the contact. Keep it under about 220 words unless they ask for detail.',
+    'ZONING LETTERS: when the resident asks for a zoning letter, zoning verification letter or a summary of a property\'s zoning, follow the ZONING LETTER rule exactly (lookup_zoning, then lookup_permits, then the <<<LETTER>>> … <<<END LETTER>>> block with the [ZONING MAP] line). The layout above does not apply to letters.',
     'If the answer depends on the zoning district (setbacks, lot coverage, allowed uses) and no address was given, give the general rules and end by inviting them to add their street address for district-specific rules.'
   ];
   if(TYPE_ID) g.push('The resident opened this assistant from the portal page for record type ' + TYPE_ID + (typeName ? ' (' + typeName + ')' : '') + '. When they ask about "this permit" or "this application", call find_permit_type with record_type_id ' + TYPE_ID + '.');
@@ -596,11 +600,119 @@ function autolink(text){
   frag.appendChild(document.createTextNode(text.slice(last)));
   return frag;
 }
+/* Zoning letters: same rendering as index.html (letter box, zoning map, print button). */
+function renderBody(div, text, role){
+  const m = role === 'bot' ? text.match(/<<<LETTER>>>([\s\S]*?)<<<END LETTER>>>/) : null;
+  if(!m){ div.appendChild(linkify(text)); return; }
+  const before = text.slice(0, m.index).trim();
+  const after = text.slice(m.index + m[0].length).trim();
+  const body = m[1].trim();
+  if(before){ div.appendChild(linkify(before)); }
+  const box = document.createElement('div');
+  box.className = 'letter';
+  const lt = document.createElement('div');
+  lt.className = 'lt'; lt.textContent = 'INFORMATIONAL ZONING SUMMARY';
+  box.appendChild(lt);
+  // Insert the zoning map where the letter's [ZONING MAP] marker appears (or at the end).
+  const zm = (window.lastZoning && window.lastZoning.zoning_map) || null;
+  const parts = body.split('[ZONING MAP]');
+  box.appendChild(linkify(parts[0]));
+  if(zm){ box.appendChild(zoningMapBlock(zm)); }
+  if(parts.length > 1){ box.appendChild(linkify(parts.slice(1).join(''))); }
+  div.appendChild(box);
+  const btn = document.createElement('button');
+  btn.className = 'printBtn';
+  btn.textContent = 'Print / Save as PDF';
+  btn.onclick = () => printLetter(body, zm);
+  div.appendChild(btn);
+  if(after){ div.appendChild(document.createElement('br')); div.appendChild(linkify(after)); }
+}
+function zoningMapBlock(zm){
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'margin:8px 0';
+  const a = document.createElement('a');
+  a.href = zm.live_map_url; a.target = '_blank'; a.rel = 'noopener';
+  a.title = 'Open this parcel on the live City zoning map';
+  // The image is generated centered on the parcel, so a centered dot marks it exactly.
+  a.style.cssText = 'position:relative;display:inline-block;line-height:0';
+  const img = document.createElement('img');
+  img.src = zm.image_url;
+  // If the visitor's network blocks the GIS host, reload the image through the Worker proxy.
+  img.onerror = function(){ if(!img.dataset.retried){ img.dataset.retried = '1'; img.src = gisViaProxy(zm.image_url); } };
+  img.alt = 'Zoning map of the property — click to open the live City zoning map';
+  img.style.cssText = 'display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px';
+  a.appendChild(img);
+  const dot = document.createElement('span');
+  dot.setAttribute('aria-hidden', 'true');
+  dot.style.cssText = 'position:absolute;left:50%;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;'
+    + 'border-radius:50%;background:#d93025;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45);'
+    + 'pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact';
+  a.appendChild(dot);
+  wrap.appendChild(a);
+  const cap = document.createElement('div');
+  cap.style.cssText = 'font-size:11.5px;color:#5c6b78;margin-top:4px';
+  cap.appendChild(document.createTextNode('The red dot marks the property. Click the map to open this parcel on the live City zoning map, or open the '));
+  const full = document.createElement('a');
+  full.href = zm.full_map_url; full.target = '_blank'; full.rel = 'noopener'; full.textContent = 'full Hilliard Zoning Map';
+  cap.appendChild(full); cap.appendChild(document.createTextNode('.'));
+  wrap.appendChild(cap);
+  return wrap;
+}
+function printLetter(body, zm){
+  const w = window.open('', '_blank');
+  if(!w){ alert('Please allow pop-ups to print the letter.'); return; }
+  let esc = body.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  // Convert markdown links to anchors first, protecting them with placeholders
+  // so the bare-URL pass below can't double-wrap their href.
+  const anchors = [];
+  esc = esc.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (mm, label, url) => {
+    anchors.push('<a href="' + recordHref(url) + '" target="_blank" rel="noopener">' + label + '</a>');
+    return '\uE000' + (anchors.length - 1) + '\uE000';
+  });
+  esc = esc.replace(/(https?:\/\/[^\s<]+|(?:[a-z0-9-]+\.)+(?:gov|com|org|net)(?:\/[^\s<]*)?)/gi, (u) => {
+    let trail = ''; const tm = u.match(URL_TRAIL);
+    if(tm){ trail = u.slice(u.length - tm[0].length); u = u.slice(0, u.length - tm[0].length); }
+    const href = recordHref(u.startsWith('http') ? u : 'https://' + u);
+    return '<a href="' + href + '" target="_blank" rel="noopener">' + u + '</a>' + trail;
+  });
+  esc = esc.replace(/\uE000(\d+)\uE000/g, (mm, i) => anchors[+i]);
+  // Zoning map: place it where the [ZONING MAP] marker is (or after the letter text).
+  const hAttr = (s) => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  const dotCss = 'position:absolute;left:50%;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;'
+    + 'background:#d93025;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45);'
+    + '-webkit-print-color-adjust:exact;print-color-adjust:exact';
+  const mapHtml = zm ? ('<div style="margin:10px 0"><a href="' + hAttr(zm.live_map_url) + '" target="_blank" rel="noopener" style="position:relative;display:inline-block;line-height:0">'
+    + '<img src="' + hAttr(zm.image_url) + '" alt="Zoning map of the property" style="display:block;max-width:100%;width:480px;border:1px solid #dde4ea;border-radius:6px">'
+    + '<span aria-hidden="true" style="' + dotCss + '"></span></a>'
+    + '<div style="font-family:-apple-system,\'Segoe UI\',Arial,sans-serif;font-size:11px;color:#5c6b78;margin-top:4px">The red dot marks the property. Click the map to open this parcel on the live City zoning map, or open the <a href="' + hAttr(zm.full_map_url) + '" target="_blank" rel="noopener">full Hilliard Zoning Map</a>.</div></div>') : '';
+  const content = (esc.indexOf('[ZONING MAP]') >= 0)
+    ? '<pre>' + esc.replace('[ZONING MAP]', '</pre>' + mapHtml + '<pre>') + '</pre>'
+    : '<pre>' + esc + '</pre>' + mapHtml;
+  w.document.write('<!DOCTYPE html><html><head><title>Informational Zoning Summary</title><style>'
+    + "body{font-family:Georgia,'Times New Roman',serif;color:#1d2b36;max-width:7.2in;margin:40px auto;line-height:1.55;font-size:13.5px}"
+    + ".lh{border-bottom:3px solid #1b3a5c;padding-bottom:12px;margin-bottom:6px}"
+    + ".lh h1{font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#1b3a5c;font-size:22px;margin:0}"
+    + ".lh .sub{font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#5c6b78;font-size:11.5px;margin-top:3px}"
+    + ".banner{background:#fdf3dc;border:1px solid #ecd9a0;padding:8px 12px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:.3px;margin:14px 0;text-transform:uppercase;color:#7a5a00}"
+    + 'pre{white-space:pre-wrap;font:inherit;margin:0}'
+    + '@media print{.noprint{display:none}}'
+    + '</style></head><body>'
+    + '<div class="lh"><h1>City of Hilliard, Ohio</h1><div class="sub">Hilliard Assistant &middot; hilliardohio.gov &middot; (614) 876-7361 &middot; 3800 Municipal Way, Hilliard, OH 43026</div></div>'
+    + '<div class="banner">Informational zoning summary &mdash; not an official Zoning Verification Letter</div>'
+    + content
+    + '<p class="noprint"><button onclick="window.print()">Print</button></p>'
+    + '</body></html>');
+  w.document.close();
+}
 function addMsg(role, text){
   const div = document.createElement('div');
   div.className = 'msg ' + role;
-  if(role === 'bot') div.appendChild(linkify(String(text).replace(/^\s*\[ZONING MAP\]\s*$/gm, '').replace(/\*\*/g, '')));
-  else div.textContent = text;
+  if(role === 'bot'){
+    let t = String(text).replace(/\*\*/g, '');
+    // Outside a letter the map marker has nothing to attach to.
+    if(!/<<<LETTER>>>/.test(t)) t = t.replace(/^\s*\[ZONING MAP\]\s*$/gm, '');
+    renderBody(div, t, role);
+  } else div.textContent = text;
   $('thread').appendChild(div);
   $('thread').scrollTop = $('thread').scrollHeight;
   resizeEmbed();
