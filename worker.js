@@ -636,7 +636,13 @@ function cwClassify(title, path) {
     if (y) date = (mo ? mo[0].toUpperCase() + mo.slice(1) + ' ' : '') + y;
   }
   const num = (title.match(/\b(Ordinance|Resolution)\s+No\.?\s*([0-9]{2}-R?-?[0-9]+[A-Z]?)/i) || []);
-  return { kind, body: bodyM ? bodyM[1].replace(/&amp;/g, '&') : undefined, date, number: num[2] ? num[1] + ' ' + num[2] : undefined };
+  // Planning staff reports sit in "Meeting Attachments > Planning Report", not under a board;
+  // the case number says which board heard it (BZA-25-23, PZ-26-11).
+  const caseM = (title + ' ' + path).match(/\b(BZA|PZ|P&Z|PC)[- ]?(\d{2})[- ](\d{1,3})\b/i);
+  let body = bodyM ? bodyM[1].replace(/&amp;/g, '&') : undefined;
+  if (caseM && (!body || /Planning Report|Agenda Memo/i.test(path))) body = /^BZA/i.test(caseM[1]) ? 'Board of Zoning Appeals' : 'Planning & Zoning Commission';
+  if (body && /^Planning (and|&) Zoning/i.test(body)) body = 'Planning & Zoning Commission';
+  return { kind, body, date, number: num[2] ? num[1] + ' ' + num[2] : undefined, case_number: caseM ? (/^BZA/i.test(caseM[1]) ? 'BZA' : 'PZ') + '-' + caseM[2] + '-' + caseM[3] : undefined };
 }
 function cwSortKey(date) {
   const m = String(date).match(/(?:(\w+) (?:(\d{1,2}), )?)?(\d{4})$/);
@@ -652,21 +658,42 @@ async function cwJson(path, init) {
   const t = await r.text();
   try { return JSON.parse(t); } catch (e) { throw new Error('CivicWeb search returned non-JSON (' + t.slice(0, 60).replace(/\s+/g, ' ') + '…) — possibly bot-blocked'); }
 }
+// CivicWeb's index requires every unquoted word to match and chokes on common words
+// ("history of the Homestead park" returns nothing; "Homestead park" returns 227), so
+// strip filler words outside quotes, and if a search still comes back empty, retry with
+// fewer words.
+const CW_STOP = new Set(['a','an','the','of','and','or','for','to','in','on','at','by','with','from','about','is','are','was','were','be','what','when','which','who','how','did','does','do','any','all','history','legislative','background','records','record','documents','document','information','info','regarding','related','city','hilliard','ohio']);
+function cwCriteria(q) {
+  const phrases = [];
+  const rest = String(q).replace(/"[^"]+"/g, m => { phrases.push(m); return ' '; });
+  const words = rest.split(/\s+/).map(w => w.replace(/^[^\w&-]+|[^\w&-]+$/g, '')).filter(w => w && !CW_STOP.has(w.toLowerCase()));
+  return { phrases, words };
+}
 async function searchCivicwebDocuments(env, input) {
   const query = String((input && input.query) || '').replace(/\s+/g, ' ').trim().slice(0, 200);
   if (!query) return { error: 'no query' };
   const sort = (input && input.sort) === 'newest' || (input && input.sort) === 'oldest' ? input.sort : 'relevance';
   const kinds = Array.isArray(input && input.types) ? input.types.map(s => String(s).toLowerCase()) : [];
   const fromYear = Number(input && input.from_year) || 0, toYear = Number(input && input.to_year) || 0;
-  const key = 'cwsearch:' + sort + ':' + query.toLowerCase();
+  const key = 'cwsearch2:' + sort + ':' + query.toLowerCase();
   let rows = null;
   try { const c = await env.KV.get(key); if (c) rows = JSON.parse(c); } catch (e) {}
   try {
     if (!rows) {
-      const crit = encodeURIComponent(query);
-      const ids = await cwJson(CW_SEARCH + '?criteria=' + crit + '&ordercolumn=' + (sort === 'relevance' ? 'Rank' : 'DateCreated') + '&ascending=' + (sort === 'oldest') + '&showDocuments=true&showTrackerItems=true&showMeetingItems=true');
-      const list = (Array.isArray(ids) ? ids : []).slice(0, 60);
-      rows = [];
+      const { phrases, words } = cwCriteria(query);
+      const tries = [phrases.concat(words).join(' ')];
+      // Relax: drop words from the end, keeping quoted phrases and at least one word.
+      for (let n = words.length - 1; n >= 1 && tries.length < 4; n--) tries.push(phrases.concat(words.slice(0, n)).join(' '));
+      let ids = [], used = tries[0];
+      for (const t of tries) {
+        if (!t.trim()) continue;
+        ids = await cwJson(CW_SEARCH + '?criteria=' + encodeURIComponent(t) + '&ordercolumn=' + (sort === 'relevance' ? 'Rank' : 'DateCreated') + '&ascending=' + (sort === 'oldest') + '&showDocuments=true&showTrackerItems=true&showMeetingItems=true');
+        used = t;
+        if (Array.isArray(ids) && ids.length) break;
+      }
+      const crit = encodeURIComponent(used);
+      rows = { used, list: [] };
+      const list = (Array.isArray(ids) ? ids : []).slice(0, 90);
       for (let i = 0; i < list.length; i += 30) {
         const det = await cwJson(CW_SEARCH + '/details?criteria=' + crit + '&ordercolumn=Rank&ascending=false', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(list.slice(i, i + 30))
@@ -675,12 +702,12 @@ async function searchCivicwebDocuments(env, input) {
           const path = cwPlain(d.PathHtml);
           if (/^secure folder/i.test(path)) continue;
           const title = cwPlain(d.TitleHtml);
-          rows.push(Object.assign({ id: d.Id, title, path, snippet: cwPlain(d.SampleHtml).slice(0, 420), url: CIVICWEB + (d.LinkUrl || '/document/' + d.Id) + '/' }, cwClassify(title, path)));
+          rows.list.push(Object.assign({ id: d.Id, title, path, snippet: cwPlain(d.SampleHtml).slice(0, 420), url: CIVICWEB + (d.LinkUrl || '/document/' + d.Id) + '/' }, cwClassify(title, path)));
         }
       }
       try { await env.KV.put(key, JSON.stringify(rows), { expirationTtl: 3600 }); } catch (e) {}
     }
-    let out = rows.slice();
+    let out = rows.list.slice();
     // An agenda is published as both "- Pdf" and "- Html"; keep one row, remember the HTML id (readable text).
     const seen = new Map();
     out = out.filter(r => {
@@ -690,17 +717,22 @@ async function searchCivicwebDocuments(env, input) {
       seen.set(base, r); return true;
     });
     if (kinds.length) out = out.filter(r => kinds.some(k => r.kind.toLowerCase().includes(k.replace(/s$/, ''))));
+    const bodyWant = String((input && input.body) || '').toLowerCase();
+    if (bodyWant) {
+      const re = /bza|zoning appeals/.test(bodyWant) ? /zoning appeals/i : /planning|p&z|pz\b|commission/.test(bodyWant) ? /planning & zoning/i : /council|whole/.test(bodyWant) ? /council|committee of the whole/i : new RegExp(bodyWant.replace(/[^a-z ]/g, ''), 'i');
+      out = out.filter(r => re.test(r.body || '') || re.test(r.path));
+    }
     if (fromYear || toYear) out = out.filter(r => { const y = Math.floor(cwSortKey(r.date) / 10000); return !y || ((!fromYear || y >= fromYear) && (!toYear || y <= toYear)); });
     const total = out.length;
     out = out.slice(0, 25);
     const legislation = out.filter(r => /^(Ordinance|Resolution)$/.test(r.kind));
     return {
-      query, sort, matches_shown: out.length, matches_in_index: rows.length,
-      results: out.map(r => ({ document_id: r.id, html_document_id: r.html_id, title: r.title, type: r.kind, number: r.number, body: r.body, date: r.date, folder: r.path, excerpt: r.snippet, url: r.url })),
+      query, searched_for: rows.used, sort, matches_shown: out.length, matches_checked: rows.list.length,
+      results: out.map(r => ({ document_id: r.id, html_document_id: r.html_id, title: r.title, type: r.kind, number: r.number, case_number: r.case_number, body: r.body, date: r.date, folder: r.path, excerpt: r.snippet, url: r.url })),
       timeline: out.filter(r => r.date).slice().sort((a, b) => cwSortKey(a.date) - cwSortKey(b.date)).map(r => r.date + ' — ' + r.kind + ' — ' + r.title),
       legislation_found: legislation.map(r => (r.number || r.title) + ' (' + r.date + ')'),
       more_available: total > out.length,
-      search_page: CIVICWEB + '/Portal/VirtualLibrary.aspx?SearchText=' + encodeURIComponent(query),
+      search_page: CIVICWEB + '/Portal/VirtualLibrary.aspx?SearchText=' + encodeURIComponent(rows.used),
       note: 'Results come from the City’s CivicWeb full-text index (agendas, minutes, legislation, staff reports). Excerpts are the index’s hit snippets; call read_civicweb_document for a document’s actual content before stating what it decided.'
     };
   } catch (e) {
@@ -768,9 +800,10 @@ const CW_SEARCH_TOOL = {
   name: 'search_civicweb_documents',
   description: "Full-text search of every document in the City of Hilliard's CivicWeb Document Center — City Council, Committee of the Whole, Planning & Zoning Commission, BZA and other board agendas and minutes, ordinances and resolutions with their exhibits, staff reports and agenda memos, and public notices, back to the 2000s. Returns matching documents (type, number, board, date, folder, the index's text excerpt, link) plus a date-ordered timeline. Use for the legislative history or background of a topic, property, project, road, program or policy; for 'when did Council approve/decide/discuss X'; and to find a specific ordinance, resolution or set of minutes. Run several searches with different wording (project name, street, ordinance number, 'rezoning', 'annexation') to build a complete history.",
   input_schema: { type: 'object', properties: {
-    query: { type: 'string', description: "Search words, e.g. 'Heritage Golf Club rezoning', 'Homestead Metro Park', 'Ordinance 25-06', 'Cemetery Road widening'. Put a phrase in double quotes for an exact match." },
+    query: { type: 'string', description: "Search words, e.g. 'Heritage Golf Club rezoning', 'Homestead Metro Park', 'Ordinance 25-06', 'Cemetery Road widening'. Use 2-4 distinctive words — every word must appear in a document, and filler words are ignored. Put a phrase in double quotes for an exact match. Case numbers work: 'BZA-25-23', 'PZ-26-11'." },
     sort: { type: 'string', enum: ['relevance', 'newest', 'oldest'], description: "Default relevance. Use oldest/newest to walk a history in date order." },
     types: { type: 'array', items: { type: 'string' }, description: "Optional filter: any of 'ordinance', 'resolution', 'minutes', 'agenda', 'staff memo', 'planning staff report', 'exhibit', 'public notice'." },
+    body: { type: 'string', description: "Optional board filter: 'Board of Zoning Appeals' (BZA), 'Planning & Zoning Commission' (P&Z), or 'City Council' (includes Committee of the Whole)." },
     from_year: { type: 'number' }, to_year: { type: 'number' }
   }, required: ['query'] }
 };
@@ -2002,7 +2035,7 @@ RULES:
 - ENGINEERING STANDARDS: For questions about engineering, design, or construction standards — roadway/pavement design, sanitary sewer or water main design, stormwater management/detention, erosion & sediment control, traffic control devices, street lighting, green infrastructure, landscaping/tree standards, development plan submittal requirements, standard construction drawings, or street naming/addressing — use the ENGINEERING DESIGN & CONSTRUCTION STANDARDS section of the knowledge base: briefly summarize what the standards say or which chapter applies, link to the manual, and refer detailed or project-specific questions to the Engineering Division. Note these are technical standards intended for engineers, developers, and contractors.
 - PLANNING & ZONING PROJECTS: when a resident asks about a named project or development, wants a list of applications of a given type (e.g. "list the PUDs in Hilliard", "what conditional-use applications were approved", "rezonings on Cemetery Rd"), or uses a project/case keyword that is not a street address, use the search_projects tool with concise keywords. Present results as a clean list: project name — application type — zoning — location — approval date, followed by the record/case number. IMPORTANT: when a result has a "url", render its record number as a Markdown link using exactly this syntax, including the literal square brackets and parentheses: "[PZ-26-14](THE_URL)" — replacing the label with the result's "record" value and THE_URL with its "url" value copied verbatim. If a result has no "url", write its record number (or case number) as plain text with no link. Never invent a URL for a record. If the result notes more matches than shown, say so and offer to narrow the search. Cite the source as the City's Planning & Zoning application master list and note the official record is on the OpenGov portal / Planning Division. For a specific ADDRESS, still use lookup_zoning; you may use both when a resident asks about a property AND its planning history.
 - MEETINGS, AGENDAS & MINUTES: for any question about a public meeting — what's on an agenda ("tonight", "next week", a date), when a board meets, a case number like BZA-26-31, or what was decided — call lookup_meeting_agenda with the resident's words. Present the meeting as a heading (body — date — time — location), then the substantive agenda items as a list. Skip procedural items (Call to Order, Pledge, Roll Call, Adjournment) unless asked. For each case give the case number, address and a one-line summary of the request from details, and render its staff-report attachment as a Markdown link labeled with the case number (literal brackets and parentheses, URL verbatim). Always link the full agenda (agenda_url) and, if present, the packet and minutes. If source is a snapshot, say the agenda was current as of that date. If a meeting has no agenda published yet, say so and give the meeting link. Never invent an agenda item, case, date or outcome; minutes are the only source for what was decided, and if minutes_url is absent say the minutes aren't posted yet.
-- LEGISLATIVE HISTORY & PAST DECISIONS: when a resident asks for the "legislative history", "history", background or past Council/board action on a topic, property, project, road, program or policy — or asks when something was approved, discussed or decided, or for a specific ordinance, resolution or set of minutes — call search_civicweb_documents. Work in two rounds to keep it fast: FIRST turn — call search_civicweb_documents 2-3 times IN THE SAME TURN with different wording (the project or property name, the street, any known ordinance/resolution/case number, and terms like rezoning, annexation, agreement; one of them with sort "oldest"). SECOND turn — ONLY IF the read_civicweb_document tool is available to you (verified City staff), call it IN THE SAME TURN on at most three key documents (the adopting ordinance/resolution and the minutes of the meeting that voted, first) to confirm what was decided and the vote. If that tool is not available, answer right after the searches from the titles, types, dates and excerpts alone. Do not search or read again after that unless the resident asks for more. Present the history as a dated list, oldest first, at most about 12 entries and 450 words: date — body — what happened in one sentence (with ordinance/resolution/case number) — the document as a Markdown link to its url. Include only steps that bear directly on the topic asked; leave out background items that merely mention it. Say a step "approved", "adopted" or give a vote only when a read confirmed it or the excerpt itself states it (an ordinance filed in the Legislation folder with its number may be called "Ordinance No. X"); otherwise describe it from the title and excerpt as "discussed", "on the agenda" or "introduced", and add one line that the linked documents have the full text and votes. End with the CivicWeb search_page link for the full set of results and a note that the Clerk of Council keeps the official record. Never invent a date, number, vote or outcome.
+- LEGISLATIVE HISTORY & PAST DECISIONS: when a resident asks for the "legislative history", "history", background or past Council/board action on a topic, property, project, road, program or policy — or asks when something was approved, discussed or decided, or for a specific ordinance, resolution or set of minutes — call search_civicweb_documents. Work in two rounds to keep it fast: FIRST turn — call search_civicweb_documents 2-3 times IN THE SAME TURN with different wording (the project or property name, the street address, any known ordinance/resolution/BZA/PZ case number, and terms like rezoning, variance, conditional use, annexation, agreement; one of them with sort "oldest"). Planning & Zoning Commission and Board of Zoning Appeals records (agendas, minutes, planning staff reports, case files) are in the same index — for a property, variance, conditional use, rezoning or development history, run one search with body "Board of Zoning Appeals" or "Planning & Zoning Commission" so those boards' records are included. SECOND turn — ONLY IF the read_civicweb_document tool is available to you (verified City staff), call it IN THE SAME TURN on at most three key documents (the adopting ordinance/resolution and the minutes of the meeting that voted, first) to confirm what was decided and the vote. If that tool is not available, answer right after the searches from the titles, types, dates and excerpts alone. Do not search or read again after that unless the resident asks for more. Present the history as a dated list, oldest first, at most about 12 entries and 450 words: date — body — what happened in one sentence (with ordinance/resolution/case number) — the document as a Markdown link to its url. Include only steps that bear directly on the topic asked; leave out background items that merely mention it. Say a step "approved", "adopted" or give a vote only when a read confirmed it or the excerpt itself states it (an ordinance filed in the Legislation folder with its number may be called "Ordinance No. X"); otherwise describe it from the title and excerpt as "discussed", "on the agenda" or "introduced", and add one line that the linked documents have the full text and votes. End with the CivicWeb search_page link for the full set of results and a note that the Clerk of Council keeps the official record. Never invent a date, number, vote or outcome.
 - THE WELL, MEMBERSHIPS & REC PARKS FACILITIES: for questions about joining The Well, membership rates (annual, monthly, senior, family, resident vs non-resident), what a membership includes, daily passes, hours, policies, rentals and parties, the pools, gyms, track, fitness floor, teaching kitchen, HSC 55+ social center, outdoor pools, camps in general, parks and shelters, call lookup_rec_parks_info with the resident's words. Quote prices and hours exactly as the tool returns them, say whether a figure is resident or non-resident, and end with the page link (Markdown link labeled with the page title, URL verbatim). If the resident asks about both a membership and a class, call both tools.
 - RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Adult sports leagues (category "Adult Sports Leagues", e.g. Volleyball Co-Rec Fall) come from the same tool: for those the cost is PER TEAM, the section title shows how many teams are registered of the maximum, and the Register link goes to the league page on WebTrac where a team captain registers the team — say so. Always say availability changes daily and the link shows current status. By default the tool leaves out Full and Unavailable sections; if hidden_full_or_unavailable_sections or matching_programs_with_no_open_sections is greater than zero, add one sentence such as "3 other sections are full or not open for registration" and offer to list them (call again with include_full=true if they ask). If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
 - PROJECTS, PERMITS & HOW TO PROCEED: when a resident describes work or an activity they want to do (build, install, replace, put up, open a business, hold an event, file a complaint) or asks which permit or application they need, call find_permit_type with their words, and in the same turn call search_zoning_code for the rules the project must meet (setbacks, height, size, location, district uses) whenever zoning could apply. If they gave an address, also call lookup_zoning and pass its district to search_zoning_code. Then answer in this order: (1) the application(s) they need, each as a Markdown link to its apply_url labeled with the record type name — for pools, solar and EV chargers also give the start_a_project questionnaire_url, which files every needed application together; (2) the key rules from the code, each citing its section as a Markdown link to the section url (e.g. "[§1121.02(d)](url)"), stated as the code states them; (3) what to submit and the fee, taken only from the splash_page text; (4) when the project would need a variance or other approval first (e.g. Board of Zoning Appeals) and that application's link; (5) the department contact from the splash page or knowledge base. Quote fees, dimensions and requirements only from tool results — never estimate. If the splash page and the code seem to differ, give the code section and say Planning staff make the final determination. If weak_match is true, say which applications look closest and ask one short question (e.g. residential or commercial, attached or detached). Always remind them an application is not a permit and work waits for issuance.
