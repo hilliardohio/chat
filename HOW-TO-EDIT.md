@@ -131,3 +131,24 @@ links, the zoning rules that apply (with Municode section links), what to submit
   for an iframe.
 - **Admin tests** (`POST /admin/api`): `test_permit_type` `{query, fresh:true}` shows whether
   the live portal API was used; `test_zoning_code` `{query | section:"1121.02(d)"}`.
+
+## Legislative history (CivicWeb full-text search)
+
+Ask Clark can research the history of a topic across every agenda, set of minutes, ordinance,
+resolution and staff report in the CivicWeb Document Center
+(`hilliardohio.civicweb.net/filepro/documents`). Nothing is downloaded or stored: the Worker
+calls the same full-text search the public "Search" page uses
+(`/Services/ItemsService.svc/portal/search` for ranked document ids, then `/search/details`
+for titles, folders and hit excerpts).
+
+- `search_civicweb_documents` returns up to 25 matches with type (ordinance, resolution,
+  minutes, agenda, staff memo…), date, number, excerpt and link, plus a date-ordered timeline.
+  Items in "Secure Folder" are skipped.
+- `read_civicweb_document` reads one document for the details (what was approved, the vote):
+  HTML agendas as text; PDFs up to 12 MB / 100 pages are handed to Claude with the question.
+  Full meeting packets (often 20–70 MB) are too big — Clark links them instead.
+- Admin tests (`POST /admin/api`): `test_civicweb_search` `{query, sort:"oldest"}` and
+  `test_civicweb_read` `{document_id, question}`.
+
+**Before uploading `worker.js`, start from the newest copy in this repo.** Several features
+live in the one file; uploading an older copy silently removes whatever was added since.
