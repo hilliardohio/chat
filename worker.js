@@ -816,6 +816,126 @@ const CW_READ_TOOL = {
   }, required: ['document_id', 'question'] }
 };
 
+/* ---------------- PUD / HCD development texts (municipalcodeonline "Planning & Zoning" book) ----------------
+   The City publishes every Planned Unit Development text, subarea text and plan set at
+   hilliard.municipalcodeonline.com (book "development", section "Planned Unit Development Texts
+   And Related Documents"). That site's content API is not open to scripts, so the list is kept
+   in pud-texts.json on GitHub Pages: groups (one per PUD, with the names the City GIS layer uses
+   as aliases) and documents (name, S3 PDF url, kind, subarea). It is used two ways:
+   - find_pud_text answers "send me the PUD text for X";
+   - every lookup_zoning result that lands in a PUD/HCD is enriched here, server-side, with
+     pud_documents and the current text link, so zoning answers and letters on every page link
+     the development text without the page having to do anything. */
+const PUD_TEXTS_URL = 'https://hilliardohio.github.io/chat/pud-texts.json';
+const PUD_LIBRARY_PAGE = 'https://hilliard.municipalcodeonline.com/book?type=development#name=Planned_Unit_Development_Texts_And_Related_Documents';
+let PUD_MEM = null;
+async function getPudLibrary(env) {
+  if (PUD_MEM && Date.now() - PUD_MEM.ts < 6 * 3600 * 1000) return PUD_MEM.data;
+  try { const c = await env.KV.get('pud:cache'); if (c) { const o = JSON.parse(c); if (Date.now() - o.ts < 6 * 3600 * 1000) { PUD_MEM = o; return o.data; } } } catch (e) {}
+  const r = await fetch(PUD_TEXTS_URL, { cf: { cacheTtlByStatus: { '200-299': 600, '300-399': 0, '400-499': 0, '500-599': 0 } } });
+  if (!r.ok) throw new Error('pud-texts.json is not available at ' + PUD_TEXTS_URL + ' (HTTP ' + r.status + ')');
+  const data = await r.json();
+  PUD_MEM = { ts: Date.now(), data };
+  try { await env.KV.put('pud:cache', JSON.stringify(PUD_MEM), { expirationTtl: 86400 }); } catch (e) {}
+  return data;
+}
+const PUD_NOISE = new Set(['pud', 'pnd', 'hcd', 'planned', 'unit', 'development', 'text', 'texts', 'plan', 'plans', 'concept', 'and', 'the', 'of', 'at', 'a', 'formerly', 'also', 'known', 'as', 'properties', 'property', 'located', 'between', 'roads', 'road', 'rd', 'drive', 'dr', 'subarea', 'utd', 'with', 'district']);
+function pudTokens(s) {
+  return String(s || '').toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, ' ').split(' ').filter(w => w && !PUD_NOISE.has(w) && !/^\d{1,2}$/.test(w));
+}
+function pudGroupScore(g, q) {
+  const qt = pudTokens(q);
+  if (!qt.length) return 0;
+  let best = 0;
+  for (const cand of [g.name].concat(g.aliases || [])) {
+    const ct = pudTokens(cand);
+    if (!ct.length) continue;
+    const hit = qt.filter(w => ct.some(c => c === w || (w.length >= 5 && (c.startsWith(w) || w.startsWith(c))))).length;
+    const s = hit / Math.max(qt.length, ct.length) + (hit === qt.length ? 0.25 : 0);
+    if (s > best) best = s;
+  }
+  return best;
+}
+function pudDocsFor(lib, group, subarea) {
+  const sub = String(subarea || '').toUpperCase().replace(/^SUBAREA\s*/, '').replace(/\s+/g, '');
+  const docs = (lib.documents || []).filter(d => d.group === group.name);
+  const rank = d => (sub && d.subarea && d.subarea.toUpperCase() === sub ? 0
+    : d.kind === 'general development standards' ? 1
+    : d.kind === 'text' || d.kind === 'concept plan and text' ? 2
+    : d.kind === 'plans' ? 4
+    : d.kind === 'subarea text' ? 5 : 3);
+  return docs
+    .filter(d => !(d.kind === 'subarea text' && sub && d.subarea && d.subarea.toUpperCase() !== sub))
+    .sort((a, b) => rank(a) - rank(b))
+    .slice(0, 8)
+    .map(d => ({ name: d.name, kind: d.kind, subarea: d.subarea, url: d.url }));
+}
+function pudBestGroup(lib, title) {
+  let best = null, score = 0;
+  for (const g of lib.groups || []) { const s = pudGroupScore(g, title); if (s > score) { score = s; best = g; } }
+  return score >= 0.6 ? { group: best, score } : null;   // 0.5 lets 'Scioto Run' match 'Carriage Run'
+}
+// Adds the development-text documents to a lookup_zoning result (a JSON string from the page).
+async function enrichZoningResult(env, content) {
+  let o;
+  try { o = JSON.parse(content); } catch (e) { return content; }
+  if (!o || !Array.isArray(o.zones)) return content;
+  const puds = o.zones.filter(z => /PUD|HCD|PND/i.test(String(z.district || '')) || z.pud_title);
+  if (!puds.length) return content;
+  let lib;
+  try { lib = await getPudLibrary(env); } catch (e) { return content; }
+  for (const z of puds) {
+    const m = z.pud_title ? pudBestGroup(lib, z.pud_title) : null;
+    if (m) {
+      const docs = pudDocsFor(lib, m.group, z.subarea);
+      if (docs.length) {
+        const main = docs.find(d => d.kind !== 'plans') || docs[0];
+        if (z.pud_text_url && z.pud_text_url !== main.url) z.gis_pud_text_url = z.pud_text_url;
+        z.pud_text_url = main.url;          // current version from the City's PUD library
+        z.pud_documents = docs;
+      }
+      z.pud_name = m.group.name;
+    }
+    z.pud_library_page = PUD_LIBRARY_PAGE;
+  }
+  return JSON.stringify(o);
+}
+async function findPudText(env, input) {
+  let q = String((input && input.name) || '').slice(0, 200);
+  let subarea = input && input.subarea;
+  const sm = q.match(/\bsub-?area\s*([A-Z]{1,2}\s?-?\d{1,2}[A-Z]?)\b/i);
+  if (sm) { if (!subarea) subarea = sm[1].replace(/[\s-]/g, ''); q = q.replace(sm[0], ' '); }
+  try {
+    const lib = await getPudLibrary(env);
+    const scored = (lib.groups || []).map(g => {
+      let s = pudGroupScore(g, q);
+      // Also match on document names ("Subarea B4", "McDonalds", "OhioHealth").
+      const dt = pudTokens(q);
+      if (dt.length && (lib.documents || []).some(d => d.group === g.name && dt.every(w => pudTokens(d.name).some(c => c === w || (w.length >= 5 && c.startsWith(w)))))) s = Math.max(s, 0.8);
+      return { g, s };
+    }).filter(x => x.s >= 0.6).sort((a, b) => b.s - a.s);
+    if (scored.length) { const top = scored[0].s; scored.splice(0, scored.length, ...scored.filter(x => x.s >= top - 0.15).slice(0, 3)); }
+    return {
+      query: q,
+      matches: scored.map(x => ({ pud: x.g.name, also_known_as: x.g.aliases && x.g.aliases.length ? x.g.aliases : undefined, documents: pudDocsFor(lib, x.g, subarea) })),
+      not_found: !scored.length,
+      all_pud_names: scored.length ? undefined : (lib.groups || []).map(g => g.name),
+      library_page: PUD_LIBRARY_PAGE,
+      note: 'Documents are the City’s published PUD/HCD texts and plans (library list captured ' + lib.captured + '). For the PUD that applies to a specific address, use lookup_zoning.'
+    };
+  } catch (e) {
+    return { unavailable: true, reason: (e && e.message) || 'error', library_page: PUD_LIBRARY_PAGE };
+  }
+}
+const PUD_TOOL = {
+  name: 'find_pud_text',
+  description: "Find the City of Hilliard's published Planned Unit Development (PUD) or Hilliard Conservation District (HCD) development text by development name, and return direct links to the text, subarea texts, general development standards and plan sets. Use when someone asks for a PUD text, development text, subarea standards, or the rules of a named development/subdivision (e.g. 'Hoffman Farms PUD text', 'Britton Central subarea B4', 'Alton Place HCD'). For an address, call lookup_zoning instead — its result already includes the PUD documents.",
+  input_schema: { type: 'object', properties: {
+    name: { type: 'string', description: "Development or PUD name, e.g. 'Heritage Preserve', 'Ansmil', 'Truepointe', 'Mill Run'" },
+    subarea: { type: 'string', description: "Optional subarea, e.g. 'A2', 'B4'" }
+  }, required: ['name'] }
+};
+
 const MEETINGS_TOOL = {
   name: 'lookup_meeting_agenda',
   description: 'Look up City of Hilliard public meetings and their agendas from the City\'s iCompass/CivicWeb portal: City Council, Committee of the Whole, Planning & Zoning Commission, Board of Zoning Appeals, Records Commission, Public Arts, ESC, RPAC, Aging in Place and others. Returns the meeting date/time/location, the agenda items (case numbers, addresses, applicants, requests), packet page ranges, and links to the agenda, packet, minutes and each case\'s staff report. Use for "what is on the ___ agenda tonight/next week", "when does ___ meet", "what did Council decide", or any question about a meeting, agenda item, variance case or minutes.',
@@ -2045,6 +2165,7 @@ RULES:
 - You provide general information, not legal advice. For legal interpretation, suggest the resident contact the relevant department or an attorney.
 - If asked about emergencies, always say to call 911 first.
 - ZONING BY ADDRESS OR PLACE NAME: when the question concerns a specific address, property, business, or landmark (its zoning, what can be built or operated there), ALWAYS use the lookup_zoning tool first — never guess. You may pass a business/landmark name (e.g. "Hilliard Kroger on Cemetery Rd") directly; the tool resolves it to an address. If the result includes a resolved_place, begin your answer by stating the resolved street address (e.g. "The Hilliard Kroger is at 4656 Cemetery Rd —") so the resident can confirm it's the right property. If lookup_zoning returns an error (place not found), tell the resident it couldn't be located and ask for a street address. Then answer using that district's standards from the knowledge base. If the result is a PUD, explain that the PUD's own approved development text governs (share the pud_text_url link if provided) and refer detailed questions to the Planning Division. If tax_district is not "CITY OF HILLIARD", say the property appears to be outside city zoning jurisdiction. Mention the matched address so the resident can confirm it's the right parcel, and note that GIS results are informational — the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) provides official zoning verification letters.
+- PUD / HCD DEVELOPMENT TEXTS: when lookup_zoning puts a property in a PUD or HCD (Planned Unit Development / Hilliard Conservation District) zone, ALWAYS include the development text in the answer — whatever the question — as a Markdown link labeled with the PUD name (pud_name, or pud_title) and subarea if any, pointing at pud_text_url copied verbatim; if pud_documents lists other documents that matter (the subarea text, general development standards, plans), link those too, one per line, labeled with each document's name. Explain in one sentence that in a PUD/HCD the development text, not the standard district chapter, sets the permitted uses, setbacks and other standards, and that anything the text does not address falls back to the zoning code. When someone asks for a PUD text or development text by name, or about the rules of a named development or subdivision, call find_pud_text and link the documents it returns; if it finds nothing, say so and link library_page (the City's full PUD list). Never invent or shorten these URLs.
 - PROPERTY DETAILS: the lookup_zoning tool also returns Franklin County Auditor data for the parcel (owner, acreage, year built, last transfer date/price, property class, subdivision). Use it for questions about lot size, ownership, or property history, and mention the data comes from Franklin County Auditor records. For complete records (values, taxes, photos, transfer history) direct the resident to the Auditor's property search: property.franklincountyauditor.com. Property TAX amounts: Franklin County Auditor/Treasurer, not the City.
 - PERMIT HISTORY: to list the permits for a specific address, use the lookup_permits tool (only after you have the confirmed address from lookup_zoning). If it returns records, present them. Whenever the result includes a "location_url", link the resident directly to it (it is that property's OpenGov record page showing every permit) rather than the generic search page. Only if there is no location_url (e.g. the result is "unavailable") fall back to hilliardoh.portal.opengov.com/search — typing the address under "Locations" lists every active and historical permit and its status. Applying for permits, checking their own applications, and requesting zoning verification letters all happen at hilliardoh.portal.opengov.com.
 - ZONING LETTER: when a resident asks for a "zoning letter", "zoning verification letter", "ZVL", or a letter documenting their property's zoning: first, if no address was given, ask for the property address. Once you have it, call lookup_zoning; then call lookup_permits with the matched_address to retrieve the property's permit history. Then (a) explain in one or two sentences that OFFICIAL Zoning Verification Letters — which include conformance determinations, variance history, and violation checks researched by Planning staff — are issued by the Planning Division and may be requested at https://hilliardoh.portal.opengov.com/categories/1080/record-types/6376 (a fee applies) — write that full URL verbatim, not the generic portal address — and that you can provide an instant informational summary; then (b) output the summary between the EXACT markers <<<LETTER>>> and <<<END LETTER>>> (the page renders it as a printable letter). Use this structure in plain text, omitting any line with no data:
@@ -2061,7 +2182,7 @@ To whom it may concern:
 In response to a request for information regarding the above referenced property, the following has been compiled from City of Hilliard GIS records and Franklin County Auditor public records:
 
 Zoning Classification: [Write the zone's "district" code, then a space-dash-space, then its "district_name" value — and render that whole "CODE — Name" string as ONE Markdown link to the zone's "code_url", using EXACTLY this syntax with the literal square brackets and parentheses: "[I-FE — I-270 Corridor District, I-FE Flex Employment subdistrict (§1116.08)](PUT_CODE_URL_HERE)". The characters [ ] ( ) are REQUIRED and must appear literally. Copy code_url verbatim. If the zone has no code_url or no district_name, write what you do have as plain text with no link. This line is the ENTIRE zoning classification section: write NOTHING else about the district — no description of the district, no history, no statement about which ordinance established or rezoned it, and never name a rezoning ordinance number. The tool does not return one and you must not infer one.]
-[Include the next line ONLY when the district is PUD and a pud_text_url is present, then nothing further:] Approved development text: [Markdown link, literal brackets and parentheses required, labeled with the pud_title value (or "PUD development text" if there is no pud_title) and pointing at the pud_text_url value copied verbatim, never truncated or wrapped. Do not print that URL anywhere except inside the parentheses. The link label must be the PUD's name — NEVER an ordinance number, and never the phrase "Rezoning Ordinance". No sentence may follow this line.]
+[Include the next line ONLY when the district is PUD or HCD and a pud_text_url is present, then nothing further:] Approved development text: [Markdown link, literal brackets and parentheses required, labeled with the pud_title value (or "PUD development text" if there is no pud_title) and pointing at the pud_text_url value copied verbatim, never truncated or wrapped. Do not print that URL anywhere except inside the parentheses. The link label must be the PUD's name — NEVER an ordinance number, and never the phrase "Rezoning Ordinance". No sentence may follow this line.]
 [ZONING MAP]
 [IMPORTANT: output the line "[ZONING MAP]" EXACTLY as those two words in square brackets on its own line — the page replaces it with the zoning map image, a dot marking the property, and a link to the full Hilliard Zoning Map. Do NOT add any sentence describing the map or repeating the zoning-map URL; the caption under the image already covers it.]
 Current Use (Franklin County Auditor classification): [property_class][, subdivision if present]
@@ -2260,7 +2381,7 @@ export default {
         // here on every request. The page's staff-mode checkbox lives in the visitor's
         // own browser and is not evidence of anything.
         const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
-        const baseTools = TOOLS.concat([PROGRAMS_TOOL, RECPARKS_TOOL, MEETINGS_TOOL, PERMIT_TYPE_TOOL, ZONING_CODE_TOOL, CW_SEARCH_TOOL]);
+        const baseTools = TOOLS.concat([PROGRAMS_TOOL, RECPARKS_TOOL, MEETINGS_TOOL, PERMIT_TYPE_TOOL, ZONING_CODE_TOOL, CW_SEARCH_TOOL, PUD_TOOL]);
         // Reading whole PDFs (read_civicweb_document) is slow and costs an API call per document,
         // so the full read-and-confirm history research is for verified staff only.
         const tools = isStaff ? baseTools.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL, CREATE_GW_TOOL, INFA_TOOL, CW_READ_TOOL]) : baseTools;
@@ -2284,6 +2405,7 @@ export default {
           else if (b.name === 'lookup_meeting_agenda') out = await lookupMeetingAgenda(env, b.input || {});
           else if (b.name === 'find_permit_type') out = await findPermitType(env, b.input || {});
           else if (b.name === 'search_zoning_code') out = await searchZoningCode(env, b.input || {});
+          else if (b.name === 'find_pud_text') out = await findPudText(env, b.input || {});
           else if (b.name === 'search_civicweb_documents') out = await searchCivicwebDocuments(env, b.input || {});
           else if (b.name === 'read_civicweb_document') out = isStaff
             ? await readCivicwebDocument(env, b.input || {}, apiKey, cfg.model)
@@ -2314,6 +2436,11 @@ export default {
             const uses = {};
             prevMsg.content.filter(b => b && b.type === 'tool_use').forEach(b => { uses[b.id] = b; });
             for (const tr of lastMsg.content) {
+              // Zoning results from the page: attach the PUD/HCD development texts.
+              if (tr && tr.type === 'tool_result' && uses[tr.tool_use_id] && uses[tr.tool_use_id].name === 'lookup_zoning' && typeof tr.content === 'string') {
+                tr.content = await enrichZoningResult(env, tr.content);
+                continue;
+              }
               if (tr && tr.type === 'tool_result' && uses[tr.tool_use_id] && /handled server-side|not available on the/i.test(String(tr.content || ''))) {
                 const u = uses[tr.tool_use_id];
                 if (u.name === 'lookup_zoning' || u.name === 'lookup_owner_for_notice') continue;
@@ -2532,7 +2659,7 @@ export default {
         if (a === 'refresh_caches') {
           // Drop cached copies of the published data files so a freshly uploaded
           // programs.json / legislation-index.json / meetings.json is used immediately.
-          for (const k of ['programs:cache', 'legis:cache', 'projects:cache', 'meetings:live', 'portal:cache']) { try { await env.KV.delete(k); } catch (e) {} }
+          for (const k of ['programs:cache', 'legis:cache', 'projects:cache', 'meetings:live', 'portal:cache', 'pud:cache']) { try { await env.KV.delete(k); } catch (e) {} }
           let programs = null; try { const c = await getPrograms(env); programs = { count: (c.programs || []).length, generated: c.generated }; } catch (e) { programs = { error: e.message }; }
           return json({ ok: true, programs }, 200, env);
         }

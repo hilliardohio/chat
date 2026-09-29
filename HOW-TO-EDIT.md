@@ -152,3 +152,25 @@ for titles, folders and hit excerpts).
 
 **Before uploading `worker.js`, start from the newest copy in this repo.** Several features
 live in the one file; uploading an older copy silently removes whatever was added since.
+
+## PUD / HCD development texts (`pud-texts.json`)
+
+Clark links the development text whenever a property is in a PUD or HCD zone, and answers
+"send me the PUD text for X" with `find_pud_text`. The source is the City's list at
+`hilliard.municipalcodeonline.com` → Planning & Zoning → *Planned Unit Development Texts And
+Related Documents*. That site doesn't let scripts read the list, so it is copied into
+`pud-texts.json` (captured 2026-09-28: 80 documents in 50 developments).
+
+- Each **group** is one PUD, with **aliases** for the names the City GIS zoning layer uses
+  (e.g. "Parkview Reserve" → Parkview Preserve, "Lakewood PND" → Lakewood). Each **document**
+  has its name, PDF link, kind (text, subarea text, general development standards, plans) and
+  subarea.
+- The Worker adds `pud_documents` and the current `pud_text_url` to every `lookup_zoning`
+  result that lands in a PUD/HCD (the GIS layer's own link is kept as `gis_pud_text_url`
+  when it points at an older copy). No change to the pages was needed.
+- **When the City adds or replaces a PUD text,** add it to `pud-texts.json` (copy the link
+  from the municipalcodeonline page) and upload the file; Clark picks it up within six hours
+  (`/admin` → Refresh caches speeds that up).
+- Zones on the GIS layer with no document in the library yet: Brookfield Village, Hayden Run
+  and Avery Estates, Heather Ridge and Crystal Lakes, Scioto Run. Clark links the library
+  page for those.
