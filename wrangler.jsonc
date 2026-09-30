@@ -30,7 +30,8 @@
   // handler). Cron times are UTC: 09:00 UTC = 5:00 a.m. Eastern in summer / 4:00 a.m. in
   // winter, i.e. before residents start searching. Add more entries (e.g. "0 15 * * *")
   // for a midday refresh; the crawl takes about 8 seconds.
-  "triggers": { "crons": ["0 9 * * *", "30 9 * * *", "0 10 * * *"] },
+  // "15 9 * * *" rebuilds the Right of Way permit map feed (/api/row-permits) from OpenGov.
+  "triggers": { "crons": ["0 9 * * *", "30 9 * * *", "0 10 * * *", "15 9 * * *"] },
 
   // Only the browser origin allowed to call the API. GLOBAL_DAILY_LIMIT and IP_HOURLY_LIMIT
   // are deliberately absent -- they are unset on the live Worker, so the code defaults apply.

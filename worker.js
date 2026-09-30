@@ -2273,6 +2273,13 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(env) });
 
     try {
+      if (path === '/api/row-permits' && request.method === 'GET') {
+        // Public feed for the Right of Way permit map (no account numbers or personal data
+        // beyond the applicant name that OpenGov already shows on the public portal).
+        const d = await env.KV.get('row:data');
+        if (!d) return new Response(JSON.stringify({ error: 'not built yet', permits: [] }), { status: 503, headers: { 'content-type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+        return new Response(d, { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=600', 'Access-Control-Allow-Origin': '*' } });
+      }
       if (path === '/api/config' && request.method === 'GET') {
         const cfg = await getConfig(env);
         return json({ topics: cfg.topics }, 200, env);
@@ -2656,6 +2663,13 @@ export default {
           // When the catalog was last rebuilt, by whom, and whether it worked.
           return json({ last_crawl: JSON.parse((await env.KV.get('programs:lastCrawl')) || 'null') }, 200, env);
         }
+        if (a === 'refresh_row_permits') {
+          return json(await refreshRowPermits(env, 'admin'), 200, env);
+        }
+        if (a === 'row_status') {
+          let last = null; try { last = JSON.parse(await env.KV.get('row:last') || 'null'); } catch (e) {}
+          return json({ last }, 200, env);
+        }
         if (a === 'refresh_caches') {
           // Drop cached copies of the published data files so a freshly uploaded
           // programs.json / legislation-index.json / meetings.json is used immediately.
@@ -2755,9 +2769,101 @@ export default {
     // "0 9 * * *" rebuilds the WebTrac catalog; the other triggers each crawl one batch of
     // the Rec & Parks website (about 70 pages, 40 per batch, so two runs cover the site).
     if (cron === '0 9 * * *') ctx.waitUntil(refreshProgramCatalog(env, 'cron ' + cron));
+    else if (cron === '15 9 * * *') ctx.waitUntil(refreshRowPermits(env, 'cron ' + cron));
     else ctx.waitUntil(refreshRecParksSite(env, 'cron ' + cron));
   }
 };
+
+/* ---------------- Right of Way permit map feed ----------------
+   Nightly (cron "15 9 * * *") and from the /admin button: pull every enabled ACTIVE
+   Right Of Way Permit (record type 6342) from the OpenGov API together with its primary
+   location (address point, GPS point, or road segment with both endpoints), the
+   applicant, and -- once OpenGov enables the Forms API for hilliardoh -- the application
+   form fields (company, dates, roads, description). The result is stored in KV as
+   row:data and served, publicly, at GET /api/row-permits for the map page at
+   hilliardohio.github.io. A failed run keeps the previous data in place. */
+const ROW_RECORD_TYPE_ID = 6342;
+const ROW_FORM_LABELS = {
+  company: /^Company$/i, owner: /^Owner of infrastructure/i, start: /^Start Date/i, end: /^Completion Date/i,
+  desc: /^Description of project/i, type: /^Type of Construction/i, roads: /^Road segments and intersections/i,
+  cut: /^Will you be cutting or opening/i, city: /^Is this job for the City of Hilliard/i
+};
+// Pull "label => value" pairs out of whatever shape the Forms API returns (it is not
+// documented yet); tolerant of nested sections and of value/entry/fieldValue naming.
+function rowFormExtract(form) {
+  const out = {};
+  (function walk(o, d) {
+    if (!o || typeof o !== 'object' || d > 14) return;
+    if (Array.isArray(o)) { o.forEach(x => walk(x, d + 1)); return; }
+    const label = o.label || o.fieldLabel || o.name;
+    let v = o.value; if (v == null && o.entry && typeof o.entry === 'object') v = o.entry.value;
+    if (v == null) v = o.fieldValue;
+    if (label && v != null && v !== '' && typeof v !== 'object') {
+      for (const k in ROW_FORM_LABELS) if (!out[k] && ROW_FORM_LABELS[k].test(String(label).trim())) out[k] = String(v).slice(0, 300);
+    }
+    for (const k in o) if (typeof o[k] === 'object') walk(o[k], d + 1);
+  })(form, 0);
+  return out;
+}
+async function refreshRowPermits(env, trigger) {
+  const t0 = Date.now();
+  let result;
+  try {
+    if (!env.OPENGOV_API_KEY) throw new Error('OPENGOV_API_KEY not set');
+    const H = { Authorization: 'Token ' + env.OPENGOV_API_KEY, Accept: 'application/vnd.api+json' };
+    const get = async (p) => { const r = await fetch(PLCE_BASE + '/' + p, { headers: H }); return { status: r.status, body: r.ok ? await r.json() : null }; };
+    // 1) every ACTIVE record of the ROW type (archived ones come back isEnabled:false)
+    const recs = [];
+    for (let page = 1; page <= 20; page++) {
+      const r = await get('records?' + new URLSearchParams({ 'filter[recordTypeID]': String(ROW_RECORD_TYPE_ID), 'filter[status]': 'ACTIVE', 'page[size]': '100', 'page[number]': String(page) }));
+      if (r.status !== 200) throw new Error('records page ' + page + ' HTTP ' + r.status);
+      const rows = (r.body.data || []);
+      rows.forEach(x => { if ((x.attributes || {}).isEnabled) recs.push(x); });
+      const meta = r.body.meta || {};
+      if (!rows.length || (meta.totalPages && page >= meta.totalPages)) break;
+    }
+    if (!recs.length) throw new Error('no active ROW records returned -- kept the previous data');
+    // 2) probe the Forms API once; it returns 501 until OpenGov enables it for hilliardoh
+    const probe = await get('records/' + recs[0].id + '/form');
+    const formsOn = probe.status === 200;
+    // 3) location + applicant (+ form) for each record, 6 at a time
+    const out = []; let locErrors = 0;
+    const work = recs.slice();
+    async function one(rec) {
+      const a = rec.attributes || {};
+      const row = { id: Number(rec.id), no: a.number || '', sub: (a.submittedAt || '').slice(0, 10), exp: (a.expiresAt || '').slice(0, 10), applicant: '', company: '', owner: '', addr: '', lt: 0, lat: null, lon: null, lat2: null, lon2: null, label: '', start: '', end: '', desc: '', type: '', roads: '', cut: '' };
+      try {
+        const l = await get('records/' + rec.id + '/primary-location');
+        const la = ((l.body || {}).data || {}).attributes || {};
+        row.lt = { POINT: 2, SEGMENT: 3 }[la.locationType] || 1;   // 1 = address/parcel
+        row.lat = la.latitude != null ? Number(la.latitude) : null; row.lon = la.longitude != null ? Number(la.longitude) : null;
+        row.lat2 = la.secondaryLatitude != null ? Number(la.secondaryLatitude) : null; row.lon2 = la.secondaryLongitude != null ? Number(la.secondaryLongitude) : null;
+        const tidy = (x) => String(x || '').replace(/\s+/g, ' ').trim();
+        const addr = [tidy(la.streetNo), tidy(la.streetName)].filter(Boolean).join(' ');
+        row.addr = addr ? addr + (la.city ? ', ' + la.city : '') + (la.state ? ', ' + la.state : '') + (la.postalCode ? ' ' + la.postalCode : '') : '';
+        row.label = la.segmentLabel || row.addr || (row.lat != null ? row.lat + ', ' + row.lon : '');
+        if (row.lat == null) locErrors++;
+      } catch (e) { locErrors++; }
+      try {
+        const ap = await get('records/' + rec.id + '/applicant');
+        const d = (ap.body || {}).data; const aa = (Array.isArray(d) ? d[0] : d || {}).attributes || {};
+        row.applicant = [aa.firstName, aa.lastName].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+      } catch (e) {}
+      if (formsOn) { try { const f = await get('records/' + rec.id + '/form'); if (f.body) Object.assign(row, rowFormExtract(f.body)); } catch (e) {} }
+      out.push(row);
+    }
+    await Promise.all(Array.from({ length: 6 }, async () => { while (work.length) await one(work.shift()); }));
+    out.sort((x, y) => (y.sub || '').localeCompare(x.sub || '') || (y.id - x.id));
+    const data = { generated: new Date().toISOString(), count: out.length, forms_api: formsOn, location_errors: locErrors, permits: out.filter(r => r.lat != null) };
+    await env.KV.put('row:data', JSON.stringify(data));
+    result = { ok: true, trigger, ms: Date.now() - t0, count: out.length, mapped: data.permits.length, forms_api: formsOn, location_errors: locErrors, generated: data.generated };
+  } catch (e) {
+    result = { ok: false, trigger, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'The previous ROW permit data remains in use.' };
+  }
+  try { await env.KV.put('row:last', JSON.stringify(Object.assign({ at: new Date().toISOString() }, result))); } catch (e) {}
+  console.log('row permits refresh', JSON.stringify(result));
+  return result;
+}
 
 /* Shared by the /admin button and the Cron Trigger: crawl WebTrac, store the catalog in
    KV, drop the 15-minute cache, and record the outcome so /admin can show it. A failed
@@ -2884,6 +2990,7 @@ td.ans{max-width:320px}
       <button class="btn ghost" onclick="refreshCaches()">Reload all data files</button>
       <button class="btn ghost" onclick="crawlPrograms()">Refresh rec programs from WebTrac</button>
       <button class="btn ghost" onclick="crawlRecParks()">Refresh Rec &amp; Parks site pages</button>
+      <button class="btn ghost" onclick="refreshRow()">Refresh ROW permit map data</button>
       <span id="cachesMsg" class="stat"></span>
     </div>
     <div class="stat" id="projectsStatus"></div>
@@ -2977,6 +3084,11 @@ async function crawlPrograms(){
   document.getElementById('cachesMsg').textContent = 'Crawling WebTrac (about a minute)…';
   const d = await api('crawl_programs');
   document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.programs + ' programs / ' + d.sections + ' sections crawled (' + Math.round(d.ms/1000) + 's).</span>' : '<span class="err">' + (d.error || 'failed') + '</span>';
+}
+async function refreshRow(){
+  document.getElementById('cachesMsg').textContent = 'Pulling active Right of Way permits from OpenGov (about a minute)…';
+  const d = await api('refresh_row_permits');
+  document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.count + ' active ROW permits (' + d.mapped + ' mapped' + (d.forms_api ? ', form fields on' : ', form fields not yet available from OpenGov') + ', ' + Math.round(d.ms/1000) + 's). Feed: /api/row-permits</span>' : '<span class="err">' + (d.error || 'failed') + '</span>';
 }
 async function crawlRecParks(){
   document.getElementById('cachesMsg').textContent = 'Crawling recandparks.hilliardohio.gov (one batch of 40 pages)…';
