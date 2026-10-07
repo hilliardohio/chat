@@ -22,7 +22,7 @@ const DEFAULT_MODEL = 'claude-sonnet-5';
 const MAX_TOKENS = 2600; // headroom so a full zoning letter is never cut off mid-sentence
 
 /* ---------------- knowledge base (editable later in /admin) ---------------- */
-const DEFAULT_KB = "CITY OF HILLIARD, OHIO — KNOWLEDGE BASE (compiled Aug 25, 2026 from hilliardohio.gov and the Hilliard Code of Ordinances on Municode, Supplement 10, codified through Ord. 25-28, Oct 27, 2025)\n\n== CONTACT & BASICS ==\nCity Hall/Administration: 3800 Municipal Way, Hilliard, OH 43026 — (614) 876-7361. Business hours approx. 8am–5pm weekdays.\nWebsite: hilliardohio.gov. General questions: \"Ask Us\" form at hilliardohio.gov/contact-the-city/ (~48-hr response).\nService requests (potholes, chipper, signs, etc.): Hilliard Helps / Hilliard 311 — hilliardohio.gov/hilliardhelps/, (614) 876-7361 ext. 311.\nPolice: 5171 Northwest Parkway. Emergency 911; NON-EMERGENCY (614) 876-7321 (24/7). Records: (614) 876-2429, hpdrecordsunit@hilliardohio.gov.\nFire: provided by NORWICH TOWNSHIP (not the City) — 5181 Northwest Parkway, (614) 876-7694.\nMayor's Court: 5171 Northwest Parkway, Wednesdays 8am; Clerk (614) 334-2348; pay tickets at ohioticketpayments.com/Hilliard/DocketSearch.php.\nThe Well (rec & wellness campus): 3993 Cosgray Rd, (614) 876-5200.\nCity Code: library.municode.com/oh/hilliard/codes/code_of_ordinances.\n\n== GOVERNMENT ==\nHilliard has a COUNCIL–MANAGER government — NO elected mayor. Seven at-large council members appoint a City Manager.\nCity Manager: Joshua Rauch (sworn in April 20, 2026).\nCouncil: Emily Cole (President), Tina Cottone (VP), Greg Betts, Kathy Parker-Jones, Nadia Atway Rasul, Andy Teater, Cynthia Vermillion. Contact: CityCouncil@hilliardohio.gov. Clerk of Council: Diane Werbrich, (614) 334-2365.\nRegular Council meetings: 6pm, 2nd & 4th Mondays, Council Chambers, 3800 Municipal Way (time changed from 7pm effective Aug 25, 2026). Agendas/minutes: hilliardohio.civicweb.net/Portal/. The assistant can pull any board's current agenda items, packet and minutes live from that portal with the lookup_meeting_agenda tool. Board of Zoning Appeals: 6pm, 3rd Thursday monthly. Planning & Zoning Commission: 2nd Thursday monthly. Speakers sign in with the Clerk; 3 minutes each.\nBoards/commissions: Planning & Zoning Commission, Board of Zoning Appeals, Environmental Sustainability, Public Arts, Shade Tree, Records Commission, and others.\n\n== TRASH, RECYCLING & YARD WASTE ==\nProvider: Local Waste Services (LWS) under city contract. Trash, recycling AND yard waste all collected EVERY TUESDAY citywide.\nHoliday rule: holiday on Sun/Mon/Tue pushes pickup to Wednesday; Saturday holidays cause no delay.\nContainers out by 7am at end of driveway (not in the street), max 50 lbs. By code (Ch. 975): set out no earlier than 5pm the day before; bring in by 9am the morning after; store containers behind the house or not forward of the front face of the dwelling.\nBins: blue recycling + green/gray trash (65-gal standard). Larger 90-gal recycling bin FREE from LWS (614-409-9375); larger trash bin $65 via City (614-334-1209).\nBilling: quarterly by LWS; pay at localwasteservices.com; unpaid bills can become a property lien. Senior (65+) discount: 10% (Ch. 975.06) — apply through LWS, info@localwasteservices.com.\nMissed pickup: LWS (614) 409-9375 option 2, within 24 hours. City trash line: (614) 334-1209.\nBulk items: with regular trash at curb; upholstered items (mattresses/box springs/furniture) MUST be wrapped in plastic. Large pickups scheduled via LWS.\nRecyclables loose, never bagged. Guidance: recycleright.org, swaco.org.\nYard waste: Tuesdays Mar 1–Nov 30, in brown paper bags or rigid containers with free yard-waste stickers (get at 3800 Municipal Way). Bundles max 4ft x 2ft, branches ≤2in diameter, ≤50 lbs. Christmas trees collected bare.\nChipper (City, on-demand): limbs over 4 ft long/4 in diameter; Mondays mid-April–late Sept; request via Hilliard Helps by 2:30pm the prior Friday.\nComposting: GoZero program. Styrofoam recycling available — see hilliardohio.gov.\n\n== WATER, SEWER & UTILITIES ==\nThe City does NOT provide water/sewer. COLUMBUS Division of Water serves Hilliard: start/stop service & billing (614) 645-3111 or columbus.gov utilities pages.\nStorm/sanitary sewer infrastructure inside the city: Hilliard Engineering; issues → Hilliard 311.\nElectric: AEP Ohio (lines/outages); city electric aggregation supplied by Dynegy (hilliardohio.gov/aggregation/). Gas: Columbia Gas of Ohio.\nCall OUPS (oups.org) at least 48 hrs before digging.\n\n== INCOME TAX ==\nRate: 2.5% (since Jan 1, 2022). ALL residents 18+ must file a city return every year by April 15 — even if nothing is owed — EXCEPT seniors with no earned income. Filed through RITA (ritaohio.com); checks payable to RITA.\nFull credit for tax paid to a work city, up to 2.5%. Retirement income, unemployment not taxed.\nCity Income Tax Division: (614) 876-7361 ext. 778, Tax1@hilliardohio.gov.\nPROPERTY taxes: Franklin County Auditor (614) 525-4663 — not the City.\n\n== PERMITS, BUILDING & CONTRACTORS ==\nApply and pay ONLINE via the OpenGov portal: hilliardoh.viewpointcloud.com (a.k.a. hilliardoh.portal.opengov.com). An application is NOT a permit — wait for issuance before building.\nPermits required for (examples): decks, sheds, fences, basement finishes, additions, roofs, driveways, patios, pools, hot tubs, electrical, plumbing, furnace replacement, siding.\nReview: about 2 weeks typical; most permits valid 1 year. Contact: Building@hilliardohio.gov.\nAll contractors must be REGISTERED with the Building Department. Homeowners may do their own work on their own residence (not rentals) — permits/inspections still required.\nZoning applications (zoning certificate, sign permit, fence permit, BZA, zoning verification letter): Planning Division, Planning1@hilliardohio.gov, OpenGov portal.\nReport a code/zoning violation: hilliardohio.gov/report-a-code-violation/.\nSidewalk repair: adjacent property owner's responsibility (City repairs curb ramps and damage from city-tree roots).\n\n== CITY CODE HIGHLIGHTS (cite section numbers) ==\nPARKING: No vehicle parked on any street more than 72 continuous hours (§351.14). Commercial vehicles max 1 hr on street; RVs/trailers max 2 hrs on street (§351.22), delivery/loading excepted. No general citywide overnight parking ban — but obey posted signs and permit districts (§§351.23–.24). Snow emergency (declared when 3+ inches forecast): no parking on designated snow-emergency streets, vehicles may be towed (Ch. 352).\nNOISE: Quiet hours 10pm–7am (§531.02) — no loudspeakers, loading, or powered lawn/garden equipment that disturbs neighbors (snow-removal equipment exempt). Residential sound limits roughly 60 dBA day / 50 dBA night (§531.03). CONSTRUCTION: no exterior construction work on Sundays or between 7pm and 7:30am (§509.08).\nANIMALS: Max 4 dogs/cats total per household (excl. under 4 months) (§505.06). Dogs must be confined/leashed or under reasonable control (§505.02); annual dog license via Franklin County (§505.09). CHICKENS (§1121.08): only in R-R, R-1, R-2, PUD, HCD districts; lots UNDER 0.5 acre → NOT allowed; 0.5–2.99 acres → up to 6; coop rear yard only, 15 ft from property lines; zoning certificate + fence permit required. Roosters/ducks only on 1+ acre. Beekeeping per §1121.09 (flyway barrier rules). Livestock only in R-R on 3+ acres (§1121.07).\nGRASS/WEEDS: max 6 inches (§1303.02, Ch. 917). 5-day notice to cut; City may mow and assess costs as a tax lien; min $250 fine (§917.99).\nJUNK VEHICLES: inoperable vehicles/equipment may not sit outside an enclosed building more than 48 hours (§1121.05).\nFENCES (§1121.02(d)): PERMIT REQUIRED. No front-yard fences (invisible fences excepted; limited corner-lot exception). Max 6 ft side/rear; chain-link max 4 ft in residential. Neutral colors; finished side out; no barbed wire/stockade/electric/scrap materials. Pools must be fenced (4–6 ft, self-latching gate) or have a locking safety cover.\nSHEDS/ACCESSORY BUILDINGS (§1121.02(b)): rear yard only; ≥6 ft from rear and ≥3 ft from side lot lines; max 14 ft tall; max 50% of the home's floor area or 900 sq ft, whichever is less; ≤30% of required rear yard.\nSIGNS (Ch. 1129): NO signs in any public right-of-way, on utility poles, street signs, trees, or public property. Garage/yard-sale signs allowed without permit on private property only. Real-estate signs: one, max 8 sq ft, 4 ft high, removed within 7 days of closing. No separate political-sign rules — same content-neutral rules apply (keep on private property, out of right-of-way).\nGARAGE SALES (Ch. 727): max 2 per residence per 12 months, max 3 consecutive days; hours 9am–8pm (Apr–Sep) / 9am–6pm (Oct–Mar).\nFIREWORKS (Ch. 1519): discharge of consumer fireworks is PROHIBITED citywide (Hilliard opted out of Ohio's holiday-discharge default). Licensed public exhibitions only. First-degree misdemeanor, fine up to $1,000.\nCURFEW (Ch. 539): under 12 — darkness to dawn; under 18 — midnight to 6am. Exceptions: with parent/guardian, parent-directed errand, work travel, newspaper delivery.\nHOME OCCUPATIONS (§1121.06(e)): permit from Planning Director required; business entirely inside the dwelling; residents only; max 25% of floor area or 250 sq ft; no on-site retail sales; no exterior evidence except one 2-sq-ft non-illuminated sign.\nSIDEWALK SNOW: abutting property owners are responsible for clearing snow and ice from sidewalks/paths next to their property (§909.02(i)).\nTRASH STORAGE: solid waste kept max 14 days (§975.02); container set-out/bring-in rules in §975.05 (see trash section).\nZONING DISTRICTS (§1104.01): 16 districts — R-R, R-1, R-2, R-3, R-4 residential; B-1–B-4 business; M-1, M-2 industrial; S-1, HCD, OH-MD, OH-RD special; PUD planned.\n\n== ZONING DISTRICT STANDARDS (Chs. 1109–1117; use with the lookup_zoning tool for address questions) ==\nEvery district is also subject to Ch. 1121 general provisions (accessory buildings, fences, home occupations, chickens), Ch. 1123 conditional uses, Ch. 1127 parking, Ch. 1129 signs. \"P\"=permitted, \"C\"=conditional use (needs approval).\nR-R Rural Residential: large-lot single-family without public utilities; farms/stables C. Min lot 100,000 sq ft / 150 ft wide; height 35 ft; setbacks front 40 / side 15 (35 total) / rear 40; coverage 25%. Only district allowing agricultural animal uses broadly.\nR-1 Low Density: single-family P; schools/worship/B&B C. Min lot 13,500 sq ft / 90 ft (30,000 sq ft if no public water/sewer); height 35; front 35 / side 12 (30 total) / rear 40; coverage 30%.\nR-2 Low/Medium Density: single-family P. Min lot 11,200 sq ft / 80 ft; height 35; front 25 for the dwelling BUT garages must sit back 35 ft (unique to R-2); side 10 (20 total) / rear 35; coverage 30%.\nR-3 Moderate Density: single-family P; two-family, townhouses, CCRC, day care center C. Min lot 10,000 sq ft / 70 ft (two-family 6,000 sq ft/unit); height 35; front 30 / side 10 (20 total) / rear 30; coverage 35%.\nR-4 High Density: detached/attached/multi-family P. Min lot 6,000 sq ft / 60 ft; multi-family max 14 units/acre; height 35 (up to 70 with extra setbacks); front 30 / side 8 (16 total) / rear 30; coverage 35%.\nB-1 Neighborhood Business: small-scale convenience retail/services, small restaurants (<2,000 sq ft, no drive-thru), offices, banks P; bars, general retail, drive-thrus C. Min lot 7,500 sq ft / 60 ft; height 35; front 30 / side 0 / rear 20.\nB-2 Community Business: general retail, restaurants, bars, hotels, offices P; vehicle sales/repair, drive-thru restaurants, outdoor storage C. Min lot 1 acre / 200 ft; height 35; parking 20 / building 50 front; side 20 / rear 30.\nB-3 Office/Institutional: offices, medical, labs, data centers, restaurants P; hospitals, colleges C; most retail excluded. Min lot 1 acre / 200 ft; height 45; building front 50; side 20 / rear 30.\nB-4 I-270 Corridor: offices, hotels, restaurants, retail <15,000 sq ft P; residential, grocery, drive-thrus C. Min lot 1 acre / 200 ft; height 70; building front 60 / side 30 / rear 30 (+1 ft setback per ft above 45 ft height).\nM-1 Restricted Industrial: light manufacturing, offices, research, data centers P; breweries, warehouses, self-storage, outdoor storage C. Min lot 1 acre / 100 ft; height 45; building front 50 / side 20 / rear 40; coverage 30%.\nM-2 General Industrial: manufacturing, warehouses/distribution P; chemical plants, truck repair, recycling C. Min lot 2 acres / 200 ft; height 45; building front 50 / side 30 / rear 40; coverage 50%.\nS-1 Support Facilities: parks, schools, worship, government, libraries (mostly C); no dwellings. Min lot 3 acres / 250 ft; height 45; building front 60 / side 50 (100 total) / rear 60; coverage 20%.\nHCD Hilliard Conservation District (Big Darby watershed): conservation development; min tract 20 acres, no min lot size, 70% permanent open space; standards set by development-plan review; height 35.\nOH-MD Old Hilliard Mixed Use (downtown): retail, restaurants, bars, offices, dwellings P. No min lot; height 52 ft; build-to zone 0–10 ft front; parking behind buildings. Exterior changes need P&Z design review (§1115.05); fences max 30 inches downtown.\nOH-RD Old Hilliard Residential: small-lot housing near downtown; all dwelling types P. Min lot 7,000 sq ft / 50 ft; height 35; front build-to 0–25 ft; side 5 (12 total) / rear 25. Exterior modifications need P&Z review.\nCOMMUNITY DEVELOPMENT DISTRICTS (Chapter 1116 — adopted by Ordinance 25-17, July 14, 2025; amended by Ordinance 26-07, March 23, 2026; not yet codified on Municode, so the governing text is the ordinance itself: https://library.municode.com/oh/hilliard/ordinances/code_of_ordinances?nodeId=1369718). These form-based districts implement the 2023 Hilliard Community Plan and are newer than the Chapter 1109–1117 districts above. They are: DE Big Darby Employment District (§1116.07), and the I-270 Corridor (I) District (§1116.08) with its subdistricts I-1 Natural, I-3 Suburban, I-6 Urban Core, I-FE Flex Employment, I-MR Mill Run, and Civic. Chapter 1116 also contains shared design standards and guidelines (§1116.02), building typologies (§1116.03), frontage typologies (§1116.04), open space typologies (§1116.05), and green parking typologies (§1116.06). Standards are set by building/frontage form rather than a conventional setback table; review is through Site Plan Review (Ch. 1131), except Big Darby Employment which follows §1116.07(h). For property-specific standards in these districts, refer the resident to the Planning Division.\nPUD Planned Unit Development: NEGOTIATED district — no fixed standards table. Each PUD is governed by its own Council-approved development text/plan (deviations from baseline district standards allowed). Pre-2014 PUDs keep their original approved plans. For any property in a PUD: the resident must check that PUD's approved text — the GIS lookup often returns a link to it; otherwise contact Planning (Planning1@hilliardohio.gov).\n\n== SNOW, STREETS & LEAVES ==\nSnowplow priority: 1) major arteries 2) minor arterials 3) residential streets (usually unsalted) 4) cul-de-sacs 5) lots/paths. Track plows live: SnowPaths — portal.snowpaths.com/public/983278/983279.\nDon't shovel snow into streets or around hydrants. Potholes/street lights: report via Hilliard 311.\nLeaf collection (curbside vacuum): Oct–Dec by color-coded quadrant (2026: Oct 20–Dec 19). Rake to the TREE LAWN (never the street) by 7am Monday of your zone's week. Bagged leaves also OK with Tuesday yard waste through Nov 30. Street sweeping roughly monthly (not winter).\n\n== PARKS & RECREATION ==\nThe Well: 3993 Cosgray Rd — fitness floor, indoor aquatics, gyms, indoor track, teaching kitchen, The Depot teen space; memberships & day passes; partner OSU Wexner Medical Center. (614) 876-5200.\nTwo outdoor pools: Hilliard Family Aquatic Center and Clyde \"Butch\" Seidle Community Pool — one pass valid at both; passes go on sale each January; prices at hilliardohio.gov/pools-passes/.\nNearly 27 parks incl. Roger A. Reynolds Municipal Park (shelter rentals $100/day, $50 nonprofit), Hilliard's Station Park (7-mile Heritage Trail trailhead), First Responders Park, Weaver Park.\nProgram registration: webtrac.hilliardohio.gov (RecTrac/WebTrac; also mobile app). The assistant can search the live program catalog with the search_programs tool — classes, swim lessons, camps, leagues, fitness, HSC 55+ — and give direct registration links. Browse by category: Aquatics, Art/Culture & Enrichment, Fitness & Wellness, Senior Center, Outdoor Adventure, Seasonal, Sports; or by age group (Preschool, Youth 6-12, Teen 13-17, Adult 18+, Senior 55+, Family, All Ages). Fees show a resident and a non-resident rate; residency rules are under \"Am I a resident?\" on WebTrac. Registration needs a free WebTrac account (Sign In / Register). Rentals: rentals@hilliardohio.gov, (614) 334-2580. 55+ programs (HSC 55+) at The Well; Hilliard Express senior transportation.\n\n== EVENTS ==\nAnnual: Independence Day Parade & Freedom Fest (July 4), Fall Festival (Sept 13, 2026), Heritage Day, Pumpkin Float, Beggar's Night/Trick-or-Treat (Oct 31 if Mon–Thu, else preceding Thursday; 2026: Oct 29, 6–8pm), Tree Lighting (Dec 6, 2026), Cram the Cruiser. Calendar: hilliardohio.gov/events/.\nDORA (outdoor drinks, Old Hilliard): 21+, daily noon–9pm (last call 8:30pm), designated cups from participating vendors only.\n\n== PROPERTY RECORDS & PERMIT LOOKUP (address-specific) ==\nPROPERTY DATA: The lookup_zoning tool returns Franklin County Auditor parcel data: owner, parcel size in acres, residence year built, last transfer date and price, property class, subdivision, homestead status. Cite it as Franklin County Auditor data. FULL property records (appraised value, property taxes, transfer history, photos, sketches): Franklin County Auditor property search — property.franklincountyauditor.com (search by address under 'Address' mode). Bulk/GIS property data: the Auditor's Data Library at auditor.franklincountyohio.gov/Auditor/FTP. Property tax questions: Franklin County Auditor (614) 525-4663 — NOT the City.\nPERMIT LOOKUP BY ADDRESS: Every active and historical permit issued for a Hilliard property can be viewed publicly at hilliardoh.portal.opengov.com/search — choose the 'Locations' tab, type the address, and select it; the property page lists all records (building, electrical, plumbing, HVAC, fence, sign, zoning applications, etc.) with their status. The assistant cannot pull these records directly; always give residents this link for permit-history questions.\nPERMIT APPLICATIONS & ZONING VERIFICATION: hilliardoh.portal.opengov.com is the City's permitting portal (OpenGov, formerly ViewPoint Cloud) — apply for permits, pay fees, track your own applications, schedule inspections, request zoning verification letters (Planning & Zoning category), and request addresses. Create a free account to apply. Directions and record-type categories are on the portal home page. Portal help: Building@hilliardohio.gov (building permits) or Planning1@hilliardohio.gov (zoning/planning).\n\n== PUBLIC RECORDS ==\nNo ID, writing, or reason required. Email publicrecords@hilliardohio.gov or Clerk of Council (614) 334-2365. Police records: hpdrecordsunit@hilliardohio.gov, (614) 876-2429, online form, or in person 24/7.\nCopies 5¢/page; emailed records free; no charge if under $20.\n\n== JOBS ==\nApply ONLY online: governmentjobs.com/careers/cityofhilliard. No residency requirement. Seasonal jobs (lifeguards, camps) via Rec & Parks. HR: (614) 334-1397. Police hiring: hilliardohio.gov/join-the-hpd-team/.\n\n== KNOWN LIMITS (be transparent about these) ==\nCurrent prices/fees (pool passes, Well memberships, permit fees, program fees) change — direct people to the live page or phone number instead of quoting numbers. Leaf-zone quadrant boundaries are on a PDF map on the leaf page. Fire/EMS is Norwich Township. Property tax is Franklin County. School questions → Hilliard City Schools district (separate from City).\n\n== SPECIFIC CITY WEBSITE PAGES (link residents to the EXACT page below, not the generic homepage) ==\nRecycling: hilliardohio.gov/recycling/\nComposting / food waste / GoZero: hilliardohio.gov/composting-program/\nTrash & recycling (overview): hilliardohio.gov/trash-recycling/\nYard waste: hilliardohio.gov/yard-waste/\nLeaf collection: hilliardohio.gov/leaf-collection/\nStyrofoam recycling: hilliardohio.gov/styrofoam-recycling/\nPool passes & pools: hilliardohio.gov/pools-passes/\nIncome tax (RITA): hilliardohio.gov/taxes/\nSnowplow tracking (SnowPaths): hilliardohio.gov/snowpaths/\nStreet maintenance: hilliardohio.gov/street-maintenance/\nSidewalk maintenance: hilliardohio.gov/sidewalk-maintenance/\nStreet trees / tree program: hilliardohio.gov/trees/\nReport a code violation (info page): hilliardohio.gov/report-a-code-violation/\nService requests (Hilliard Helps / 311): hilliardohio.gov/hilliardhelps/\nPlanning & zoning: hilliardohio.gov/planning-zoning/\nPlanning Division: hilliardohio.gov/planning-division/\nBuilding Standards Division: hilliardohio.gov/building-standards-division/\nBoard of Zoning Appeals: hilliardohio.gov/zoning-appeals/\nEngineering Division: hilliardohio.gov/engineering-division/\nStormwater management: hilliardohio.gov/stormwater-management/\nSanitary sewer & stormwater: hilliardohio.gov/sanitary-sewer-and-stormwater-systems/\nPolice: hilliardohio.gov/police/\nPolice online reporting: hilliardohio.gov/onlinereporting/\nMayor's Court: hilliardohio.gov/mayors-court/\nPublic records: hilliardohio.gov/public-records/\nPolice records: hilliardohio.gov/police-public-records/\nContact the City / Ask Us: hilliardohio.gov/contact-the-city/\nCity Council: hilliardohio.gov/city-council/\nAgendas & minutes: hilliardohio.gov/agendas-minutes/\nBoards & commissions: hilliardohio.gov/boards-commissions/\nJobs / hiring: hilliardohio.gov/hiring/\nPolice hiring: hilliardohio.gov/join-the-hpd-team/\nNewsletter signup: hilliardohio.gov/newsletter-signup/\nAnnual events: hilliardohio.gov/annual-events/\nFall Festival: hilliardohio.gov/fallfestival/\nDORA (outdoor drinks): hilliardohio.gov/dora/\nElectric aggregation: hilliardohio.gov/aggregation/\nSustainability: hilliardohio.gov/sustainability/\nCommunity garden: hilliardohio.gov/community-garden/\nForms & applications: hilliardohio.gov/forms-and-applications/\nRec program guide: hilliardohio.gov/program-guide/\nRec registration: webtrac.hilliardohio.gov\nVacation house check: hilliardohio.gov/vacation-house-check/\nSmart911: hilliardohio.gov/smart911/\nMosquito control: hilliardohio.gov/mosquitos/\nKeep Hilliard Beautiful: hilliardohio.gov/keep-hilliard-beautiful/\n\n== PERMIT & LICENSE APPLICATION LINKS (OpenGov portal — give the EXACT application URL below when a resident wants to apply or asks about a permit type; an application is NOT a permit, wait for issuance) ==\nBuilding Permit - Residential (decks, sheds/accessory over 200 sq ft, additions, remodels, detached garages, basement finishing): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6395\nBuilding Permit - Commercial: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6468\nCommercial Plan Review (step 1 before a commercial building permit): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6502\nElectrical Permit (includes residential solar panels): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6511\nHVAC / Refrigeration Permit (furnace/AC replacement): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6513\nGas Line Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6514\nRoofing Permit (commercial re-roof only; not required for 1-3 family homes): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6515\nFire Protection System Permit (sprinklers, fire alarm, hood suppression): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6512\nCommercial Kitchen Hood Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6510\nDemolition Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6520\nTemporary Structure / Tent Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6516\nCertificate of Occupancy (existing structures): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6517\nPlumbing Permits — now handled by Franklin County Public Health: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6559\nFence Permit (includes swimming pool fences): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6460\nSign Permit (permanent): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6389\nSign Permit - Temporary (banners, feather flags, A-frames, real estate/construction signs): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6544\nZoning Certificate (certificate of zoning compliance): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6383\nZoning Verification / Confirmation Letter (official ZVL): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6376\nBoard of Zoning Appeals Application (variances, conditional use, home occupation): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6469\nPlanning & Zoning Commission Application (rezoning, site plans, plats, lot splits): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6481\nAddress Request: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6535\nTemporary Storage Unit (POD) registration: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6536\nHotel/Motel or Bed & Breakfast: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6519\nMassage or Bath Establishment: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6518\nCurb, Driveway Approach & Sidewalk Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6392\nRight of Way Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6342\nWater & Sewer Taps: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6523\nSewer/Water Lateral Replacement or Repair: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6489\nSpecial Flood Hazard Area Development Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6500\nCivil / Site Plan Review: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6534\nSanitary Backflow Device Program: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6539\nHauling Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6546\nReport a Code Violation (file a complaint): https://hilliardoh.portal.opengov.com/categories/1078/record-types/6375\nGrass / Weed Complaint: https://hilliardoh.portal.opengov.com/categories/1078/record-types/6538\nContractor Registration: https://hilliardoh.portal.opengov.com/categories/1086/record-types/6371\nSolicitor & Peddler Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6487\nFood Truck / Cart Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6484\nNeighborhood Block Party / Street Closure Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6492\nEvent Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6540\nCharitable/Religious/Political Canvassing Registration: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6496\nBrowse all permit categories: hilliardoh.portal.opengov.com\n\n== ENGINEERING DESIGN & CONSTRUCTION STANDARDS (for engineering / design / construction questions) ==\nThe City's Engineering Design and Construction Standards govern how public and private infrastructure must be designed and built in Hilliard — the reference used by engineers, developers, and contractors on development and capital projects. Full manual: https://hilliard.municipalcodeonline.com/book?type=designs#name=Engineering_Design_Manual\nThe standards include the Engineering Design Manual plus Engineering General Notes, Norwich Fire Regulations, Policies, Small Cell Design Guidelines, Standard Drawings, and Street Naming & Addressing Standards.\nEngineering Design Manual chapters: 1) Project Types & Plan Requirements; 2) Development Procedures & Submittal Requirements; 3) Construction & Material Specifications; 4) Roadway; 5) Sanitary Sewers; 6) Water Lines; 7) Stormwater; 8) Soil Erosion & Sedimentation Control; 9) Traffic Control Devices; 10) Lighting; 11) Green Infrastructure Improvements; 12) Landscape & Tree Standards.\nUse this for questions about engineering/design/construction standards — roadway & pavement design, sanitary sewer or water main design, stormwater management/detention, erosion & sediment control, traffic control devices, street lighting, green infrastructure, landscaping/tree requirements, development plan submittal requirements, standard construction drawings, and street naming/addressing. These are technical standards for design professionals; link the manual, name the relevant chapter, and refer detailed or project-specific questions to the Engineering Division (Development Services), hilliardohio.gov/engineering-division/ or (614) 876-7361.";
+const DEFAULT_KB = "CITY OF HILLIARD, OHIO — KNOWLEDGE BASE (compiled Aug 25, 2026 from hilliardohio.gov and the Hilliard Code of Ordinances on Municode, Supplement 10, codified through Ord. 25-28, Oct 27, 2025)\n\n== CONTACT & BASICS ==\nCity Hall/Administration: 3800 Municipal Way, Hilliard, OH 43026 — (614) 876-7361. Business hours approx. 8am–5pm weekdays.\nWebsite: hilliardohio.gov. General questions: \"Ask Us\" form at hilliardohio.gov/contact-the-city/ (~48-hr response).\nService requests (potholes, chipper, signs, etc.): Hilliard Helps / Hilliard 311 — hilliardohio.gov/hilliardhelps/, (614) 876-7361 ext. 311.\nPolice: 5171 Northwest Parkway. Emergency 911; NON-EMERGENCY (614) 876-7321 (24/7). Records: (614) 876-2429, hpdrecordsunit@hilliardohio.gov.\nFire: provided by NORWICH TOWNSHIP (not the City) — 5181 Northwest Parkway, (614) 876-7694.\nMayor's Court: 5171 Northwest Parkway, Wednesdays 8am; Clerk (614) 334-2348; pay tickets at ohioticketpayments.com/Hilliard/DocketSearch.php.\nThe Well (rec & wellness campus): 3993 Cosgray Rd, (614) 876-5200.\nCity Code: library.municode.com/oh/hilliard/codes/code_of_ordinances.\n\n== GOVERNMENT ==\nHilliard has a COUNCIL–MANAGER government — NO elected mayor. Seven at-large council members appoint a City Manager.\nCity Manager: Joshua Rauch (sworn in April 20, 2026).\nCouncil: Emily Cole (President), Tina Cottone (VP), Greg Betts, Kathy Parker-Jones, Nadia Atway Rasul, Andy Teater, Cynthia Vermillion. Contact: CityCouncil@hilliardohio.gov. Clerk of Council: Diane Werbrich, (614) 334-2365.\nRegular Council meetings: 6pm, 2nd & 4th Mondays, Council Chambers, 3800 Municipal Way (time changed from 7pm effective Aug 25, 2026). Agendas/minutes: hilliardohio.civicweb.net/Portal/. The assistant can pull any board's current agenda items, packet and minutes live from that portal with the lookup_meeting_agenda tool. Board of Zoning Appeals: 6pm, 3rd Thursday monthly. Planning & Zoning Commission: 2nd Thursday monthly. Speakers sign in with the Clerk; 3 minutes each.\nBoards/commissions: Planning & Zoning Commission, Board of Zoning Appeals, Environmental Sustainability, Public Arts, Shade Tree, Records Commission, and others.\n\n== TRASH, RECYCLING & YARD WASTE ==\nProvider: Local Waste Services (LWS) under city contract. Trash, recycling AND yard waste all collected EVERY TUESDAY citywide.\nHoliday rule: holiday on Sun/Mon/Tue pushes pickup to Wednesday; Saturday holidays cause no delay.\nContainers out by 7am at end of driveway (not in the street), max 50 lbs. By code (Ch. 975): set out no earlier than 5pm the day before; bring in by 9am the morning after; store containers behind the house or not forward of the front face of the dwelling.\nBins: blue recycling + green/gray trash (65-gal standard). Larger 90-gal recycling bin FREE from LWS (614-409-9375); larger trash bin $65 via City (614-334-1209).\nBilling: quarterly by LWS; pay at localwasteservices.com; unpaid bills can become a property lien. Senior (65+) discount: 10% (Ch. 975.06) — apply through LWS, info@localwasteservices.com.\nMissed pickup: LWS (614) 409-9375 option 2, within 24 hours. City trash line: (614) 334-1209.\nBulk items: with regular trash at curb; upholstered items (mattresses/box springs/furniture) MUST be wrapped in plastic. Large pickups scheduled via LWS.\nRecyclables loose, never bagged. Guidance: recycleright.org, swaco.org.\nYard waste: Tuesdays Mar 1–Nov 30, in brown paper bags or rigid containers with free yard-waste stickers (get at 3800 Municipal Way). Bundles max 4ft x 2ft, branches ≤2in diameter, ≤50 lbs. Christmas trees collected bare.\nChipper (City, on-demand): limbs over 4 ft long/4 in diameter; Mondays mid-April–late Sept; request via Hilliard Helps by 2:30pm the prior Friday.\nComposting: GoZero program. Styrofoam recycling available — see hilliardohio.gov.\n\n== WATER, SEWER & UTILITIES ==\nThe City does NOT provide water/sewer. COLUMBUS Division of Water serves Hilliard: start/stop service & billing (614) 645-3111 or columbus.gov utilities pages.\nStorm/sanitary sewer infrastructure inside the city: Hilliard Engineering; issues → Hilliard 311.\nElectric: AEP Ohio (lines/outages); city electric aggregation supplied by Dynegy (hilliardohio.gov/aggregation/). Gas: Columbia Gas of Ohio.\nCall OUPS (oups.org) at least 48 hrs before digging.\n\n== INCOME TAX ==\nRate: 2.5% (since Jan 1, 2022). ALL residents 18+ must file a city return every year by April 15 — even if nothing is owed — EXCEPT seniors with no earned income. Filed through RITA (ritaohio.com); checks payable to RITA.\nFull credit for tax paid to a work city, up to 2.5%. Retirement income, unemployment not taxed.\nCity Income Tax Division: (614) 876-7361 ext. 778, Tax1@hilliardohio.gov.\nPROPERTY taxes: Franklin County Auditor (614) 525-4663 — not the City.\n\n== PERMITS, BUILDING & CONTRACTORS ==\nApply and pay ONLINE via the OpenGov portal: hilliardoh.viewpointcloud.com (a.k.a. hilliardoh.portal.opengov.com). An application is NOT a permit — wait for issuance before building.\nPermits required for (examples): decks, sheds, fences, basement finishes, additions, roofs, driveways, patios, pools, hot tubs, electrical, plumbing, furnace replacement, siding.\nReview: about 2 weeks typical; most permits valid 1 year. Contact: Building@hilliardohio.gov.\nCODES IN FORCE: commercial/industrial/multi-family construction follows the 2024 Ohio Building Code (OBC, Ohio Administrative Code 4101:1, based on the 2021 IBC with Ohio amendments) plus the Ohio Mechanical, Plumbing and Fire codes; one-, two- and three-family dwellings follow the Residential Code of Ohio (RCO, OAC 4101:8). Hilliard's Building Standards Division is a State-certified building department and is the authority having jurisdiction. The assistant can look up OBC sections with lookup_building_code; browse the code at up.codes/viewer/ohio/ibc-2021 or the official text at codes.ohio.gov/ohio-administrative-code/4101:1.\nAll contractors must be REGISTERED with the Building Department. Homeowners may do their own work on their own residence (not rentals) — permits/inspections still required.\nZoning applications (zoning certificate, sign permit, fence permit, BZA, zoning verification letter): Planning Division, Planning1@hilliardohio.gov, OpenGov portal.\nReport a code/zoning violation: hilliardohio.gov/report-a-code-violation/.\nSidewalk repair: adjacent property owner's responsibility (City repairs curb ramps and damage from city-tree roots).\n\n== CITY CODE HIGHLIGHTS (cite section numbers) ==\nPARKING: No vehicle parked on any street more than 72 continuous hours (§351.14). Commercial vehicles max 1 hr on street; RVs/trailers max 2 hrs on street (§351.22), delivery/loading excepted. No general citywide overnight parking ban — but obey posted signs and permit districts (§§351.23–.24). Snow emergency (declared when 3+ inches forecast): no parking on designated snow-emergency streets, vehicles may be towed (Ch. 352).\nNOISE: Quiet hours 10pm–7am (§531.02) — no loudspeakers, loading, or powered lawn/garden equipment that disturbs neighbors (snow-removal equipment exempt). Residential sound limits roughly 60 dBA day / 50 dBA night (§531.03). CONSTRUCTION: no exterior construction work on Sundays or between 7pm and 7:30am (§509.08).\nANIMALS: Max 4 dogs/cats total per household (excl. under 4 months) (§505.06). Dogs must be confined/leashed or under reasonable control (§505.02); annual dog license via Franklin County (§505.09). CHICKENS (§1121.08): only in R-R, R-1, R-2, PUD, HCD districts; lots UNDER 0.5 acre → NOT allowed; 0.5–2.99 acres → up to 6; coop rear yard only, 15 ft from property lines; zoning certificate + fence permit required. Roosters/ducks only on 1+ acre. Beekeeping per §1121.09 (flyway barrier rules). Livestock only in R-R on 3+ acres (§1121.07).\nGRASS/WEEDS: max 6 inches (§1303.02, Ch. 917). 5-day notice to cut; City may mow and assess costs as a tax lien; min $250 fine (§917.99).\nJUNK VEHICLES: inoperable vehicles/equipment may not sit outside an enclosed building more than 48 hours (§1121.05).\nFENCES (§1121.02(d)): PERMIT REQUIRED. No front-yard fences (invisible fences excepted; limited corner-lot exception). Max 6 ft side/rear; chain-link max 4 ft in residential. Neutral colors; finished side out; no barbed wire/stockade/electric/scrap materials. Pools must be fenced (4–6 ft, self-latching gate) or have a locking safety cover.\nSHEDS/ACCESSORY BUILDINGS (§1121.02(b)): rear yard only; ≥6 ft from rear and ≥3 ft from side lot lines; max 14 ft tall; max 50% of the home's floor area or 900 sq ft, whichever is less; ≤30% of required rear yard.\nSIGNS (Ch. 1129): NO signs in any public right-of-way, on utility poles, street signs, trees, or public property. Garage/yard-sale signs allowed without permit on private property only. Real-estate signs: one, max 8 sq ft, 4 ft high, removed within 7 days of closing. No separate political-sign rules — same content-neutral rules apply (keep on private property, out of right-of-way).\nGARAGE SALES (Ch. 727): max 2 per residence per 12 months, max 3 consecutive days; hours 9am–8pm (Apr–Sep) / 9am–6pm (Oct–Mar).\nFIREWORKS (Ch. 1519): discharge of consumer fireworks is PROHIBITED citywide (Hilliard opted out of Ohio's holiday-discharge default). Licensed public exhibitions only. First-degree misdemeanor, fine up to $1,000.\nCURFEW (Ch. 539): under 12 — darkness to dawn; under 18 — midnight to 6am. Exceptions: with parent/guardian, parent-directed errand, work travel, newspaper delivery.\nHOME OCCUPATIONS (§1121.06(e)): permit from Planning Director required; business entirely inside the dwelling; residents only; max 25% of floor area or 250 sq ft; no on-site retail sales; no exterior evidence except one 2-sq-ft non-illuminated sign.\nSIDEWALK SNOW: abutting property owners are responsible for clearing snow and ice from sidewalks/paths next to their property (§909.02(i)).\nTRASH STORAGE: solid waste kept max 14 days (§975.02); container set-out/bring-in rules in §975.05 (see trash section).\nZONING DISTRICTS (§1104.01): 16 districts — R-R, R-1, R-2, R-3, R-4 residential; B-1–B-4 business; M-1, M-2 industrial; S-1, HCD, OH-MD, OH-RD special; PUD planned.\n\n== ZONING DISTRICT STANDARDS (Chs. 1109–1117; use with the lookup_zoning tool for address questions) ==\nEvery district is also subject to Ch. 1121 general provisions (accessory buildings, fences, home occupations, chickens), Ch. 1123 conditional uses, Ch. 1127 parking, Ch. 1129 signs. \"P\"=permitted, \"C\"=conditional use (needs approval).\nR-R Rural Residential: large-lot single-family without public utilities; farms/stables C. Min lot 100,000 sq ft / 150 ft wide; height 35 ft; setbacks front 40 / side 15 (35 total) / rear 40; coverage 25%. Only district allowing agricultural animal uses broadly.\nR-1 Low Density: single-family P; schools/worship/B&B C. Min lot 13,500 sq ft / 90 ft (30,000 sq ft if no public water/sewer); height 35; front 35 / side 12 (30 total) / rear 40; coverage 30%.\nR-2 Low/Medium Density: single-family P. Min lot 11,200 sq ft / 80 ft; height 35; front 25 for the dwelling BUT garages must sit back 35 ft (unique to R-2); side 10 (20 total) / rear 35; coverage 30%.\nR-3 Moderate Density: single-family P; two-family, townhouses, CCRC, day care center C. Min lot 10,000 sq ft / 70 ft (two-family 6,000 sq ft/unit); height 35; front 30 / side 10 (20 total) / rear 30; coverage 35%.\nR-4 High Density: detached/attached/multi-family P. Min lot 6,000 sq ft / 60 ft; multi-family max 14 units/acre; height 35 (up to 70 with extra setbacks); front 30 / side 8 (16 total) / rear 30; coverage 35%.\nB-1 Neighborhood Business: small-scale convenience retail/services, small restaurants (<2,000 sq ft, no drive-thru), offices, banks P; bars, general retail, drive-thrus C. Min lot 7,500 sq ft / 60 ft; height 35; front 30 / side 0 / rear 20.\nB-2 Community Business: general retail, restaurants, bars, hotels, offices P; vehicle sales/repair, drive-thru restaurants, outdoor storage C. Min lot 1 acre / 200 ft; height 35; parking 20 / building 50 front; side 20 / rear 30.\nB-3 Office/Institutional: offices, medical, labs, data centers, restaurants P; hospitals, colleges C; most retail excluded. Min lot 1 acre / 200 ft; height 45; building front 50; side 20 / rear 30.\nB-4 I-270 Corridor: offices, hotels, restaurants, retail <15,000 sq ft P; residential, grocery, drive-thrus C. Min lot 1 acre / 200 ft; height 70; building front 60 / side 30 / rear 30 (+1 ft setback per ft above 45 ft height).\nM-1 Restricted Industrial: light manufacturing, offices, research, data centers P; breweries, warehouses, self-storage, outdoor storage C. Min lot 1 acre / 100 ft; height 45; building front 50 / side 20 / rear 40; coverage 30%.\nM-2 General Industrial: manufacturing, warehouses/distribution P; chemical plants, truck repair, recycling C. Min lot 2 acres / 200 ft; height 45; building front 50 / side 30 / rear 40; coverage 50%.\nS-1 Support Facilities: parks, schools, worship, government, libraries (mostly C); no dwellings. Min lot 3 acres / 250 ft; height 45; building front 60 / side 50 (100 total) / rear 60; coverage 20%.\nHCD Hilliard Conservation District (Big Darby watershed): conservation development; min tract 20 acres, no min lot size, 70% permanent open space; standards set by development-plan review; height 35.\nOH-MD Old Hilliard Mixed Use (downtown): retail, restaurants, bars, offices, dwellings P. No min lot; height 52 ft; build-to zone 0–10 ft front; parking behind buildings. Exterior changes need P&Z design review (§1115.05); fences max 30 inches downtown.\nOH-RD Old Hilliard Residential: small-lot housing near downtown; all dwelling types P. Min lot 7,000 sq ft / 50 ft; height 35; front build-to 0–25 ft; side 5 (12 total) / rear 25. Exterior modifications need P&Z review.\nCOMMUNITY DEVELOPMENT DISTRICTS (Chapter 1116 — adopted by Ordinance 25-17, July 14, 2025; amended by Ordinance 26-07, March 23, 2026; not yet codified on Municode, so the governing text is the ordinance itself: https://library.municode.com/oh/hilliard/ordinances/code_of_ordinances?nodeId=1369718). These form-based districts implement the 2023 Hilliard Community Plan and are newer than the Chapter 1109–1117 districts above. They are: DE Big Darby Employment District (§1116.07), and the I-270 Corridor (I) District (§1116.08) with its subdistricts I-1 Natural, I-3 Suburban, I-6 Urban Core, I-FE Flex Employment, I-MR Mill Run, and Civic. Chapter 1116 also contains shared design standards and guidelines (§1116.02), building typologies (§1116.03), frontage typologies (§1116.04), open space typologies (§1116.05), and green parking typologies (§1116.06). Standards are set by building/frontage form rather than a conventional setback table; review is through Site Plan Review (Ch. 1131), except Big Darby Employment which follows §1116.07(h). For property-specific standards in these districts, refer the resident to the Planning Division.\nPUD Planned Unit Development: NEGOTIATED district — no fixed standards table. Each PUD is governed by its own Council-approved development text/plan (deviations from baseline district standards allowed). Pre-2014 PUDs keep their original approved plans. For any property in a PUD: the resident must check that PUD's approved text — the GIS lookup often returns a link to it; otherwise contact Planning (Planning1@hilliardohio.gov).\n\n== SNOW, STREETS & LEAVES ==\nSnowplow priority: 1) major arteries 2) minor arterials 3) residential streets (usually unsalted) 4) cul-de-sacs 5) lots/paths. Track plows live: SnowPaths — portal.snowpaths.com/public/983278/983279.\nDon't shovel snow into streets or around hydrants. Potholes/street lights: report via Hilliard 311.\nLeaf collection (curbside vacuum): Oct–Dec by color-coded quadrant (2026: Oct 20–Dec 19). Rake to the TREE LAWN (never the street) by 7am Monday of your zone's week. Bagged leaves also OK with Tuesday yard waste through Nov 30. Street sweeping roughly monthly (not winter).\n\n== PARKS & RECREATION ==\nThe Well: 3993 Cosgray Rd — fitness floor, indoor aquatics, gyms, indoor track, teaching kitchen, The Depot teen space; memberships & day passes; partner OSU Wexner Medical Center. (614) 876-5200.\nTwo outdoor pools: Hilliard Family Aquatic Center and Clyde \"Butch\" Seidle Community Pool — one pass valid at both; passes go on sale each January; prices at hilliardohio.gov/pools-passes/.\nNearly 27 parks incl. Roger A. Reynolds Municipal Park (shelter rentals $100/day, $50 nonprofit), Hilliard's Station Park (7-mile Heritage Trail trailhead), First Responders Park, Weaver Park.\nProgram registration: webtrac.hilliardohio.gov (RecTrac/WebTrac; also mobile app). The assistant can search the live program catalog with the search_programs tool — classes, swim lessons, camps, leagues, fitness, HSC 55+ — and give direct registration links. Browse by category: Aquatics, Art/Culture & Enrichment, Fitness & Wellness, Senior Center, Outdoor Adventure, Seasonal, Sports; or by age group (Preschool, Youth 6-12, Teen 13-17, Adult 18+, Senior 55+, Family, All Ages). Fees show a resident and a non-resident rate; residency rules are under \"Am I a resident?\" on WebTrac. Registration needs a free WebTrac account (Sign In / Register). Rentals: rentals@hilliardohio.gov, (614) 334-2580. 55+ programs (HSC 55+) at The Well; Hilliard Express senior transportation.\n\n== EVENTS ==\nAnnual: Independence Day Parade & Freedom Fest (July 4), Fall Festival (Sept 13, 2026), Heritage Day, Pumpkin Float, Beggar's Night/Trick-or-Treat (Oct 31 if Mon–Thu, else preceding Thursday; 2026: Oct 29, 6–8pm), Tree Lighting (Dec 6, 2026), Cram the Cruiser. Calendar: hilliardohio.gov/events/.\nDORA (outdoor drinks, Old Hilliard): 21+, daily noon–9pm (last call 8:30pm), designated cups from participating vendors only.\n\n== PROPERTY RECORDS & PERMIT LOOKUP (address-specific) ==\nPROPERTY DATA: The lookup_zoning tool returns Franklin County Auditor parcel data: owner, parcel size in acres, residence year built, last transfer date and price, property class, subdivision, homestead status. Cite it as Franklin County Auditor data. FULL property records (appraised value, property taxes, transfer history, photos, sketches): Franklin County Auditor property search — property.franklincountyauditor.com (search by address under 'Address' mode). Bulk/GIS property data: the Auditor's Data Library at auditor.franklincountyohio.gov/Auditor/FTP. Property tax questions: Franklin County Auditor (614) 525-4663 — NOT the City.\nPERMIT LOOKUP BY ADDRESS: Every active and historical permit issued for a Hilliard property can be viewed publicly at hilliardoh.portal.opengov.com/search — choose the 'Locations' tab, type the address, and select it; the property page lists all records (building, electrical, plumbing, HVAC, fence, sign, zoning applications, etc.) with their status. The assistant cannot pull these records directly; always give residents this link for permit-history questions.\nPERMIT APPLICATIONS & ZONING VERIFICATION: hilliardoh.portal.opengov.com is the City's permitting portal (OpenGov, formerly ViewPoint Cloud) — apply for permits, pay fees, track your own applications, schedule inspections, request zoning verification letters (Planning & Zoning category), and request addresses. Create a free account to apply. Directions and record-type categories are on the portal home page. Portal help: Building@hilliardohio.gov (building permits) or Planning1@hilliardohio.gov (zoning/planning).\n\n== PUBLIC RECORDS ==\nNo ID, writing, or reason required. Email publicrecords@hilliardohio.gov or Clerk of Council (614) 334-2365. Police records: hpdrecordsunit@hilliardohio.gov, (614) 876-2429, online form, or in person 24/7.\nCopies 5¢/page; emailed records free; no charge if under $20.\n\n== JOBS ==\nApply ONLY online: governmentjobs.com/careers/cityofhilliard. No residency requirement. Seasonal jobs (lifeguards, camps) via Rec & Parks. HR: (614) 334-1397. Police hiring: hilliardohio.gov/join-the-hpd-team/.\n\n== KNOWN LIMITS (be transparent about these) ==\nCurrent prices/fees (pool passes, Well memberships, permit fees, program fees) change — direct people to the live page or phone number instead of quoting numbers. Leaf-zone quadrant boundaries are on a PDF map on the leaf page. Fire/EMS is Norwich Township. Property tax is Franklin County. School questions → Hilliard City Schools district (separate from City).\n\n== SPECIFIC CITY WEBSITE PAGES (link residents to the EXACT page below, not the generic homepage) ==\nRecycling: hilliardohio.gov/recycling/\nComposting / food waste / GoZero: hilliardohio.gov/composting-program/\nTrash & recycling (overview): hilliardohio.gov/trash-recycling/\nYard waste: hilliardohio.gov/yard-waste/\nLeaf collection: hilliardohio.gov/leaf-collection/\nStyrofoam recycling: hilliardohio.gov/styrofoam-recycling/\nPool passes & pools: hilliardohio.gov/pools-passes/\nIncome tax (RITA): hilliardohio.gov/taxes/\nSnowplow tracking (SnowPaths): hilliardohio.gov/snowpaths/\nStreet maintenance: hilliardohio.gov/street-maintenance/\nSidewalk maintenance: hilliardohio.gov/sidewalk-maintenance/\nStreet trees / tree program: hilliardohio.gov/trees/\nReport a code violation (info page): hilliardohio.gov/report-a-code-violation/\nService requests (Hilliard Helps / 311): hilliardohio.gov/hilliardhelps/\nPlanning & zoning: hilliardohio.gov/planning-zoning/\nPlanning Division: hilliardohio.gov/planning-division/\nBuilding Standards Division: hilliardohio.gov/building-standards-division/\nBoard of Zoning Appeals: hilliardohio.gov/zoning-appeals/\nEngineering Division: hilliardohio.gov/engineering-division/\nStormwater management: hilliardohio.gov/stormwater-management/\nSanitary sewer & stormwater: hilliardohio.gov/sanitary-sewer-and-stormwater-systems/\nPolice: hilliardohio.gov/police/\nPolice online reporting: hilliardohio.gov/onlinereporting/\nMayor's Court: hilliardohio.gov/mayors-court/\nPublic records: hilliardohio.gov/public-records/\nPolice records: hilliardohio.gov/police-public-records/\nContact the City / Ask Us: hilliardohio.gov/contact-the-city/\nCity Council: hilliardohio.gov/city-council/\nAgendas & minutes: hilliardohio.gov/agendas-minutes/\nBoards & commissions: hilliardohio.gov/boards-commissions/\nJobs / hiring: hilliardohio.gov/hiring/\nPolice hiring: hilliardohio.gov/join-the-hpd-team/\nNewsletter signup: hilliardohio.gov/newsletter-signup/\nAnnual events: hilliardohio.gov/annual-events/\nFall Festival: hilliardohio.gov/fallfestival/\nDORA (outdoor drinks): hilliardohio.gov/dora/\nElectric aggregation: hilliardohio.gov/aggregation/\nSustainability: hilliardohio.gov/sustainability/\nCommunity garden: hilliardohio.gov/community-garden/\nForms & applications: hilliardohio.gov/forms-and-applications/\nRec program guide: hilliardohio.gov/program-guide/\nRec registration: webtrac.hilliardohio.gov\nVacation house check: hilliardohio.gov/vacation-house-check/\nSmart911: hilliardohio.gov/smart911/\nMosquito control: hilliardohio.gov/mosquitos/\nKeep Hilliard Beautiful: hilliardohio.gov/keep-hilliard-beautiful/\n\n== PERMIT & LICENSE APPLICATION LINKS (OpenGov portal — give the EXACT application URL below when a resident wants to apply or asks about a permit type; an application is NOT a permit, wait for issuance) ==\nBuilding Permit - Residential (decks, sheds/accessory over 200 sq ft, additions, remodels, detached garages, basement finishing): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6395\nBuilding Permit - Commercial: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6468\nCommercial Plan Review (step 1 before a commercial building permit): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6502\nElectrical Permit (includes residential solar panels): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6511\nHVAC / Refrigeration Permit (furnace/AC replacement): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6513\nGas Line Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6514\nRoofing Permit (commercial re-roof only; not required for 1-3 family homes): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6515\nFire Protection System Permit (sprinklers, fire alarm, hood suppression): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6512\nCommercial Kitchen Hood Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6510\nDemolition Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6520\nTemporary Structure / Tent Permit: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6516\nCertificate of Occupancy (existing structures): https://hilliardoh.portal.opengov.com/categories/1079/record-types/6517\nPlumbing Permits — now handled by Franklin County Public Health: https://hilliardoh.portal.opengov.com/categories/1079/record-types/6559\nFence Permit (includes swimming pool fences): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6460\nSign Permit (permanent): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6389\nSign Permit - Temporary (banners, feather flags, A-frames, real estate/construction signs): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6544\nZoning Certificate (certificate of zoning compliance): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6383\nZoning Verification / Confirmation Letter (official ZVL): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6376\nBoard of Zoning Appeals Application (variances, conditional use, home occupation): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6469\nPlanning & Zoning Commission Application (rezoning, site plans, plats, lot splits): https://hilliardoh.portal.opengov.com/categories/1080/record-types/6481\nAddress Request: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6535\nTemporary Storage Unit (POD) registration: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6536\nHotel/Motel or Bed & Breakfast: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6519\nMassage or Bath Establishment: https://hilliardoh.portal.opengov.com/categories/1080/record-types/6518\nCurb, Driveway Approach & Sidewalk Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6392\nRight of Way Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6342\nWater & Sewer Taps: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6523\nSewer/Water Lateral Replacement or Repair: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6489\nSpecial Flood Hazard Area Development Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6500\nCivil / Site Plan Review: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6534\nSanitary Backflow Device Program: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6539\nHauling Permit: https://hilliardoh.portal.opengov.com/categories/1084/record-types/6546\nReport a Code Violation (file a complaint): https://hilliardoh.portal.opengov.com/categories/1078/record-types/6375\nGrass / Weed Complaint: https://hilliardoh.portal.opengov.com/categories/1078/record-types/6538\nContractor Registration: https://hilliardoh.portal.opengov.com/categories/1086/record-types/6371\nSolicitor & Peddler Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6487\nFood Truck / Cart Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6484\nNeighborhood Block Party / Street Closure Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6492\nEvent Permit: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6540\nCharitable/Religious/Political Canvassing Registration: https://hilliardoh.portal.opengov.com/categories/1074/record-types/6496\nBrowse all permit categories: hilliardoh.portal.opengov.com\n\n== ENGINEERING DESIGN & CONSTRUCTION STANDARDS (for engineering / design / construction questions) ==\nThe City's Engineering Design and Construction Standards govern how public and private infrastructure must be designed and built in Hilliard — the reference used by engineers, developers, and contractors on development and capital projects. Full manual: https://hilliard.municipalcodeonline.com/book?type=designs#name=Engineering_Design_Manual\nThe standards include the Engineering Design Manual plus Engineering General Notes, Norwich Fire Regulations, Policies, Small Cell Design Guidelines, Standard Drawings, and Street Naming & Addressing Standards.\nEngineering Design Manual chapters: 1) Project Types & Plan Requirements; 2) Development Procedures & Submittal Requirements; 3) Construction & Material Specifications; 4) Roadway; 5) Sanitary Sewers; 6) Water Lines; 7) Stormwater; 8) Soil Erosion & Sedimentation Control; 9) Traffic Control Devices; 10) Lighting; 11) Green Infrastructure Improvements; 12) Landscape & Tree Standards.\nUse this for questions about engineering/design/construction standards — roadway & pavement design, sanitary sewer or water main design, stormwater management/detention, erosion & sediment control, traffic control devices, street lighting, green infrastructure, landscaping/tree requirements, development plan submittal requirements, standard construction drawings, and street naming/addressing. These are technical standards for design professionals; link the manual, name the relevant chapter, and refer detailed or project-specific questions to the Engineering Division (Development Services), hilliardohio.gov/engineering-division/ or (614) 876-7361.";
 
 const DEFAULT_TOPICS = [
  {
@@ -145,58 +145,11 @@ function parseWebtracPage(html, code) {
       const tds = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(c => c[1]);
       if (tds.length < 10) continue;
       const fm = (row[1].match(/iteminfo\.html\?[^"']*FMID=(\d+)/i) || [])[1];
-      sections.push({ section: wtCell(tds[1], 'Activity #'), title: wtCell(tds[2], 'Description'), dates: wtCell(tds[3], 'Dates'), times: wtCell(tds[4], 'Times'), days: wtCell(tds[5], 'Days'), location: wtCell(tds[6], 'Location'), ages: wtCell(tds[7], 'Ages'), cost: wtCell(tds[8], 'Cost'), availability: wtCell(tds[9], 'Availability'), section_url: fm ? WEBTRAC + 'iteminfo.html?Module=AR&FMID=' + fm : undefined, wishlist_url: fm ? WEBTRAC + 'wishlist.html?Module=AR&FMID=' + fm : undefined });
+      sections.push({ section: wtCell(tds[1], 'Activity #'), title: wtCell(tds[2], 'Description'), dates: wtCell(tds[3], 'Dates'), times: wtCell(tds[4], 'Times'), days: wtCell(tds[5], 'Days'), location: wtCell(tds[6], 'Location'), ages: wtCell(tds[7], 'Ages'), cost: wtCell(tds[8], 'Cost'), availability: wtCell(tds[9], 'Availability'), section_url: fm ? WEBTRAC + 'iteminfo.html?Module=AR&FMID=' + fm : undefined });
     }
     out.push({ category: WT_CATS[code], name, activity_number: actNo, description: desc, category_url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail', sections });
   }
   return out;
-}
-/* Adult sports leagues live in WebTrac's separate League Search (module=LS), not in the
-   activity categories, so a category-only crawl never sees "Volleyball Co-Rec Fall".
-   Each league is one block with a single row: Description, Category (e.g. "Co-Rec
-   Volleyball"), Dates, Max Teams, Current Teams, Games, Price Res/Non-Res, Details link. */
-const LEAGUE_CATEGORY = 'Adult Sports Leagues';
-const LEAGUE_URL = WEBTRAC + 'search.html?module=LS&display=detail';
-function parseWebtracLeagues(html) {
-  const out = [];
-  const blocks = html.split(/<div[^>]*class="[^"]*result-content[^"]*"/i).slice(1);
-  for (const blk of blocks) {
-    const h2 = (blk.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i) || [])[1]; if (!h2) continue;
-    const name = htmlText(h2).replace(/\s+/g, ' ').replace(/\s*-\s*\d{4,}\s*$/, '').trim();
-    const desc = htmlText((blk.match(/result-header__description[^>]*>([\s\S]*?)<\/div>/i) || [])[1] || '').replace(/\s+/g, ' ').trim();
-    const sections = [];
-    for (const row of blk.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)) {
-      const tds = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(c => c[1]);
-      if (tds.length < 9) continue;
-      const fm = (row[1].match(/iteminfo\.html\?[^"']*FMID=(\d+)/i) || [])[1];
-      const maxTeams = parseInt(wtCell(tds[4], 'Max Teams'), 10), curTeams = parseInt(wtCell(tds[5], 'Current Teams'), 10);
-      const teams = isNaN(maxTeams) ? '' : (isNaN(curTeams) ? maxTeams + ' teams' : curTeams + ' of ' + maxTeams + ' teams registered');
-      const availability = (!isNaN(maxTeams) && !isNaN(curTeams)) ? (curTeams >= maxTeams ? 'Full' : 'Available') : 'Check availability';
-      const games = wtCell(tds[6], 'Games');
-      sections.push({ section: wtCell(tds[1], 'Description'), title: wtCell(tds[2], 'Category') + (teams ? ' — ' + teams : ''), dates: wtCell(tds[3], 'Dates'), times: '', days: games ? games + ' games' : '', location: '', ages: 'Adult 18+', cost: wtCell(tds[7], 'Price Res/Non-Res') + ' per team', availability, teams_max: isNaN(maxTeams) ? undefined : maxTeams, teams_registered: isNaN(curTeams) ? undefined : curTeams, section_url: fm ? WEBTRAC + 'iteminfo.html?Module=LS&FMID=' + fm : LEAGUE_URL, wishlist_url: fm ? WEBTRAC + 'wishlist.html?Module=LS&FMID=' + fm : undefined });
-    }
-    const sport = (sections[0] && sections[0].title.split(' — ')[0]) || '';
-    out.push({ category: LEAGUE_CATEGORY, name, activity_number: '', description: (desc || ('Adult sports league: ' + (sport || name) + '.')) + ' Team registration (the price is per team) through the WebTrac League Search; schedules and standings are posted there once play starts.', category_url: LEAGUE_URL, league: true, sections });
-  }
-  return out;
-}
-async function crawlWebtracLeagues(programs, pagesRead) {
-  const seen = new Set();
-  for (let page = 1; page <= 10; page++) {
-    const r = await fetch(LEAGUE_URL + '&page=' + page, { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
-    if (!r.ok) throw new Error('WebTrac HTTP ' + r.status + ' on League Search page ' + page);
-    const html = await r.text();
-    if (page === 1 && !/result-content/.test(html)) {
-      if (/League Search|Search Results|lswebsearch/i.test(html)) { pagesRead.LEAGUES = '0 results'; return; }
-      throw new Error('WebTrac returned no results markup for the League Search (' + html.length + ' bytes)');
-    }
-    const got = parseWebtracLeagues(html).filter(p => !seen.has(p.name));
-    if (!got.length) break;
-    got.forEach(p => { seen.add(p.name); programs.push(p); });
-    const sh = html.match(/Showing results (\d+)-(\d+) of (\d+)/);
-    pagesRead.LEAGUES = page + (sh ? ' (' + sh[3] + ' results)' : '');
-    if (sh && +sh[2] >= +sh[3]) break;
-  }
 }
 async function crawlWebtracLive() {
   const programs = []; const pagesRead = {};
@@ -220,15 +173,13 @@ async function crawlWebtracLive() {
       if (sh && +sh[2] >= +sh[3]) break;
     }
   }
-  // Leagues are a bonus: a League Search hiccup must not sink the activity catalog.
-  try { await crawlWebtracLeagues(programs, pagesRead); } catch (e) { pagesRead.LEAGUES = 'error: ' + (e && e.message); }
   return {
     generated: new Date().toISOString().slice(0, 10),
     source: 'City of Hilliard Recreation & Parks online registration (RecTrac/WebTrac), crawled live by the assistant',
     note: 'Availability and waitlists change daily — always send people to the section_url or category_url for current status and to register. Cost is resident/non-resident.',
     registration_home: WEBTRAC + 'splash.html',
     keyword_search_url_pattern: WEBTRAC + 'search.html?module=AR&keyword={KEYWORD}&display=detail',
-    categories: Object.entries(WT_CATS).map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail' })).concat([{ code: 'LS', name: LEAGUE_CATEGORY, url: LEAGUE_URL }]),
+    categories: Object.entries(WT_CATS).map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail' })),
     age_groups: [['ADULT', 'Adult 18+'], ['ALL', 'All Ages'], ['FAMILY', 'Family'], ['PRE', 'Preschool Under 5'], ['SR', 'Senior 55+'], ['TEEN', 'Teen 13-17'], ['YOUTH', 'Youth 6-12']].map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&type=' + code + '&display=detail' })),
     programs, pages_read: pagesRead
   };
@@ -236,7 +187,7 @@ async function crawlWebtracLive() {
 const PROGRAM_STOP = new Set(['the','a','an','and','or','for','of','to','in','on','at','is','are','be','class','classes','program','programs','register','registration','sign','up','well','hilliard','any','there','what','when','does','do','have','offer','offers','me','my','i','year','years','old','age','ages','yo','son','daughter']);
 // Synonyms only broaden to a category word, never to a sibling activity — "pickleball"
 // must not surface volleyball just because both are sports.
-const PROGRAM_SYNONYMS = { swim: 'aquatics', swimming: 'aquatics', pool: 'aquatics', lessons: 'aquatics', senior: 'senior', seniors: 'senior', older: 'senior', '55': 'senior', kid: 'youth', kids: 'youth', child: 'youth', children: 'youth', toddler: 'preschool', workout: 'fitness', exercise: 'fitness', gym: 'fitness', league: 'leagues', leagues: 'leagues', team: 'leagues', teams: 'leagues', corec: 'co-rec', coed: 'co-rec', craft: 'enrichment', crafts: 'enrichment', paint: 'enrichment', painting: 'enrichment', pottery: 'enrichment', music: 'enrichment', dance: 'enrichment', summer: 'camp' };
+const PROGRAM_SYNONYMS = { swim: 'aquatics', swimming: 'aquatics', pool: 'aquatics', lessons: 'aquatics', senior: 'senior', seniors: 'senior', older: 'senior', '55': 'senior', kid: 'youth', kids: 'youth', child: 'youth', children: 'youth', toddler: 'preschool', workout: 'fitness', exercise: 'fitness', gym: 'fitness', league: 'sports', craft: 'enrichment', crafts: 'enrichment', paint: 'enrichment', painting: 'enrichment', pottery: 'enrichment', music: 'enrichment', dance: 'enrichment', summer: 'camp' };
 function programTerms(q) {
   const raw = String(q || '').toLowerCase().replace(/(\d+)\s*(?:-|to)\s*(\d+)/g, '$1 $2').split(/[^a-z0-9+]+/).filter(w => w.length > 1 && !PROGRAM_STOP.has(w));
   const literal = raw.filter(w => !/^\d+$/.test(w));
@@ -254,18 +205,7 @@ function sectionFitsAge(s, age) {
   if (plus) return age >= Number(plus[1]);
   return null;
 }
-/* Availability as WebTrac labels it: Available, Waitlist, Check Availability, Full,
-   Unavailable (registration not open or closed). By default only sections a resident can
-   act on today are returned; the full/unavailable ones are counted so the answer can say
-   they exist without listing them. */
-function sectionOpen(sec) {
-  const a = String((sec && sec.availability) || '').trim().toLowerCase();
-  if (!a) return true;                       // unknown -> let the register link decide
-  if (a === 'full' || a.startsWith('unavail') || a.startsWith('closed') || a.startsWith('cancel')) return false;
-  return true;                               // available, waitlist, check availability
-}
-async function searchPrograms(env, query, opts) {
-  const includeFull = !!(opts && opts.include_full);
+async function searchPrograms(env, query) {
   try {
     const cat = await getPrograms(env);
     const { literal, broad, age } = programTerms(query);
@@ -293,21 +233,7 @@ async function searchPrograms(env, query, opts) {
       }
       return s;
     };
-    // Score on the whole program (a full class is still the right program), then keep
-    // only the sections the resident can register for unless they asked for everything.
-    let hiddenSections = 0, hiddenPrograms = 0;
-    const visible = (cat.programs || []).map(p => {
-      if (includeFull) return p;
-      const secs = p.sections || [];
-      // Leagues stay listed even when every team slot is taken: residents ask what
-      // leagues exist and when the next season is, and the row says "Full" plainly.
-      const open = p.league ? secs : secs.filter(sectionOpen);
-      hiddenSections += secs.length - open.length;
-      return Object.assign({}, p, { sections: open, all_sections: secs.length });
-    });
-    const scored = visible.map(p => ({ p, s: scoreOf(p) })).filter(x => x.s > 0);
-    if (!includeFull) hiddenPrograms = scored.filter(x => !(x.p.sections || []).length && x.p.all_sections).length;
-    const ranked = scored.filter(x => includeFull || (x.p.sections || []).length).sort((a, b) => b.s - a.s).slice(0, 10);
+    const ranked = (cat.programs || []).map(p => ({ p, s: scoreOf(p) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 10);
     const terms = literal.concat(broad);
     const catHit = (cat.categories || []).find(c => terms.some(t => c.name.toLowerCase().includes(t)));
     const ageHit = (cat.age_groups || []).find(a => terms.some(t => a.name.toLowerCase().includes(t)));
@@ -321,7 +247,7 @@ async function searchPrograms(env, query, opts) {
         description: (x.p.description || '').slice(0, 300),
         category_url: x.p.category_url,
         // Age-appropriate sections first when the question named an age.
-        sections: (x.p.sections || []).slice().sort((a, b) => (sectionFitsAge(b, age) === true) - (sectionFitsAge(a, age) === true)).slice(0, 6).map(s => ({ section: s.section, title: s.title, dates: s.dates, times: s.times, days: s.days, location: s.location, ages: s.ages, fits_stated_age: age != null ? sectionFitsAge(s, age) : undefined, cost_resident_nonresident: s.cost, availability_as_of_snapshot: s.availability, register_url: s.section_url, add_to_wishlist_url: s.wishlist_url })),
+        sections: (x.p.sections || []).slice().sort((a, b) => (sectionFitsAge(b, age) === true) - (sectionFitsAge(a, age) === true)).slice(0, 6).map(s => ({ section: s.section, title: s.title, dates: s.dates, times: s.times, days: s.days, location: s.location, ages: s.ages, fits_stated_age: age != null ? sectionFitsAge(s, age) : undefined, cost_resident_nonresident: s.cost, availability_as_of_snapshot: s.availability, register_url: s.section_url })),
         more_sections: Math.max(0, (x.p.sections || []).length - 6)
       })),
       browse_category_url: catHit ? catHit.url : undefined,
@@ -329,135 +255,16 @@ async function searchPrograms(env, query, opts) {
       keyword_search_url: (cat.keyword_search_url_pattern || '').replace('{KEYWORD}', encodeURIComponent(String(query || '').trim())),
       registration_home: cat.registration_home,
       categories: (cat.categories || []).map(c => c.name + ' — ' + c.url),
-      only_open_sections: !includeFull,
-      hidden_full_or_unavailable_sections: includeFull ? 0 : hiddenSections,
-      matching_programs_with_no_open_sections: includeFull ? 0 : hiddenPrograms,
-      note: 'Availability shown is from the catalog snapshot dated ' + cat.generated + '; the register_url shows live status. Costs are resident / non-resident.' + (includeFull ? '' : ' Full and Unavailable sections were left out; call again with include_full=true if the resident wants them.')
+      note: 'Availability shown is from the catalog snapshot dated ' + cat.generated + '; the register_url shows live status. Costs are resident / non-resident.'
     };
   } catch (e) {
     return { unavailable: true, reason: (e && e.message) || 'error', staff_note: 'This is a publishing problem with the catalog file, not a WebTrac outage — see reason.', registration_home: 'https://webtrac.hilliardohio.gov/webtrac/web/splash.html' };
   }
 }
-
-/* ---------------- Recreation & Parks website (recandparks.hilliardohio.gov) ----------------
-   The Well's membership rates, daily passes, hours, policies, rentals, facilities, camps and
-   parks live on the Rec & Parks WordPress site, not in WebTrac. Its page sitemap lists ~70
-   pages; the Cron Trigger crawls them into KV (recparks:pages) a batch at a time, keeping
-   under the Worker's per-invocation subrequest budget, and lookup_rec_parks_info searches
-   that text. Tables are kept as "cell | cell" rows so rate tables survive intact. */
-const RECPARKS = 'https://recandparks.hilliardohio.gov';
-const RECPARKS_BATCH = 40;
-const RECPARKS_PRIORITY = [/\/the-well\/memberships/, /\/the-well\/daily-passes/, /\/the-well\/hours/, /\/the-well\//, /membership/, /daily-pass/, /rentals/, /camps?/, /outdoor-aquatics/, /sports-fitness/, /programs/, /parks/, /faq|policies|contact/];
-function recparksHtmlToText(html) {
-  let h = String(html || '');
-  h = h.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ').replace(/<svg[\s\S]*?<\/svg>/gi, ' ');
-  h = h.replace(/<(nav|header|footer)[\s\S]*?<\/\1>/gi, ' ');
-  // Tables first: one line per row, cells joined with " | " even when a cell wraps its text in <p>/<div>.
-  h = h.replace(/<table[\s\S]*?<\/table>/gi, tbl => '\n' + [...tbl.matchAll(/<tr[\s\S]*?<\/tr>/gi)].map(r => [...r[0].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(c => c[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()).join(' | ')).join('\n') + '\n');
-  h = h.replace(/<\/(tr|p|div|li|h\d|section|article)>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
-  h = h.replace(/<(h[1-4])[^>]*>/gi, '\n## ');
-  h = h.replace(/<[^>]+>/g, ' ');
-  h = h.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;|&rsquo;|&lsquo;/g, "'").replace(/&ndash;|&mdash;/g, '-').replace(/&#8217;/g, "'").replace(/&#82\d\d;/g, '"');
-  return h.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').replace(/\n{2,}/g, '\n').replace(/^Skip to content\n/i, '').trim();
-}
-async function recparksPageList() {
-  const r = await fetch(RECPARKS + '/page-sitemap1.xml', { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
-  if (!r.ok) throw new Error('Rec & Parks sitemap HTTP ' + r.status);
-  const xml = await r.text();
-  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim()).filter(u => u.startsWith(RECPARKS));
-  const rank = u => { const i = RECPARKS_PRIORITY.findIndex(re => re.test(u)); return i < 0 ? 99 : i; };
-  return [...new Set(urls)].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
-}
-async function refreshRecParksSite(env, trigger) {
-  const t0 = Date.now();
-  let result;
-  try {
-    const urls = await recparksPageList();
-    let pages = {}; try { pages = JSON.parse((await env.KV.get('recparks:pages')) || '{}'); } catch (e) {}
-    let cursor = parseInt((await env.KV.get('recparks:cursor')) || '0', 10) || 0;
-    if (cursor >= urls.length) cursor = 0;
-    const slice = urls.slice(cursor, cursor + RECPARKS_BATCH);
-    let ok = 0, failed = 0;
-    for (const u of slice) {
-      try {
-        const r = await fetch(u, { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
-        if (!r.ok) { failed++; continue; }
-        const html = await r.text();
-        const title = htmlText((html.match(/<title>([\s\S]*?)<\/title>/i) || [])[1] || '').replace(/\s*[-|–].*$/, '').trim() || u;
-        const text = recparksHtmlToText(html).slice(0, 9000);
-        if (text.length < 80) { failed++; continue; }
-        pages[u] = { title, text, at: new Date().toISOString() };
-        ok++;
-      } catch (e) { failed++; }
-    }
-    // Drop pages that left the sitemap.
-    for (const k of Object.keys(pages)) if (!urls.includes(k)) delete pages[k];
-    const next = cursor + slice.length >= urls.length ? 0 : cursor + slice.length;
-    await env.KV.put('recparks:pages', JSON.stringify(pages));
-    await env.KV.put('recparks:cursor', String(next));
-    result = { ok: true, trigger, ms: Date.now() - t0, fetched: ok, failed, batch_from: cursor, total_pages: urls.length, stored: Object.keys(pages).length, next_cursor: next, complete: next === 0 };
-  } catch (e) {
-    result = { ok: false, trigger, ms: Date.now() - t0, error: (e && e.message) || 'error' };
-  }
-  try { await env.KV.put('recparks:lastCrawl', JSON.stringify(Object.assign({ at: new Date().toISOString() }, result))); } catch (e) {}
-  console.log('rec & parks site refresh', JSON.stringify(result));
-  return result;
-}
-async function getRecParksPages(env) {
-  try { return JSON.parse((await env.KV.get('recparks:pages')) || '{}'); } catch (e) { return {}; }
-}
-const RECPARKS_SYNONYMS = { price: 'rate', prices: 'rate', cost: 'rate', costs: 'rate', fee: 'rate', fees: 'rate', rates: 'rate', join: 'membership', member: 'membership', members: 'membership', memberships: 'membership', pass: 'daily', passes: 'daily', open: 'hours', close: 'hours', closes: 'hours', closed: 'hours', time: 'hours', times: 'hours', rent: 'rental', renting: 'rental', rentals: 'rental', party: 'rental', birthday: 'rental', shelter: 'rental', pool: 'aquatic', pools: 'aquatic', swim: 'aquatic', gym: 'gymnasium', kitchen: 'teaching', senior: 'hsc', seniors: 'hsc', '55': 'hsc' };
-async function lookupRecParksInfo(env, query) {
-  const pages = await getRecParksPages(env);
-  const keys = Object.keys(pages);
-  if (!keys.length) return { unavailable: true, reason: 'The Rec & Parks site has not been crawled yet (run "Refresh Rec & Parks site pages" on /admin or wait for the daily crawl).', site: RECPARKS + '/the-well/memberships' };
-  const stop = new Set(['the', 'a', 'an', 'and', 'or', 'of', 'to', 'in', 'on', 'at', 'is', 'are', 'for', 'what', 'how', 'much', 'does', 'do', 'i', 'my', 'me', 'well', 'hilliard', 'it', 'can', 'with', 'about', 'there', 'any', 'get', 'have']);
-  const raw = String(query || '').toLowerCase().split(/[^a-z0-9+]+/).filter(w => w.length > 1 && !stop.has(w));
-  const terms = [...new Set(raw.concat(raw.map(w => RECPARKS_SYNONYMS[w]).filter(Boolean)))];
-  const same = (a, b) => a === b || (Math.min(a.length, b.length) >= 4 && (a.startsWith(b) || b.startsWith(a)));
-  const scored = keys.map(u => {
-    const p = pages[u];
-    const tw = p.title.toLowerCase().split(/[^a-z0-9]+/), uw = u.toLowerCase().split(/[^a-z0-9]+/);
-    const body = p.text.toLowerCase();
-    let s = 0;
-    for (const t of terms) {
-      if (tw.some(w => same(w, t))) s += 6;
-      if (uw.some(w => same(w, t))) s += 4;
-      const n = (body.match(new RegExp('\\b' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
-      s += Math.min(6, n);
-    }
-    return { u, s };
-  }).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 3);
-  const excerpt = (text, max) => {
-    const paras = text.split('\n');
-    const hits = paras.map((line, i) => ({ i, line, hit: terms.some(t => line.toLowerCase().includes(t)) }));
-    // Keep headings and table rows near hits so rate tables come through whole.
-    const keep = new Set();
-    hits.forEach(h => { if (h.hit) { for (let k = Math.max(0, h.i - 2); k <= Math.min(paras.length - 1, h.i + 8); k++) keep.add(k); } });
-    let out = '';
-    for (let i = 0; i < paras.length && out.length < max; i++) { if (keep.has(i) || paras[i].startsWith('## ')) out += paras[i] + '\n'; }
-    return (out.trim() || text.slice(0, max)).slice(0, max);
-  };
-  return {
-    query,
-    source: 'City of Hilliard Recreation & Parks website, crawled ' + (pages[keys[0]] && pages[keys[0]].at || '').slice(0, 10),
-    results: scored.map(x => ({ title: pages[x.u].title, url: x.u, excerpt: excerpt(pages[x.u].text, 2200), crawled: pages[x.u].at })),
-    note: 'Quote rates and hours exactly as written (tables are "item | resident | non-resident"). Link the page URL so the resident can confirm current details.'
-  };
-}
-const RECPARKS_TOOL = {
-  name: 'lookup_rec_parks_info',
-  description: 'Look up information from the City of Hilliard Recreation & Parks website (recandparks.hilliardohio.gov): The Well membership rates and what a membership includes, daily passes, hours, policies, facility details (fitness floor, pools, gyms, track, teaching kitchen, HSC 55+ social center, Depot, café), rentals and parties, outdoor pools, camps, parks and amenities, volunteering, contact info. Use for any question about joining The Well, prices, hours, rentals or facilities; use search_programs instead for specific classes, lessons and leagues.',
-  input_schema: { type: 'object', properties: { query: { type: 'string', description: 'What they want to know, e.g. "family membership cost", "daily pass price", "pool hours", "birthday party rental"' } }, required: ['query'] }
-};
-
 const PROGRAMS_TOOL = {
   name: 'search_programs',
-  description: 'Search the City of Hilliard Recreation & Parks program catalog (classes, swim lessons, camps, fitness, adult sports leagues such as volleyball/basketball/softball, senior programs at The Well and parks) and return matching programs with dates, times, ages, cost and a direct registration link on the WebTrac registration site. Use for any question about classes, lessons, camps, leagues, programs, or how to register.',
-  input_schema: { type: 'object', properties: {
-    query: { type: 'string', description: 'What they are looking for, e.g. "swim lessons for a 4 year old", "yoga", "youth basketball", "senior programs"' },
-    include_full: { type: 'boolean', description: 'Default false: sections that are Full or Unavailable (registration closed / not open) are left out and only counted. Set true only when the resident explicitly asks to see full, closed or waitlisted-only classes.' }
-  }, required: ['query'] }
+  description: 'Search the City of Hilliard Recreation & Parks program catalog (classes, swim lessons, camps, fitness, sports leagues, senior programs at The Well and parks) and return matching programs with dates, times, ages, cost and a direct registration link on the WebTrac registration site. Use for any question about classes, lessons, camps, leagues, programs, or how to register.',
+  input_schema: { type: 'object', properties: { query: { type: 'string', description: 'What they are looking for, e.g. "swim lessons for a 4 year old", "yoga", "youth basketball", "senior programs"' } }, required: ['query'] }
 };
 
 /* ---------------- Meeting agendas & minutes (iCompass / CivicWeb Portal) ----------------
@@ -597,349 +404,97 @@ async function lookupMeetingAgenda(env, input) {
     portal: CIVICWEB + '/Portal/', calendar: CIVICWEB + '/Portal/MeetingSchedule.aspx'
   };
 }
-/* ---------------- Legislative history: full-text search of the CivicWeb Document Center ----------------
-   The Document Center (agendas, minutes, legislation, meeting attachments — tens of GB of
-   PDFs) is full-text indexed by CivicWeb itself. The public "E-Resources" search page is
-   driven by two JSON calls, which the Worker uses directly:
-     GET  /Services/ItemsService.svc/portal/search?criteria=…&ordercolumn=Rank|DateCreated&ascending=false
-          &showDocuments=true&showTrackerItems=true&showMeetingItems=true   -> [docId, …] (up to 100)
-     POST /Services/ItemsService.svc/portal/search/details?criteria=…  body [docId, …]
-          -> [{Id, LinkUrl:"/document/{id}", TitleHtml, PathHtml (folder breadcrumb), SampleHtml (hit snippet)}]
-   So nothing is crawled or stored: every question searches the City's own index. Items in
-   "Secure Folder" are left out (unpublished packet material). read_civicweb_document then
-   reads one document: HTML agendas as text, PDFs up to CW_PDF_MAX by handing the file to
-   Claude with the question; bigger PDFs (full packets run 70 MB+) return the link only. */
-const CW_SEARCH = '/Services/ItemsService.svc/portal/search';
-const CW_PDF_MAX = 12 * 1024 * 1024;
-function cwPlain(h) { return htmlText(String(h || '').replace(/<\/?strong>/gi, '')).replace(/&gt;/g, '>').replace(/&amp;/g, '&'); }
-const CW_MONTHS = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-function cwClassify(title, path) {
-  const p = path.toLowerCase(), t = title.toLowerCase();
-  let kind = 'Document';
-  if (/^legislation > ordinance/.test(p)) kind = /attachments/.test(p) ? 'Ordinance exhibit' : 'Ordinance';
-  else if (/^legislation > resolution/.test(p)) kind = /attachments/.test(p) ? 'Resolution exhibit' : 'Resolution';
-  else if (/^legislation/.test(p)) kind = 'Legislation';
-  else if (/^(historical )?minutes/.test(p) || / - minutes - /.test(t)) kind = 'Minutes';
-  else if (/^agendas/.test(p) || / - agenda - /.test(t)) kind = 'Agenda';
-  else if (/agenda memo|staff report/.test(p) || /^memo:/.test(t)) kind = 'Staff memo / report';
-  else if (/planning report/.test(p)) kind = 'Planning staff report';
-  else if (/^meeting attachments/.test(p)) kind = 'Meeting attachment';
-  else if (/^public notices/.test(p)) kind = 'Public notice';
-  const bodyM = path.match(/(City Council|Committee of the Whole|Planning (?:&|and) Zoning Commission|Board of Zoning Appeals|Recreation and Parks[^>]*|Records Commission|Charter Review[^>]*|Finance Committee|[A-Z][A-Za-z &]+ (?:Commission|Board|Committee))/);
-  // Meeting documents carry their date in the title ("City Council - Sep 14 2026 - Agenda").
-  let date = '';
-  const dm = title.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* (\d{1,2}),? (\d{4})\b/);
-  if (dm) date = dm[1] + ' ' + dm[2] + ', ' + dm[3];
-  else {
-    const y = (path.match(/\b(19|20)\d{2}\b/) || [])[0];
-    const mo = CW_MONTHS.find(m => new RegExp('\\b' + m + '\\b', 'i').test(path));
-    if (y) date = (mo ? mo[0].toUpperCase() + mo.slice(1) + ' ' : '') + y;
-  }
-  const num = (title.match(/\b(Ordinance|Resolution)\s+No\.?\s*([0-9]{2}-R?-?[0-9]+[A-Z]?)/i) || []);
-  // Planning staff reports sit in "Meeting Attachments > Planning Report", not under a board;
-  // the case number says which board heard it (BZA-25-23, PZ-26-11).
-  const caseM = (title + ' ' + path).match(/\b(BZA|PZ|P&Z|PC)[- ]?(\d{2})[- ](\d{1,3})\b/i);
-  let body = bodyM ? bodyM[1].replace(/&amp;/g, '&') : undefined;
-  if (caseM && (!body || /Planning Report|Agenda Memo/i.test(path))) body = /^BZA/i.test(caseM[1]) ? 'Board of Zoning Appeals' : 'Planning & Zoning Commission';
-  if (body && /^Planning (and|&) Zoning/i.test(body)) body = 'Planning & Zoning Commission';
-  return { kind, body, date, number: num[2] ? num[1] + ' ' + num[2] : undefined, case_number: caseM ? (/^BZA/i.test(caseM[1]) ? 'BZA' : 'PZ') + '-' + caseM[2] + '-' + caseM[3] : undefined };
-}
-function cwSortKey(date) {
-  const m = String(date).match(/(?:(\w+) (?:(\d{1,2}), )?)?(\d{4})$/);
-  if (!m) return 0;
-  const mi = m[1] ? ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(m[1].slice(0, 3).toLowerCase()) : -1;
-  return Number(m[3]) * 10000 + (mi + 1) * 100 + Number(m[2] || 0);
-}
-async function cwJson(path, init) {
-  const r = await fetch(CIVICWEB + path, Object.assign({ cf: { cacheTtl: 0 } }, init || {}, {
-    headers: Object.assign({ Accept: 'application/json, text/javascript, */*; q=0.01', 'X-Requested-With': 'XMLHttpRequest' }, CW_HEADERS, (init && init.headers) || {})
-  }));
-  if (!r.ok) throw new Error('CivicWeb search HTTP ' + r.status);
-  const t = await r.text();
-  try { return JSON.parse(t); } catch (e) { throw new Error('CivicWeb search returned non-JSON (' + t.slice(0, 60).replace(/\s+/g, ' ') + '…) — possibly bot-blocked'); }
-}
-// CivicWeb's index requires every unquoted word to match and chokes on common words
-// ("history of the Homestead park" returns nothing; "Homestead park" returns 227), so
-// strip filler words outside quotes, and if a search still comes back empty, retry with
-// fewer words.
-const CW_STOP = new Set(['a','an','the','of','and','or','for','to','in','on','at','by','with','from','about','is','are','was','were','be','what','when','which','who','how','did','does','do','any','all','history','legislative','background','records','record','documents','document','information','info','regarding','related','city','hilliard','ohio']);
-function cwCriteria(q) {
-  const phrases = [];
-  const rest = String(q).replace(/"[^"]+"/g, m => { phrases.push(m); return ' '; });
-  const words = rest.split(/\s+/).map(w => w.replace(/^[^\w&-]+|[^\w&-]+$/g, '')).filter(w => w && !CW_STOP.has(w.toLowerCase()));
-  return { phrases, words };
-}
-async function searchCivicwebDocuments(env, input) {
-  const query = String((input && input.query) || '').replace(/\s+/g, ' ').trim().slice(0, 200);
-  if (!query) return { error: 'no query' };
-  const sort = (input && input.sort) === 'newest' || (input && input.sort) === 'oldest' ? input.sort : 'relevance';
-  const kinds = Array.isArray(input && input.types) ? input.types.map(s => String(s).toLowerCase()) : [];
-  const fromYear = Number(input && input.from_year) || 0, toYear = Number(input && input.to_year) || 0;
-  const key = 'cwsearch2:' + sort + ':' + query.toLowerCase();
-  let rows = null;
-  try { const c = await env.KV.get(key); if (c) rows = JSON.parse(c); } catch (e) {}
-  try {
-    if (!rows) {
-      const { phrases, words } = cwCriteria(query);
-      const tries = [phrases.concat(words).join(' ')];
-      // Relax: drop words from the end, keeping quoted phrases and at least one word.
-      for (let n = words.length - 1; n >= 1 && tries.length < 4; n--) tries.push(phrases.concat(words.slice(0, n)).join(' '));
-      let ids = [], used = tries[0];
-      for (const t of tries) {
-        if (!t.trim()) continue;
-        ids = await cwJson(CW_SEARCH + '?criteria=' + encodeURIComponent(t) + '&ordercolumn=' + (sort === 'relevance' ? 'Rank' : 'DateCreated') + '&ascending=' + (sort === 'oldest') + '&showDocuments=true&showTrackerItems=true&showMeetingItems=true');
-        used = t;
-        if (Array.isArray(ids) && ids.length) break;
-      }
-      const crit = encodeURIComponent(used);
-      rows = { used, list: [] };
-      const list = (Array.isArray(ids) ? ids : []).slice(0, 90);
-      for (let i = 0; i < list.length; i += 30) {
-        const det = await cwJson(CW_SEARCH + '/details?criteria=' + crit + '&ordercolumn=Rank&ascending=false', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(list.slice(i, i + 30))
-        });
-        for (const d of (det || [])) {
-          const path = cwPlain(d.PathHtml);
-          if (/^secure folder/i.test(path)) continue;
-          const title = cwPlain(d.TitleHtml);
-          rows.list.push(Object.assign({ id: d.Id, title, path, snippet: cwPlain(d.SampleHtml).slice(0, 420), url: CIVICWEB + (d.LinkUrl || '/document/' + d.Id) + '/' }, cwClassify(title, path)));
-        }
-      }
-      try { await env.KV.put(key, JSON.stringify(rows), { expirationTtl: 3600 }); } catch (e) {}
-    }
-    let out = rows.list.slice();
-    // An agenda is published as both "- Pdf" and "- Html"; keep one row, remember the HTML id (readable text).
-    const seen = new Map();
-    out = out.filter(r => {
-      const base = r.title.replace(/ - (Pdf|Html)$/i, '');
-      if (seen.has(base)) { const o = seen.get(base); if (/ - Html$/i.test(r.title)) o.html_id = r.id; return false; }
-      if (/ - Html$/i.test(r.title)) r.html_id = r.id;
-      seen.set(base, r); return true;
-    });
-    if (kinds.length) out = out.filter(r => kinds.some(k => r.kind.toLowerCase().includes(k.replace(/s$/, ''))));
-    const bodyWant = String((input && input.body) || '').toLowerCase();
-    if (bodyWant) {
-      const re = /bza|zoning appeals/.test(bodyWant) ? /zoning appeals/i : /planning|p&z|pz\b|commission/.test(bodyWant) ? /planning & zoning/i : /council|whole/.test(bodyWant) ? /council|committee of the whole/i : new RegExp(bodyWant.replace(/[^a-z ]/g, ''), 'i');
-      out = out.filter(r => re.test(r.body || '') || re.test(r.path));
-    }
-    if (fromYear || toYear) out = out.filter(r => { const y = Math.floor(cwSortKey(r.date) / 10000); return !y || ((!fromYear || y >= fromYear) && (!toYear || y <= toYear)); });
-    const total = out.length;
-    out = out.slice(0, 25);
-    const legislation = out.filter(r => /^(Ordinance|Resolution)$/.test(r.kind));
-    return {
-      query, searched_for: rows.used, sort, matches_shown: out.length, matches_checked: rows.list.length,
-      results: out.map(r => ({ document_id: r.id, html_document_id: r.html_id, title: r.title, type: r.kind, number: r.number, case_number: r.case_number, body: r.body, date: r.date, folder: r.path, excerpt: r.snippet, url: r.url })),
-      timeline: out.filter(r => r.date).slice().sort((a, b) => cwSortKey(a.date) - cwSortKey(b.date)).map(r => r.date + ' — ' + r.kind + ' — ' + r.title),
-      legislation_found: legislation.map(r => (r.number || r.title) + ' (' + r.date + ')'),
-      more_available: total > out.length,
-      search_page: CIVICWEB + '/Portal/VirtualLibrary.aspx?SearchText=' + encodeURIComponent(rows.used),
-      note: 'Results come from the City’s CivicWeb full-text index (agendas, minutes, legislation, staff reports). Excerpts are the index’s hit snippets; call read_civicweb_document for a document’s actual content before stating what it decided.'
-    };
-  } catch (e) {
-    return { unavailable: true, reason: (e && e.message) || 'error', search_page: CIVICWEB + '/Portal/VirtualLibrary.aspx?SearchText=' + encodeURIComponent(query) };
-  }
-}
-async function readCivicwebDocument(env, input, apiKey, model) {
-  const id = Number(input && input.document_id);
-  const question = String((input && input.question) || '').slice(0, 400);
-  if (!id) return { error: 'document_id required' };
-  const url = CIVICWEB + '/document/' + id + '/';
-  const ck = 'cwread:' + id + ':' + question.toLowerCase().slice(0, 120);
-  try { const c = await env.KV.get(ck); if (c) return JSON.parse(c); } catch (e) {}
-  try {
-    const r = await fetch(url, { headers: CW_HEADERS, cf: { cacheTtl: 0 } });
-    if (!r.ok) return { unavailable: true, reason: 'HTTP ' + r.status, url };
-    const ct = r.headers.get('content-type') || '';
-    const len = Number(r.headers.get('content-length') || 0);
-    let out;
-    if (/html|text\//i.test(ct)) {
-      const text = htmlText(await r.text());
-      const terms = legisTerms(question);
-      // Keep the passages about the question, in order, up to ~12k characters.
-      const paras = text.split(/(?<=[.;:])\s+(?=[A-Z0-9])/);
-      const keep = terms.length ? paras.filter(p => terms.some(w => p.toLowerCase().includes(w))) : paras;
-      out = { url, format: 'html', text: (keep.length ? keep : paras).join(' ').slice(0, 12000) };
-    } else if (/pdf/i.test(ct)) {
-      if (len > CW_PDF_MAX) { try { r.body && r.body.cancel(); } catch (e) {} return { too_large: true, size_mb: Math.round(len / 1048576), url, note: 'This PDF (likely a full meeting packet) is too large to read here; rely on the search excerpt and give the resident the link.' }; }
-      const ask = source => fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model, max_tokens: 1100, messages: [{ role: 'user', content: [
-          { type: 'document', source },
-          { type: 'text', text: 'This is a City of Hilliard, Ohio public record. Extract everything in it that bears on: "' + (question || 'what this document is and what it decided') + '". Report: the document type and date; ordinance/resolution/case numbers; what was proposed and by whom; motions, votes (with the tally and how each member voted if listed), outcomes and effective dates; amounts, addresses and parcels; and any references to earlier or later legislation. Quote only the few key sentences exactly and give page numbers. Be brief: at most about 250 words. If the document says nothing about the question, say so in one line. Plain text, no preamble.' }
-        ] }] })
-      });
-      // Let Anthropic fetch the PDF by URL first (no Worker CPU spent encoding it); if CivicWeb
-      // refuses that fetcher, send the bytes the Worker already has.
-      try { r.body && r.body.cancel(); } catch (e) {}
-      let resp = await ask({ type: 'url', url });
-      let data = await resp.json();
-      let size = len;
-      if (!resp.ok && resp.status !== 429 && resp.status !== 529) {
-        const r2 = await fetch(url, { headers: CW_HEADERS, cf: { cacheTtl: 0 } });
-        const buf = await r2.arrayBuffer();
-        size = buf.byteLength;
-        if (size > CW_PDF_MAX) return { too_large: true, size_mb: Math.round(size / 1048576), url };
-        let bin = ''; const bytes = new Uint8Array(buf);
-        for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-        resp = await ask({ type: 'base64', media_type: 'application/pdf', data: btoa(bin) });
-        data = await resp.json();
-      }
-      if (!resp.ok) return { unavailable: true, reason: 'could not read the PDF (' + resp.status + ': ' + String((data.error && data.error.message) || '').slice(0, 160) + ')', url, note: 'Documents over 100 pages cannot be read here; rely on the search excerpt and give the link.' };
-      out = { url, format: 'pdf', size_mb: size ? Math.round(size / 104857.6) / 10 : undefined, extract: (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').slice(0, 9000) };
-    } else {
-      return { unavailable: true, reason: 'unsupported file type ' + ct, url };
-    }
-    try { await env.KV.put(ck, JSON.stringify(out), { expirationTtl: 7 * 86400 }); } catch (e) {}
-    return out;
-  } catch (e) {
-    return { unavailable: true, reason: (e && e.message) || 'error', url };
-  }
-}
-const CW_SEARCH_TOOL = {
-  name: 'search_civicweb_documents',
-  description: "Full-text search of every document in the City of Hilliard's CivicWeb Document Center — City Council, Committee of the Whole, Planning & Zoning Commission, BZA and other board agendas and minutes, ordinances and resolutions with their exhibits, staff reports and agenda memos, and public notices, back to the 2000s. Returns matching documents (type, number, board, date, folder, the index's text excerpt, link) plus a date-ordered timeline. Use for the legislative history or background of a topic, property, project, road, program or policy; for 'when did Council approve/decide/discuss X'; and to find a specific ordinance, resolution or set of minutes. Run several searches with different wording (project name, street, ordinance number, 'rezoning', 'annexation') to build a complete history.",
-  input_schema: { type: 'object', properties: {
-    query: { type: 'string', description: "Search words, e.g. 'Heritage Golf Club rezoning', 'Homestead Metro Park', 'Ordinance 25-06', 'Cemetery Road widening'. Use 2-4 distinctive words — every word must appear in a document, and filler words are ignored. Put a phrase in double quotes for an exact match. Case numbers work: 'BZA-25-23', 'PZ-26-11'." },
-    sort: { type: 'string', enum: ['relevance', 'newest', 'oldest'], description: "Default relevance. Use oldest/newest to walk a history in date order." },
-    types: { type: 'array', items: { type: 'string' }, description: "Optional filter: any of 'ordinance', 'resolution', 'minutes', 'agenda', 'staff memo', 'planning staff report', 'exhibit', 'public notice'." },
-    body: { type: 'string', description: "Optional board filter: 'Board of Zoning Appeals' (BZA), 'Planning & Zoning Commission' (P&Z), or 'City Council' (includes Committee of the Whole)." },
-    from_year: { type: 'number' }, to_year: { type: 'number' }
-  }, required: ['query'] }
-};
-const CW_READ_TOOL = {
-  name: 'read_civicweb_document',
-  description: "Read one CivicWeb document found by search_civicweb_documents and extract what it says about a question — the ordinance's operative sections, the minutes' discussion, motion and roll-call vote, the staff report's recommendation — with page references. Works on HTML agendas and on PDFs up to about 12 MB (legislation, minutes, staff memos); full meeting packets larger than that return only the link. Use on the 1-4 most important documents in a history (the adopting legislation and the minutes of the meeting that voted on it), not on every result.",
-  input_schema: { type: 'object', properties: {
-    document_id: { type: 'number', description: 'document_id (or html_document_id for an agenda) from search_civicweb_documents' },
-    question: { type: 'string', description: "What to pull out, e.g. 'what did Council approve for Homestead Metro Park and what was the vote?'" }
-  }, required: ['document_id', 'question'] }
-};
-
-/* ---------------- PUD / HCD development texts (municipalcodeonline "Planning & Zoning" book) ----------------
-   The City publishes every Planned Unit Development text, subarea text and plan set at
-   hilliard.municipalcodeonline.com (book "development", section "Planned Unit Development Texts
-   And Related Documents"). That site's content API is not open to scripts, so the list is kept
-   in pud-texts.json on GitHub Pages: groups (one per PUD, with the names the City GIS layer uses
-   as aliases) and documents (name, S3 PDF url, kind, subarea). It is used two ways:
-   - find_pud_text answers "send me the PUD text for X";
-   - every lookup_zoning result that lands in a PUD/HCD is enriched here, server-side, with
-     pud_documents and the current text link, so zoning answers and letters on every page link
-     the development text without the page having to do anything. */
-const PUD_TEXTS_URL = 'https://hilliardohio.github.io/chat/pud-texts.json';
-const PUD_LIBRARY_PAGE = 'https://hilliard.municipalcodeonline.com/book?type=development#name=Planned_Unit_Development_Texts_And_Related_Documents';
-let PUD_MEM = null;
-async function getPudLibrary(env) {
-  if (PUD_MEM && Date.now() - PUD_MEM.ts < 6 * 3600 * 1000) return PUD_MEM.data;
-  try { const c = await env.KV.get('pud:cache'); if (c) { const o = JSON.parse(c); if (Date.now() - o.ts < 6 * 3600 * 1000) { PUD_MEM = o; return o.data; } } } catch (e) {}
-  const r = await fetch(PUD_TEXTS_URL, { cf: { cacheTtlByStatus: { '200-299': 600, '300-399': 0, '400-499': 0, '500-599': 0 } } });
-  if (!r.ok) throw new Error('pud-texts.json is not available at ' + PUD_TEXTS_URL + ' (HTTP ' + r.status + ')');
-  const data = await r.json();
-  PUD_MEM = { ts: Date.now(), data };
-  try { await env.KV.put('pud:cache', JSON.stringify(PUD_MEM), { expirationTtl: 86400 }); } catch (e) {}
-  return data;
-}
-const PUD_NOISE = new Set(['pud', 'pnd', 'hcd', 'planned', 'unit', 'development', 'text', 'texts', 'plan', 'plans', 'concept', 'and', 'the', 'of', 'at', 'a', 'formerly', 'also', 'known', 'as', 'properties', 'property', 'located', 'between', 'roads', 'road', 'rd', 'drive', 'dr', 'subarea', 'utd', 'with', 'district']);
-function pudTokens(s) {
-  return String(s || '').toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, ' ').split(' ').filter(w => w && !PUD_NOISE.has(w) && !/^\d{1,2}$/.test(w));
-}
-function pudGroupScore(g, q) {
-  const qt = pudTokens(q);
-  if (!qt.length) return 0;
-  let best = 0;
-  for (const cand of [g.name].concat(g.aliases || [])) {
-    const ct = pudTokens(cand);
-    if (!ct.length) continue;
-    const hit = qt.filter(w => ct.some(c => c === w || (w.length >= 5 && (c.startsWith(w) || w.startsWith(c))))).length;
-    const s = hit / Math.max(qt.length, ct.length) + (hit === qt.length ? 0.25 : 0);
-    if (s > best) best = s;
-  }
-  return best;
-}
-function pudDocsFor(lib, group, subarea) {
-  const sub = String(subarea || '').toUpperCase().replace(/^SUBAREA\s*/, '').replace(/\s+/g, '');
-  const docs = (lib.documents || []).filter(d => d.group === group.name);
-  const rank = d => (sub && d.subarea && d.subarea.toUpperCase() === sub ? 0
-    : d.kind === 'general development standards' ? 1
-    : d.kind === 'text' || d.kind === 'concept plan and text' ? 2
-    : d.kind === 'plans' ? 4
-    : d.kind === 'subarea text' ? 5 : 3);
-  return docs
-    .filter(d => !(d.kind === 'subarea text' && sub && d.subarea && d.subarea.toUpperCase() !== sub))
-    .sort((a, b) => rank(a) - rank(b))
-    .slice(0, 8)
-    .map(d => ({ name: d.name, kind: d.kind, subarea: d.subarea, url: d.url }));
-}
-function pudBestGroup(lib, title) {
-  let best = null, score = 0;
-  for (const g of lib.groups || []) { const s = pudGroupScore(g, title); if (s > score) { score = s; best = g; } }
-  return score >= 0.6 ? { group: best, score } : null;   // 0.5 lets 'Scioto Run' match 'Carriage Run'
-}
-// Adds the development-text documents to a lookup_zoning result (a JSON string from the page).
-async function enrichZoningResult(env, content) {
-  let o;
-  try { o = JSON.parse(content); } catch (e) { return content; }
-  if (!o || !Array.isArray(o.zones)) return content;
-  const puds = o.zones.filter(z => /PUD|HCD|PND/i.test(String(z.district || '')) || z.pud_title);
-  if (!puds.length) return content;
-  let lib;
-  try { lib = await getPudLibrary(env); } catch (e) { return content; }
-  for (const z of puds) {
-    const m = z.pud_title ? pudBestGroup(lib, z.pud_title) : null;
-    if (m) {
-      const docs = pudDocsFor(lib, m.group, z.subarea);
-      if (docs.length) {
-        const main = docs.find(d => d.kind !== 'plans') || docs[0];
-        if (z.pud_text_url && z.pud_text_url !== main.url) z.gis_pud_text_url = z.pud_text_url;
-        z.pud_text_url = main.url;          // current version from the City's PUD library
-        z.pud_documents = docs;
-      }
-      z.pud_name = m.group.name;
-    }
-    z.pud_library_page = PUD_LIBRARY_PAGE;
-  }
-  return JSON.stringify(o);
-}
-async function findPudText(env, input) {
-  let q = String((input && input.name) || '').slice(0, 200);
-  let subarea = input && input.subarea;
-  const sm = q.match(/\bsub-?area\s*([A-Z]{1,2}\s?-?\d{1,2}[A-Z]?)\b/i);
-  if (sm) { if (!subarea) subarea = sm[1].replace(/[\s-]/g, ''); q = q.replace(sm[0], ' '); }
-  try {
-    const lib = await getPudLibrary(env);
-    const scored = (lib.groups || []).map(g => {
-      let s = pudGroupScore(g, q);
-      // Also match on document names ("Subarea B4", "McDonalds", "OhioHealth").
-      const dt = pudTokens(q);
-      if (dt.length && (lib.documents || []).some(d => d.group === g.name && dt.every(w => pudTokens(d.name).some(c => c === w || (w.length >= 5 && c.startsWith(w)))))) s = Math.max(s, 0.8);
-      return { g, s };
-    }).filter(x => x.s >= 0.6).sort((a, b) => b.s - a.s);
-    if (scored.length) { const top = scored[0].s; scored.splice(0, scored.length, ...scored.filter(x => x.s >= top - 0.15).slice(0, 3)); }
-    return {
-      query: q,
-      matches: scored.map(x => ({ pud: x.g.name, also_known_as: x.g.aliases && x.g.aliases.length ? x.g.aliases : undefined, documents: pudDocsFor(lib, x.g, subarea) })),
-      not_found: !scored.length,
-      all_pud_names: scored.length ? undefined : (lib.groups || []).map(g => g.name),
-      library_page: PUD_LIBRARY_PAGE,
-      note: 'Documents are the City’s published PUD/HCD texts and plans (library list captured ' + lib.captured + '). For the PUD that applies to a specific address, use lookup_zoning.'
-    };
-  } catch (e) {
-    return { unavailable: true, reason: (e && e.message) || 'error', library_page: PUD_LIBRARY_PAGE };
-  }
-}
-const PUD_TOOL = {
-  name: 'find_pud_text',
-  description: "Find the City of Hilliard's published Planned Unit Development (PUD) or Hilliard Conservation District (HCD) development text by development name, and return direct links to the text, subarea texts, general development standards and plan sets. Use when someone asks for a PUD text, development text, subarea standards, or the rules of a named development/subdivision (e.g. 'Hoffman Farms PUD text', 'Britton Central subarea B4', 'Alton Place HCD'). For an address, call lookup_zoning instead — its result already includes the PUD documents.",
-  input_schema: { type: 'object', properties: {
-    name: { type: 'string', description: "Development or PUD name, e.g. 'Heritage Preserve', 'Ansmil', 'Truepointe', 'Mill Run'" },
-    subarea: { type: 'string', description: "Optional subarea, e.g. 'A2', 'B4'" }
-  }, required: ['name'] }
-};
-
 const MEETINGS_TOOL = {
   name: 'lookup_meeting_agenda',
   description: 'Look up City of Hilliard public meetings and their agendas from the City\'s iCompass/CivicWeb portal: City Council, Committee of the Whole, Planning & Zoning Commission, Board of Zoning Appeals, Records Commission, Public Arts, ESC, RPAC, Aging in Place and others. Returns the meeting date/time/location, the agenda items (case numbers, addresses, applicants, requests), packet page ranges, and links to the agenda, packet, minutes and each case\'s staff report. Use for "what is on the ___ agenda tonight/next week", "when does ___ meet", "what did Council decide", or any question about a meeting, agenda item, variance case or minutes.',
   input_schema: { type: 'object', properties: { query: { type: 'string', description: 'The resident\'s question, e.g. "what is on the BZA agenda tonight", "next City Council meeting", "P&Z October 8 agenda"' } }, required: ['query'] }
+};
+
+/* ---------------- Ohio Building Code 2024 (IBC 2021 + Ohio amendments) ----------------
+   obc-index.json is navigational only — section numbers, titles and UpCodes deep links
+   (4,110 sections). The code text is ICC-copyrighted, so it is never stored in the repo:
+   at answer time the Worker reads the one chapter page the question needs, extracts just
+   the matched section(s), caches that chapter briefly, and the model summarises with a
+   citation and link. If UpCodes refuses the Worker, the resident still gets the exact
+   section number and links (UpCodes + the official OAC chapter). */
+const OBC_INDEX_URL = 'https://hilliardohio.github.io/chat/obc-index.json';
+const OBC_HEADERS = { 'Accept': 'text/html', 'Accept-Language': 'en-US,en;q=0.9', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36' };
+const OBC_STOP = new Set(['the','a','an','and','or','of','to','in','for','is','are','what','does','do','code','building','ohio','obc','require','required','requirements','section','say','about','need','needs','my','i','can','have','there','be','on','with','how','many','much','minimum','maximum','per','rule','rules','commercial']);
+async function getObcIndex(env) {
+  try { const c = await env.KV.get('obc:index'); if (c) { const o = JSON.parse(c); if (Date.now() - o.ts < 24 * 3600e3) return o.data; } } catch (e) {}
+  const r = await fetch(OBC_INDEX_URL, { cf: { cacheTtlByStatus: { '200-299': 3600, '400-499': 0, '500-599': 0 } } });
+  if (!r.ok) throw new Error('obc-index.json not available (' + r.status + ')');
+  const data = await r.json();
+  try { await env.KV.put('obc:index', JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
+  return data;
+}
+// Read one chapter page and slice out the text of the requested sections. Returns {} if
+// the page can't be fetched. Cached per chapter for 6 hours.
+async function obcSectionTexts(env, chapter, wanted) {
+  const key = 'obc:ch:' + chapter.chapter;
+  let text = null;
+  try { const c = await env.KV.get(key); if (c) { const o = JSON.parse(c); if (Date.now() - o.ts < 6 * 3600e3) text = o.text; } } catch (e) {}
+  if (text == null) {
+    const r = await fetch(chapter.url, { headers: OBC_HEADERS, cf: { cacheTtl: 0 } });
+    if (!r.ok) throw new Error('UpCodes HTTP ' + r.status);
+    const html = await r.text();
+    if (html.length < 50000 || !/UpCodes/.test(html)) throw new Error('UpCodes returned a stub page (' + html.length + ' bytes)');
+    text = htmlText(html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '')).replace(/\s+/g, ' ');
+    try { await env.KV.put(key, JSON.stringify({ ts: Date.now(), text }), { expirationTtl: 6 * 3600 }); } catch (e) {}
+  }
+  const out = {};
+  const ordered = chapter.sections;
+  for (const s of wanted) {
+    const idx = ordered.findIndex(x => x.number === s.number);
+    const start = text.indexOf(s.number + ' ' + s.title.slice(0, 20));
+    if (start < 0) continue;
+    // End at the next indexed section heading that actually appears after this one.
+    let end = -1;
+    for (let j = idx + 1; j < ordered.length && end < 0; j++) { const n = ordered[j]; const k = text.indexOf(n.number + ' ' + n.title.slice(0, 12), start + 10); if (k > 0) end = k; }
+    const body = text.slice(start, end > 0 ? end : start + 2500).replace(/UpCodes Diagrams \(\d+\)/g, '').trim();
+    out[s.number] = body.length > 1800 ? body.slice(0, 1800) + ' …' : body;
+  }
+  return out;
+}
+async function lookupBuildingCode(env, input) {
+  const q = String(input.query || '').trim();
+  try {
+    const idx = await getObcIndex(env);
+    const all = idx.chapters.flatMap(c => c.sections.map(s => ({ ...s, chapter: c })));
+    const explicit = [...q.matchAll(/\b(\d{3,4}(?:\.\d+)*)\b/g)].map(m => m[1]);
+    let picked = [];
+    if (explicit.length) picked = all.filter(s => explicit.some(n => s.number === n || s.number.startsWith(n + '.'))).slice(0, 6);
+    if (!picked.length) {
+      const terms = q.toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2 && !OBC_STOP.has(w));
+      const same = (a, b) => a === b || (Math.min(a.length, b.length) >= 4 && (a.startsWith(b) || b.startsWith(a)));
+      const scored = all.map(s => {
+        const tw = s.title.toLowerCase().split(/[^a-z0-9]+/), cw = s.chapter.title.toLowerCase().split(/[^a-z0-9]+/);
+        let sc = 0; for (const t of terms) { if (tw.some(w => same(w, t))) sc += 5; if (cw.some(w => same(w, t))) sc += 1; }
+        // prefer parent-level sections (fewer dots) when scores tie
+        return { s, sc: sc - (s.number.split('.').length - 1) * 0.1 };
+      }).filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc);
+      picked = scored.slice(0, 6).map(x => x.s);
+    }
+    if (!picked.length) return { found: false, query: q, viewer_home: idx.viewer_home, oac_home: idx.oac_home, note: 'No section title matches; suggest the resident browse the code or contact Building Standards.' };
+    // Read text for the top sections, one chapter fetch per distinct chapter.
+    const byChapter = new Map(); for (const s of picked.slice(0, 3)) { const k = s.chapter.chapter; if (!byChapter.has(k)) byChapter.set(k, []); byChapter.get(k).push(s); }
+    const texts = {}; let readError = null;
+    for (const [, secs] of byChapter) { try { Object.assign(texts, await obcSectionTexts(env, secs[0].chapter, secs)); } catch (e) { readError = e.message; } }
+    return {
+      found: true, query: q,
+      code: idx.code,
+      sections: picked.map(s => ({ number: s.number, title: s.title, chapter: 'Chapter ' + s.chapter.chapter + ' — ' + s.chapter.title, url: s.url, oac_chapter_url: s.chapter.oac_url, text: texts[s.number] })),
+      text_read: Object.keys(texts).length > 0,
+      text_unavailable_reason: Object.keys(texts).length ? undefined : (readError || 'section text not located on the page'),
+      viewer_home: idx.viewer_home, oac_home: idx.oac_home,
+      note: 'Summarise, don\'t reproduce. Cite the section number and link it. Hilliard Building Standards (614) 876-7361 / Building@hilliardohio.gov makes the official determination.'
+    };
+  } catch (e) { return { unavailable: true, reason: (e && e.message) || 'error', viewer_home: 'https://up.codes/viewer/ohio/ibc-2021', oac_home: 'https://codes.ohio.gov/ohio-administrative-code/4101:1' }; }
+}
+const OBC_TOOL = {
+  name: 'lookup_building_code',
+  description: 'Look up the 2024 Ohio Building Code (OBC, based on the 2021 IBC with Ohio amendments — the code for commercial, industrial, institutional and multi-family buildings). Pass a section number or a plain-language topic; returns matching sections with titles, links to the section on UpCodes and the official Ohio Administrative Code chapter, and (when readable) the section text to summarise. Use for questions about building code requirements — egress, occupancy, fire protection, accessibility, structural, plan review, inspections, certificates of occupancy — for anything other than a 1-, 2- or 3-family house.',
+  input_schema: { type: 'object', properties: { query: { type: 'string', description: 'e.g. "1004.5 occupant load", "exit signs", "accessible parking spaces", "when is a certificate of occupancy required"' } }, required: ['query'] }
 };
 
 /* ---------------- Legislation drafting (STAFF ONLY) ----------------
@@ -1488,322 +1043,6 @@ const DRAFT_TOOL = {
      Header: Authorization: Token <key>   Accept: application/vnd.api+json
    Always degrades gracefully: any missing key / auth failure / error returns
    { unavailable: true }, and the letter falls back to the portal search link. */
-/* ---------------- OpenGov portal guidance: record types, splash pages, zoning code ----------------
-   The public portal (hilliardoh.portal.opengov.com) reads everything it shows from a keyless
-   public API: record_types (each type's splash page is `htmlcontent`), categories (the
-   department pages) and project_templates (the "Start a Project" questionnaires that decide
-   which record types a project needs). The Worker reads the same API live, so an edit Planning
-   or Building makes in Settings -> System -> Content shows up in answers within the hour.
-   If the API can't be reached, opengov-record-types.json on GitHub Pages is the fallback.
-   The zoning code comes from zoning-code.json (Part Eleven, captured from Municode in a browser
-   because Municode's content API needs a signed-in token). */
-const OG_PUBLIC_API = 'https://api-east.viewpointcloud.com/v2/hilliardoh/';
-const OG_PORTAL = 'https://hilliardoh.portal.opengov.com';
-const PORTAL_SNAPSHOT_URL = 'https://hilliardohio.github.io/chat/opengov-record-types.json';
-const ZONING_CODE_URL = 'https://hilliardohio.github.io/chat/zoning-code.json';
-
-function ogHtmlText(h) {
-  let s = String(h || '');
-  // Keep link targets: splash pages point at the exact Municode section or checklist PDF.
-  s = s.replace(/<a [^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (m, href, label) => {
-    const l = label.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
-    return l ? l + ' (' + href + ')' : href;
-  });
-  s = s.replace(/<\/(p|li|h\d|div|tr)>|<br\s*\/?>/gi, '\n').replace(/<\/t[dh]>/gi, ' | ').replace(/<li[^>]*>/gi, '• ');
-  s = s.replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;|&rsquo;|&lsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"')
-    .replace(/&ndash;|&mdash;/g, '-').replace(/&#\d+;/g, ' ');
-  return s.replace(/[ \t ]+/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
-}
-async function ogPublic(path) {
-  const r = await fetch(OG_PUBLIC_API + path, { headers: { Accept: 'application/vnd.api+json, application/json' } });
-  if (!r.ok) throw new Error('OpenGov public API ' + path + ' HTTP ' + r.status);
-  return r.json();
-}
-async function loadPortalLive() {
-  const [rt, cats, pts] = await Promise.all([ogPublic('record_types'), ogPublic('categories'), ogPublic('project_templates')]);
-  const catById = {};
-  (cats.data || []).forEach(c => { catById[String(c.id)] = c.attributes || {}; });
-  const record_types = (rt.data || []).map(x => x.attributes || {}).filter(a => a.isEnabled).map(a => ({
-    id: a.recordTypeID,
-    name: String(a.name || '').replace(/\s+/g, ' ').trim(),
-    department: String((catById[String(a.categoryID)] || {}).name || '').trim(),
-    categoryID: a.categoryID,
-    summary: String(a.descriptionLabel || '').trim(),
-    apply: a.ApplyAccessID,
-    url: OG_PORTAL + '/categories/' + a.categoryID + '/record-types/' + a.recordTypeID,
-    text: ogHtmlText(a.htmlcontent)
-  }));
-  const names = {};
-  record_types.forEach(r => { names[r.id] = r.name; });
-  const departments = Object.entries(catById).filter(([, c]) => c.isEnabled).map(([id, c]) => ({
-    id: Number(id), name: String(c.name || '').trim(), url: OG_PORTAL + '/categories/' + id, text: ogHtmlText(c.content)
-  }));
-  // "Start a Project" bundles: which record types a project needs, and under what answer.
-  const projects = [];
-  for (const p of (pts.data || [])) {
-    const a = p.attributes || {};
-    if (!a.isEnabled) continue;
-    const id = a.projectTemplateID;
-    let requires = [];
-    try {
-      const [comps, qs, conds] = await Promise.all([
-        ogPublic('project_template_components?projectTemplateID=' + id),
-        ogPublic('project_template_questions?projectTemplateID=' + id),
-        ogPublic('project_template_component_conditions?projectTemplateID=' + id)
-      ]);
-      const qText = {};
-      (qs.data || []).forEach(q => { qText[q.id] = String(q.attributes.body || '').trim(); });
-      requires = (comps.data || []).filter(c => c.attributes.isEnabled !== false).map(c => {
-        const cid = Number(c.id);
-        const when = (conds.data || []).map(k => k.attributes).filter(k => k.isEnabled !== false && Number(k.projectTemplateComponentID) === cid)
-          .map(k => (qText[k.projectTemplateQuestionID] || 'question ' + k.projectTemplateQuestionID) + ' = ' + (String(k.value) === 'true' ? 'Yes' : String(k.value) === 'false' ? 'No' : k.value));
-        const rid = c.attributes.recordTypeID;
-        const o = { record_type_id: rid, name: names[rid] || c.attributes.recordTypeName || c.attributes.name };
-        if (when.length) o.only_if = when.join(c.attributes.anyCondition ? ' OR ' : ' AND ');
-        return o;
-      });
-    } catch (e) { /* the bundle is a bonus; the record types still answer the question */ }
-    projects.push({ id, name: String(a.label || '').trim(), url: OG_PORTAL + '/projectTemplate/' + id + '/questionnaire', text: ogHtmlText(a.pageContent), requires });
-  }
-  return { captured: new Date().toISOString().slice(0, 10), source: 'live', record_types, departments, projects };
-}
-async function getPortalCatalog(env) {
-  try {
-    const c = await env.KV.get('portal:cache');
-    if (c) { const o = JSON.parse(c); if (Date.now() - o.ts < 60 * 60 * 1000) return o.data; }
-  } catch (e) {}
-  let data = null, liveError = '';
-  try { data = await loadPortalLive(); if (!data.record_types.length) throw new Error('no record types returned'); }
-  catch (e) {
-    liveError = (e && e.message) || 'error';
-    const r = await fetch(PORTAL_SNAPSHOT_URL, { cf: { cacheTtlByStatus: { '200-299': 600, '300-399': 0, '400-499': 0, '500-599': 0 } } });
-    if (!r.ok) throw new Error('OpenGov portal data unavailable (live: ' + liveError + '; snapshot HTTP ' + r.status + ')');
-    data = await r.json();
-    data.source = 'snapshot';
-    data.live_error = liveError;
-  }
-  try { await env.KV.put('portal:cache', JSON.stringify({ ts: Date.now(), data }), { expirationTtl: 86400 }); } catch (e) {}
-  return data;
-}
-
-/* What residents say -> the record types that handle it. Words the splash pages don't use
-   ("deck", "hot tub", "water heater") are where plain text search misses, so they map here.
-   Ids are OpenGov record-type ids; the live catalog supplies names, links and splash text. */
-const PERMIT_ALIASES = [
-  [/\bdecks?\b|\bporch|\bsunroom|\baddition|\bremodel|\brenovat|\bbasement|\bfinish(ed|ing)? (the )?basement|\bdetached garage|\bgarage\b|\bnew (home|house)|\bbuild (a )?(home|house)|\bbedroom|\bbathroom remodel|\bkitchen remodel|\bstructural|\bload.?bearing|\bwindow|\begress|\bscreened|\bthree.?season|\bmudroom/i, [6395, 6383]],
-  [/\bshed|\baccessory (building|structure)|\bpergola|\bgazebo|\bpavilion|\bpatio|\bwalkway|\bgenerator|\butility structure|\boutdoor dining|\bparking (space|lot|pad)|\bdriveway (expansion|widen)|\bwiden(ing)? (my |the )?driveway|\bhome.?based|\bhome (business|occupation)|\b(from|out of|in) (my|our) (home|house)|\bhome (salon|office|daycare|bakery)|\bchange (of|in) use|\bchickens?\b|\bcoop|\bbee(s|keeping|hive)|\bplay(set|house|ground)|\bswing ?set|\btree ?house|\bbasketball (hoop|court)|\bsport court/i, [6383]],
-  [/\bfence|\bfencing|\bprivacy (wall|screen)/i, [6460]],
-  [/\bpool|\bhot ?tub|\bspa\b|\bjacuzzi/i, [6383, 6460, 6511]],
-  [/\bsolar|\bphotovoltaic|\bpv (array|system|panel)/i, [6511, 6395, 6383]],
-  [/\bev\b|\belectric vehicle|\bcar charger|\bcharging station|\btesla/i, [6511]],
-  [/\belectric|\bwiring|\brewir|\boutlet|\bbreaker|\bpanel (upgrade|change)|\bservice (upgrade|change)|\bamp service|\blight(ing)? fixture/i, [6511]],
-  [/\bfurnace|\bhvac|\bair condition|\b(a\/?c) (unit|replacement)|\bheat pump|\bductwork|\bmini.?split|\brefrigeration/i, [6513]],
-  [/\bgas (line|pipe|piping|range|dryer|fireplace)|\bnatural gas|\bpropane/i, [6514]],
-  [/\bplumb|\bwater heater|\bsewer line|\btoilet|\bsink\b/i, [6559]],
-  [/\bsign\b|\bsigns\b|\bsignage|\bbanner|\bfeather flag|\ba.?frame|\bsandwich board|\byard sign|\bbillboard|\bmonument sign|\bwall sign/i, [6389, 6544]],
-  [/\bdriveway|\bapron|\bcurb|\bsidewalk|\bdownspout|\bcurb cut/i, [6392]],
-  [/\bright.?of.?way|\bstreet (cut|opening)|\bboring|\bdirectional drill|\bexcavat\w* (in|under) (the )?(street|road)|\butility work in/i, [6342, 6530]],
-  [/\bdemoli|\btear (it )?down|\braze/i, [6520]],
-  [/\btent|\btemporary structure|\bstage\b|\bbleacher/i, [6516]],
-  [/\bvariance|\bexception to (the )?(code|zoning)|\btaller than allowed|\bencroach|\bbza\b|\bboard of zoning appeals|\bconditional use|\bnonconform/i, [6469]],
-  [/\brezon|\blot split|\bsplit (my|the|a) lot|\bplat\b|\bsubdivi|\bpud\b|\bplanned unit|\bsite plan|\bdevelopment plan|\bplanning (and|&) zoning commission/i, [6481, 6534]],
-  [/\bfood truck|\bfood cart|\bice cream truck/i, [6484]],
-  [/\bblock party|\bclose (the|our|my) street|\bstreet closure/i, [6492]],
-  [/\bevent\b|\bfestival|\bparade|\b5k\b|\brace\b|\bwalk.?a.?thon|\bfarmers? market/i, [6540]],
-  [/\bsolicit|\bpeddl|\bdoor.?to.?door|\bvendor/i, [6487]],
-  [/\bcanvass|\bpetition|\bcampaign/i, [6496]],
-  [/\bpods?\b|\bstorage (container|unit)|\bdumpster|\bportable storage/i, [6536]],
-  [/\bre.?roof|\bshingle|\broof (replacement|repair)|\breplac\w* (my |the |a )?roof|\bnew roof/i, [6515]],
-  [/\bsprinkler|\bfire (alarm|suppression|protection)/i, [6512]],
-  [/\b(kitchen )?hood\b|\bexhaust hood|\bcommercial kitchen/i, [6510]],
-  [/\btap\b|\bwater (and|&) sewer (tap|connection)|\bconnect(ion)? to (city )?(water|sewer)/i, [6523]],
-  [/\blateral|\bsewer (repair|replacement)|\bwater service (line|repair)/i, [6489]],
-  [/\bbackflow/i, [6539]],
-  [/\bflood|\bfloodplain|\bfloodway/i, [6500]],
-  [/\bhaul|\boversize|\boverweight|\bwide load/i, [6546]],
-  [/\bhydrant/i, [6431]],
-  [/\bcomplain|\bviolation|\breport (a|my) neighbor|\bjunk (car|vehicle)|\bnuisance|\bproperty maintenance/i, [6375]],
-  [/\bgrass|\bweeds?\b|\btall grass|\bovergrown/i, [6538]],
-  [/\bcontractor (registration|license)|\bregister (as )?(a )?contractor|\bget registered/i, [6371]],
-  [/\baddress (request|assignment)|\bnew address|\bassign(ed)? (an )?address/i, [6535]],
-  [/\bzoning (verification|confirmation) letter|\bzoning letter|\bzvl\b/i, [6376]],
-  [/\bcertificate of occupancy|\boccupancy permit|\bopen(ing)?( up)? (a|an|my|our) [a-z ]{0,25}(business|store|restaurant|shop|office|cafe|salon|studio|gym|bar|clinic|daycare)|\bcoffee shop|\brestaurant|\bretail (space|store)|\bstorefront|\bnew tenant|\btenant (space|finish|build.?out)/i, [6517, 6383, 6502]],
-  [/\bcommercial (build|construct|addition|renovation|project)|\btenant (improvement|finish|build.?out)|\bbuild.?out/i, [6502, 6468, 6383]],
-  [/\bhotel|\bmotel|\bbed (and|&) breakfast|\bb&b\b|\bairbnb|\bshort.?term rental/i, [6519]],
-  [/\bmassage|\bspa establishment|\bbathhouse/i, [6518]],
-  [/\bsmall cell/i, [6497]],
-  [/\bcell (tower|phone tower)|\bwireless (tower|support structure)|\bantenna tower/i, [6499]],
-  [/\binfrastructure acceptance|\baccept(ance of)? public infrastructure/i, [6551]],
-  [/\breimburse/i, [6556]],
-  [/\baggregation|\bopt.?out/i, [6545]]
-];
-const PERMIT_STOP = new Set(['the','a','an','and','or','for','of','to','in','on','at','is','are','be','my','our','i','we','want','wants','need','needs','do','does','can','how','what','which','permit','permits','apply','application','hilliard','city','get','install','installing','build','building','put','new','add','adding','replace','replacing','would','like','have','has','it','this','that','with','about','from','will','should','there','any','me','you','your','off','back','house','foot','feet','neighbor','neighbors','yard','backyard','front','side','rear','property']);
-
-function permitTerms(q) {
-  return [...new Set(String(q || '').toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2 && !PERMIT_STOP.has(w)))];
-}
-function excerptFor(text, terms, max) {
-  const t = String(text || '');
-  if (t.length <= max) return t;
-  // Keep the lines that mention what they asked about, plus the fee lines, in order.
-  const lines = t.split('\n');
-  const keep = new Set();
-  lines.forEach((l, i) => {
-    const ll = l.toLowerCase();
-    if (/fee|\$\d/.test(ll) || terms.some(w => ll.includes(w))) { keep.add(i); if (i + 1 < lines.length) keep.add(i + 1); }
-  });
-  for (let i = 0; i < Math.min(4, lines.length); i++) keep.add(i);
-  let out = '';
-  for (const i of [...keep].sort((a, b) => a - b)) { if ((out + lines[i]).length > max) break; out += lines[i] + '\n'; }
-  return out.trim() + '\n[… more on the portal page]';
-}
-function codeLinksIn(text) {
-  return [...new Set((String(text || '').match(/https?:\/\/library\.municode\.com\/[^\s)]+/g) || []))].slice(0, 6);
-}
-
-async function findPermitType(env, input) {
-  const query = String((input && input.project) || '').slice(0, 300);
-  const wantId = input && input.record_type_id ? Number(input.record_type_id) : null;
-  try {
-    const cat = await getPortalCatalog(env);
-    const byId = {};
-    cat.record_types.forEach(r => { byId[r.id] = r; });
-    const terms = permitTerms(query);
-    const scores = new Map();
-    const bump = (id, s) => { if (byId[id]) scores.set(id, (scores.get(id) || 0) + s); };
-    if (wantId) bump(wantId, 100);
-    PERMIT_ALIASES.forEach(([re, ids]) => { if (re.test(query)) ids.forEach((id, i) => bump(id, 12 - i * 3)); });
-    const same = (a, b) => a === b || (Math.min(a.length, b.length) >= 4 && (a.startsWith(b) || b.startsWith(a)));
-    const words = s => String(s || '').toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2);
-    for (const r of cat.record_types) {
-      const N = words(r.name), S = words(r.summary), T = words(r.text.slice(0, 4000));
-      let s = 0;
-      for (const w of terms) { if (N.some(x => same(x, w))) s += 6; if (S.some(x => same(x, w))) s += 3; if (T.some(x => same(x, w))) s += 1; }
-      if (s) bump(r.id, s);
-    }
-    const sorted = [...scores.entries()].sort((a, b) => b[1] - a[1]);
-    const top = sorted.length ? sorted[0][1] : 0;
-    // Drop incidental text hits: keep what scores close to the best match.
-    const ranked = sorted.filter(([, s]) => s >= Math.max(5, top * 0.45)).slice(0, 4).map(([id]) => byId[id]);
-    const projHits = (cat.projects || []).filter(p => {
-      const n = p.name.toLowerCase();
-      return (/pool|hot ?tub|spa\b/i.test(query) && /pool/.test(n)) || (/solar|photovoltaic/i.test(query) && /solar/.test(n)) || (/\bev\b|electric vehicle|charger|charging/i.test(query) && /vehicle/.test(n));
-    });
-    const per = ranked.length > 2 ? 1800 : 3200;
-    return {
-      query,
-      data_source: cat.source === 'live' ? 'live OpenGov portal' : 'OpenGov portal snapshot dated ' + cat.captured,
-      matches: ranked.map((r, i) => ({
-        record_type: r.name,
-        department: r.department,
-        apply_url: r.url,
-        summary: r.summary,
-        splash_page: r.text ? excerptFor(r.text, terms, i === 0 ? per + 1200 : per) : '(this record type has no instructions on its portal page)',
-        code_links: codeLinksIn(r.text)
-      })),
-      start_a_project: projHits.map(p => ({
-        project: p.name, questionnaire_url: p.url,
-        record_types_it_creates: (p.requires || []).map(x => x.name + (x.only_if ? ' — only if: ' + x.only_if : '') + ' (' + ((byId[x.record_type_id] || {}).url || '') + ')')
-      })),
-      weak_match: !ranked.length || top < 6,
-      portal_home: OG_PORTAL,
-      department_pages: (cat.departments || []).map(d => d.name + ' — ' + d.url),
-      note: 'Splash-page text is what the City publishes on each application page; quote requirements and fees from it, and link apply_url. An application is not a permit.'
-    };
-  } catch (e) {
-    return { unavailable: true, reason: (e && e.message) || 'error', portal_home: OG_PORTAL };
-  }
-}
-const PERMIT_TYPE_TOOL = {
-  name: 'find_permit_type',
-  description: "Find which City of Hilliard OpenGov permit/application (record type) a project needs, and return each match's portal apply link plus the instructions the City publishes on that application's portal page (what's covered, requirements, submittal checklist, fees, code references). Also returns 'Start a Project' bundles (pools, solar, EV chargers) that list every application the project creates and when. Use for ANY question about doing work or an activity that may need a permit, license, registration or zoning approval — building, installing, replacing, putting up, opening a business, holding an event, filing a complaint — and before telling someone which application to use.",
-  input_schema: { type: 'object', properties: {
-    project: { type: 'string', description: "The work or activity in the resident's words, e.g. 'build a 12x16 deck', 'replace my furnace', 'put up a 6 ft privacy fence', 'open a coffee shop', 'food truck at a church event'" },
-    record_type_id: { type: 'number', description: 'Optional: an OpenGov record type id when the page already knows it (e.g. 6460 for Fence Permit).' }
-  }, required: ['project'] }
-};
-
-let ZONING_MEM = null;
-async function getZoningCode(env) {
-  if (ZONING_MEM && Date.now() - ZONING_MEM.ts < 6 * 3600 * 1000) return ZONING_MEM.data;
-  const r = await fetch(ZONING_CODE_URL, { cf: { cacheTtlByStatus: { '200-299': 3600, '300-399': 0, '400-499': 0, '500-599': 0 } } });
-  if (!r.ok) throw new Error('zoning-code.json is not available at ' + ZONING_CODE_URL + ' (HTTP ' + r.status + ') — upload it to the GitHub repo; if it was just committed, Pages may still be publishing.');
-  const data = await r.json();
-  ZONING_MEM = { ts: Date.now(), data };
-  return data;
-}
-// Split a section into its lettered/numbered paragraphs so a long section (1121.02 is 19k
-// characters) returns only the parts about the question.
-function codeParagraphs(text) {
-  return String(text || '').split('\n').reduce((acc, line) => {
-    if (/^\([a-z]\)\s/.test(line) || !acc.length) acc.push(line); else acc[acc.length - 1] += '\n' + line;
-    return acc;
-  }, []);
-}
-const ZONING_SYNONYMS = { deck: ['deck', 'porch', 'accessory'], shed: ['accessory', 'shed', 'storage'], garage: ['garage', 'accessory'], pool: ['pool', 'swimming'], 'hot': ['spa', 'tub'], fence: ['fence', 'fences', 'wall'], setback: ['setback', 'yard'], setbacks: ['setback', 'yard'], height: ['height'], tall: ['height'], chicken: ['chicken', 'chickens', 'coop'], chickens: ['chicken', 'coop'], bees: ['bee', 'beekeeping', 'hive'], sign: ['sign', 'signs'], signs: ['sign'], parking: ['parking', 'spaces'], driveway: ['driveway', 'parking'], business: ['home', 'occupation'], solar: ['solar', 'energy'], generator: ['generator', 'mechanical'], tree: ['tree', 'trees', 'landscape'], trees: ['tree', 'landscape'], variance: ['variance', 'appeals'], rv: ['recreational', 'vehicle', 'boat', 'trailer'], boat: ['boat', 'recreational', 'trailer'], camper: ['recreational', 'vehicle', 'trailer'] };
-async function searchZoningCode(env, input) {
-  const query = String((input && input.query) || '').slice(0, 300);
-  const secWanted = String((input && input.section) || '').match(/(\d{4}\.\d{2})(?:\s*\(?([a-z])\)?)?/i);
-  try {
-    const code = await getZoningCode(env);
-    const secs = code.sections || [];
-    if (secWanted) {
-      const s = secs.find(x => x.sec === secWanted[1]);
-      if (s) {
-        let text = s.text;
-        if (secWanted[2]) { const p = codeParagraphs(text).find(x => x.startsWith('(' + secWanted[2].toLowerCase() + ')')); if (p) text = p; }
-        return { source: code.source, captured: code.captured, sections: [{ section: '§' + s.sec + (secWanted[2] ? '(' + secWanted[2].toLowerCase() + ')' : ''), title: s.title, url: s.url, text: text.slice(0, 7000), truncated: text.length > 7000 }] };
-      }
-    }
-    const base = permitTerms(query).filter(w => !/^\d+$/.test(w));
-    const district = (String((input && input.district) || '').match(/\b([A-Z]{1,3}-\d{0,2}[A-Z]?)\b/i) || [])[1];
-    const terms = [...new Set(base.concat(...base.map(w => ZONING_SYNONYMS[w] || [])))];
-    if (!terms.length && !district) return { error: 'no search words', hint: 'pass what the resident wants to do, e.g. "shed setbacks" or "fence height front yard"' };
-    const same = (a, b) => a === b || (Math.min(a.length, b.length) >= 4 && (a.startsWith(b) || b.startsWith(a)));
-    const scored = [];
-    for (const s of secs) {
-      const T = String(s.title).toLowerCase();
-      for (const p of codeParagraphs(s.text)) {
-        const W = p.toLowerCase().split(/[^a-z0-9]+/);
-        const H = p.split('\n')[0].slice(0, 120).toLowerCase().split(/[^a-z0-9]+/);
-        let sc = 0;
-        for (const w of terms) { const hits = W.filter(x => same(x, w)).length; if (hits) sc += 2 + Math.min(hits, 4); if (T.split(/[^a-z0-9]+/).some(x => same(x, w))) sc += 5; if (H.some(x => same(x, w))) sc += 8; }
-        if (base.length > 1 && p.length < 8000 && base.every(w => W.some(x => same(x, w)))) sc += 6;
-        sc -= Math.floor(p.length / 4000) * 3;   // big tables mention everything; don't let them crowd out the rule
-        if (district && p.includes(district.toUpperCase())) sc += 4;
-        if (sc) scored.push({ s, p, sc });
-      }
-    }
-    scored.sort((a, b) => b.sc - a.sc);
-    const out = [], seen = new Map();
-    let budget = 11000;
-    for (const x of scored) {
-      if (out.length >= 5 || budget < 400) break;
-      const key = x.s.sec;
-      const cap = out.length ? 2200 : 5500;   // the best paragraph gets room for its whole rule
-      const para = x.p.length > cap ? x.p.slice(0, cap) + ' […]' : x.p;
-      if (seen.has(key)) { const o = out[seen.get(key)]; if (o.text.length < 4000) { o.text += '\n…\n' + para; budget -= para.length; } continue; }
-      seen.set(key, out.length);
-      out.push({ section: '§' + x.s.sec, title: x.s.title, url: x.s.url, text: para });
-      budget -= para.length;
-    }
-    return { source: code.source, captured: code.captured, query, district: district || undefined, sections: out, weak_match: !out.length || scored[0].sc < 6, code_home: 'https://library.municode.com/oh/hilliard/codes/code_of_ordinances?nodeId=PTELEVENPLZOCO' };
-  } catch (e) {
-    return { unavailable: true, reason: (e && e.message) || 'error', code_home: 'https://library.municode.com/oh/hilliard/codes/code_of_ordinances?nodeId=PTELEVENPLZOCO' };
-  }
-}
-const ZONING_CODE_TOOL = {
-  name: 'search_zoning_code',
-  description: "Search the text of Hilliard's Planning & Zoning Code (Codified Ordinances Part Eleven: districts, uses, setbacks, accessory buildings, fences, pools, parking, signs, landscaping, home occupations, chickens/bees, variances and procedures) and return the matching sections with their Municode links. Use after find_permit_type to tell a resident the rules their project must meet, when a splash page cites a code section, or for any 'is it allowed / how big / how far from the property line' question. Pass a section number (e.g. '1121.02(d)') to read a specific section.",
-  input_schema: { type: 'object', properties: {
-    query: { type: 'string', description: "What to look up, e.g. 'shed setback accessory building height', 'fence height front yard corner lot', 'home occupation'" },
-    section: { type: 'string', description: "Optional exact section, e.g. '1121.02(d)' or '1109.03'" },
-    district: { type: 'string', description: "Optional zoning district from lookup_zoning, e.g. 'R-2'" }
-  }, required: ['query'] }
-};
-
 const PLCE_BASE = 'https://api.plce.opengov.com/plce/v2/hilliardoh';
 // Hilliard record-number prefixes -> friendly type names (fallback when the API
 // doesn't return a resolvable record-type name).
@@ -2154,18 +1393,15 @@ RULES:
 - SPECIFIC LINKS (IMPORTANT): Always give the single most specific URL rather than the generic hilliardohio.gov homepage or a bare portal link. When a resident asks about a city service, program, or rule, link its exact page from the "SPECIFIC CITY WEBSITE PAGES" section. When a resident asks how or where to apply for a permit or license, or asks about a specific permit type (fence, deck, sign, electrical, HVAC, driveway, etc.), give its exact application URL from the "PERMIT & LICENSE APPLICATION LINKS" section, and remind them an application is not a permit. Copy these URLs exactly as written — never invent or guess a page slug, category id, or record-type id. If no specific link fits, use the most relevant department page or the portal home.
 - ENGINEERING STANDARDS: For questions about engineering, design, or construction standards — roadway/pavement design, sanitary sewer or water main design, stormwater management/detention, erosion & sediment control, traffic control devices, street lighting, green infrastructure, landscaping/tree standards, development plan submittal requirements, standard construction drawings, or street naming/addressing — use the ENGINEERING DESIGN & CONSTRUCTION STANDARDS section of the knowledge base: briefly summarize what the standards say or which chapter applies, link to the manual, and refer detailed or project-specific questions to the Engineering Division. Note these are technical standards intended for engineers, developers, and contractors.
 - PLANNING & ZONING PROJECTS: when a resident asks about a named project or development, wants a list of applications of a given type (e.g. "list the PUDs in Hilliard", "what conditional-use applications were approved", "rezonings on Cemetery Rd"), or uses a project/case keyword that is not a street address, use the search_projects tool with concise keywords. Present results as a clean list: project name — application type — zoning — location — approval date, followed by the record/case number. IMPORTANT: when a result has a "url", render its record number as a Markdown link using exactly this syntax, including the literal square brackets and parentheses: "[PZ-26-14](THE_URL)" — replacing the label with the result's "record" value and THE_URL with its "url" value copied verbatim. If a result has no "url", write its record number (or case number) as plain text with no link. Never invent a URL for a record. If the result notes more matches than shown, say so and offer to narrow the search. Cite the source as the City's Planning & Zoning application master list and note the official record is on the OpenGov portal / Planning Division. For a specific ADDRESS, still use lookup_zoning; you may use both when a resident asks about a property AND its planning history.
+- OHIO BUILDING CODE: for questions about building code requirements (egress, exits, occupancy, fire protection, sprinklers, accessibility, structural, foundations, plan review, inspections, certificate of occupancy, when a permit or plan review is required) call lookup_building_code with the section number or topic. FIRST decide which code applies: the 2024 Ohio Building Code covers commercial, industrial, institutional, mixed-use and apartment buildings; detached one-, two- and three-family houses and their decks, sheds, garages and basements fall under the Residential Code of Ohio instead — say so, don't cite OBC sections for a house, and point to Building Standards. Answer in plain language in two to five sentences: what the section requires, cite it as e.g. "OBC Section 1010.1.1", render it as a Markdown link to its url (literal brackets and parentheses), and include the official OAC chapter link once. Summarise — never reproduce more than a short phrase of code text verbatim. Say Ohio's amendments and local conditions matter, and that the City's Building Standards Division ((614) 876-7361, Building@hilliardohio.gov) makes the official determination and reviews plans. If text_read is false, give the section title and links and say the text couldn't be retrieved automatically. If found is false, don't guess at a section — point to the code viewer and Building Standards.
 - MEETINGS, AGENDAS & MINUTES: for any question about a public meeting — what's on an agenda ("tonight", "next week", a date), when a board meets, a case number like BZA-26-31, or what was decided — call lookup_meeting_agenda with the resident's words. Present the meeting as a heading (body — date — time — location), then the substantive agenda items as a list. Skip procedural items (Call to Order, Pledge, Roll Call, Adjournment) unless asked. For each case give the case number, address and a one-line summary of the request from details, and render its staff-report attachment as a Markdown link labeled with the case number (literal brackets and parentheses, URL verbatim). Always link the full agenda (agenda_url) and, if present, the packet and minutes. If source is a snapshot, say the agenda was current as of that date. If a meeting has no agenda published yet, say so and give the meeting link. Never invent an agenda item, case, date or outcome; minutes are the only source for what was decided, and if minutes_url is absent say the minutes aren't posted yet.
-- LEGISLATIVE HISTORY & PAST DECISIONS: when a resident asks for the "legislative history", "history", background or past Council/board action on a topic, property, project, road, program or policy — or asks when something was approved, discussed or decided, or for a specific ordinance, resolution or set of minutes — call search_civicweb_documents. Work in two rounds to keep it fast: FIRST turn — call search_civicweb_documents 2-3 times IN THE SAME TURN with different wording (the project or property name, the street address, any known ordinance/resolution/BZA/PZ case number, and terms like rezoning, variance, conditional use, annexation, agreement; one of them with sort "oldest"). Planning & Zoning Commission and Board of Zoning Appeals records (agendas, minutes, planning staff reports, case files) are in the same index — for a property, variance, conditional use, rezoning or development history, run one search with body "Board of Zoning Appeals" or "Planning & Zoning Commission" so those boards' records are included. SECOND turn — ONLY IF the read_civicweb_document tool is available to you (verified City staff), call it IN THE SAME TURN on at most three key documents (the adopting ordinance/resolution and the minutes of the meeting that voted, first) to confirm what was decided and the vote. If that tool is not available, answer right after the searches from the titles, types, dates and excerpts alone. Do not search or read again after that unless the resident asks for more. Present the history as a dated list, oldest first, at most about 12 entries and 450 words: date — body — what happened in one sentence (with ordinance/resolution/case number) — the document as a Markdown link to its url. Include only steps that bear directly on the topic asked; leave out background items that merely mention it. Say a step "approved", "adopted" or give a vote only when a read confirmed it or the excerpt itself states it (an ordinance filed in the Legislation folder with its number may be called "Ordinance No. X"); otherwise describe it from the title and excerpt as "discussed", "on the agenda" or "introduced", and add one line that the linked documents have the full text and votes. End with the CivicWeb search_page link for the full set of results and a note that the Clerk of Council keeps the official record. Never invent a date, number, vote or outcome.
-- THE WELL, MEMBERSHIPS & REC PARKS FACILITIES: for questions about joining The Well, membership rates (annual, monthly, senior, family, resident vs non-resident), what a membership includes, daily passes, hours, policies, rentals and parties, the pools, gyms, track, fitness floor, teaching kitchen, HSC 55+ social center, outdoor pools, camps in general, parks and shelters, call lookup_rec_parks_info with the resident's words. Quote prices and hours exactly as the tool returns them, say whether a figure is resident or non-resident, and end with the page link (Markdown link labeled with the page title, URL verbatim). If the resident asks about both a membership and a class, call both tools.
-- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Adult sports leagues (category "Adult Sports Leagues", e.g. Volleyball Co-Rec Fall) come from the same tool: for those the cost is PER TEAM, the section title shows how many teams are registered of the maximum, and the Register link goes to the league page on WebTrac where a team captain registers the team — say so. Always say availability changes daily and the link shows current status. By default the tool leaves out Full and Unavailable sections; if hidden_full_or_unavailable_sections or matching_programs_with_no_open_sections is greater than zero, add one sentence such as "3 other sections are full or not open for registration" and offer to list them (call again with include_full=true if they ask). If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
-- PROJECTS, PERMITS & HOW TO PROCEED: when a resident describes work or an activity they want to do (build, install, replace, put up, open a business, hold an event, file a complaint) or asks which permit or application they need, call find_permit_type with their words, and in the same turn call search_zoning_code for the rules the project must meet (setbacks, height, size, location, district uses) whenever zoning could apply. If they gave an address, also call lookup_zoning and pass its district to search_zoning_code. Then answer in this order: (1) the application(s) they need, each as a Markdown link to its apply_url labeled with the record type name — for pools, solar and EV chargers also give the start_a_project questionnaire_url, which files every needed application together; (2) the key rules from the code, each citing its section as a Markdown link to the section url (e.g. "[§1121.02(d)](url)"), stated as the code states them; (3) what to submit and the fee, taken only from the splash_page text; (4) when the project would need a variance or other approval first (e.g. Board of Zoning Appeals) and that application's link; (5) the department contact from the splash page or knowledge base. Quote fees, dimensions and requirements only from tool results — never estimate. If the splash page and the code seem to differ, give the code section and say Planning staff make the final determination. If weak_match is true, say which applications look closest and ask one short question (e.g. residential or commercial, attached or detached). Always remind them an application is not a permit and work waits for issuance.
+- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Always say availability changes daily and the link shows current status. If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
 - ADDRESS NOT IN CITY LAYER: if a lookup_zoning result's found_via says the address was found in Franklin County Auditor records (not the City parcel layer), tell the resident the address was located in Franklin County Auditor records, state the matched address, give the auditor_link (their parcel page on the Auditor site), and — if tax_district is not CITY OF HILLIARD — explain the property is outside Hilliard's zoning jurisdiction. Always include the auditor_link when a resident asks about property records or when a property isn't in the City layer.
 - ADDRESS NOT FOUND (CRITICAL): if lookup_zoning returns an error with address_not_found, the address does not exist in City or County records. Say so plainly, repeat the address you were given, and — if street_on_file is present — tell the resident the street exists but its addresses run from street_on_file.low to street_on_file.high, so the house number should be re-checked. NEVER produce a zoning letter, a zoning classification, a parcel ID, an owner, a map, or a permit list for a different property, and never call lookup_permits. Do not silently correct the address to a nearby or similar one. Ask the resident to confirm the correct address instead.
 - ZONING CLASSIFICATION SOURCE: the district code, its full name, and the code_url come from the lookup_zoning result. Never state, imply, or guess which ordinance created or rezoned a property's district — that information is not returned by any tool. If a resident asks about the rezoning history of a property, tell them the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) has the rezoning record, and offer to search the Planning & Zoning application master list with search_projects.
 - You provide general information, not legal advice. For legal interpretation, suggest the resident contact the relevant department or an attorney.
 - If asked about emergencies, always say to call 911 first.
 - ZONING BY ADDRESS OR PLACE NAME: when the question concerns a specific address, property, business, or landmark (its zoning, what can be built or operated there), ALWAYS use the lookup_zoning tool first — never guess. You may pass a business/landmark name (e.g. "Hilliard Kroger on Cemetery Rd") directly; the tool resolves it to an address. If the result includes a resolved_place, begin your answer by stating the resolved street address (e.g. "The Hilliard Kroger is at 4656 Cemetery Rd —") so the resident can confirm it's the right property. If lookup_zoning returns an error (place not found), tell the resident it couldn't be located and ask for a street address. Then answer using that district's standards from the knowledge base. If the result is a PUD, explain that the PUD's own approved development text governs (share the pud_text_url link if provided) and refer detailed questions to the Planning Division. If tax_district is not "CITY OF HILLIARD", say the property appears to be outside city zoning jurisdiction. Mention the matched address so the resident can confirm it's the right parcel, and note that GIS results are informational — the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) provides official zoning verification letters.
-- PUD / HCD DEVELOPMENT TEXTS: when lookup_zoning puts a property in a PUD or HCD (Planned Unit Development / Hilliard Conservation District) zone, ALWAYS include the development text in the answer — whatever the question — as a Markdown link labeled with the PUD name (pud_name, or pud_title) and subarea if any, pointing at pud_text_url copied verbatim; if pud_documents lists other documents that matter (the subarea text, general development standards, plans), link those too, one per line, labeled with each document's name. Explain in one sentence that in a PUD/HCD the development text, not the standard district chapter, sets the permitted uses, setbacks and other standards, and that anything the text does not address falls back to the zoning code. When someone asks for a PUD text or development text by name, or about the rules of a named development or subdivision, call find_pud_text and link the documents it returns; if it finds nothing, say so and link library_page (the City's full PUD list). Never invent or shorten these URLs.
 - PROPERTY DETAILS: the lookup_zoning tool also returns Franklin County Auditor data for the parcel (owner, acreage, year built, last transfer date/price, property class, subdivision). Use it for questions about lot size, ownership, or property history, and mention the data comes from Franklin County Auditor records. For complete records (values, taxes, photos, transfer history) direct the resident to the Auditor's property search: property.franklincountyauditor.com. Property TAX amounts: Franklin County Auditor/Treasurer, not the City.
 - PERMIT HISTORY: to list the permits for a specific address, use the lookup_permits tool (only after you have the confirmed address from lookup_zoning). If it returns records, present them. Whenever the result includes a "location_url", link the resident directly to it (it is that property's OpenGov record page showing every permit) rather than the generic search page. Only if there is no location_url (e.g. the result is "unavailable") fall back to hilliardoh.portal.opengov.com/search — typing the address under "Locations" lists every active and historical permit and its status. Applying for permits, checking their own applications, and requesting zoning verification letters all happen at hilliardoh.portal.opengov.com.
 - ZONING LETTER: when a resident asks for a "zoning letter", "zoning verification letter", "ZVL", or a letter documenting their property's zoning: first, if no address was given, ask for the property address. Once you have it, call lookup_zoning; then call lookup_permits with the matched_address to retrieve the property's permit history. Then (a) explain in one or two sentences that OFFICIAL Zoning Verification Letters — which include conformance determinations, variance history, and violation checks researched by Planning staff — are issued by the Planning Division and may be requested at https://hilliardoh.portal.opengov.com/categories/1080/record-types/6376 (a fee applies) — write that full URL verbatim, not the generic portal address — and that you can provide an instant informational summary; then (b) output the summary between the EXACT markers <<<LETTER>>> and <<<END LETTER>>> (the page renders it as a printable letter). Use this structure in plain text, omitting any line with no data:
@@ -2182,7 +1418,7 @@ To whom it may concern:
 In response to a request for information regarding the above referenced property, the following has been compiled from City of Hilliard GIS records and Franklin County Auditor public records:
 
 Zoning Classification: [Write the zone's "district" code, then a space-dash-space, then its "district_name" value — and render that whole "CODE — Name" string as ONE Markdown link to the zone's "code_url", using EXACTLY this syntax with the literal square brackets and parentheses: "[I-FE — I-270 Corridor District, I-FE Flex Employment subdistrict (§1116.08)](PUT_CODE_URL_HERE)". The characters [ ] ( ) are REQUIRED and must appear literally. Copy code_url verbatim. If the zone has no code_url or no district_name, write what you do have as plain text with no link. This line is the ENTIRE zoning classification section: write NOTHING else about the district — no description of the district, no history, no statement about which ordinance established or rezoned it, and never name a rezoning ordinance number. The tool does not return one and you must not infer one.]
-[Include the next line ONLY when the district is PUD or HCD and a pud_text_url is present, then nothing further:] Approved development text: [Markdown link, literal brackets and parentheses required, labeled with the pud_title value (or "PUD development text" if there is no pud_title) and pointing at the pud_text_url value copied verbatim, never truncated or wrapped. Do not print that URL anywhere except inside the parentheses. The link label must be the PUD's name — NEVER an ordinance number, and never the phrase "Rezoning Ordinance". No sentence may follow this line.]
+[Include the next line ONLY when the district is PUD and a pud_text_url is present, then nothing further:] Approved development text: [Markdown link, literal brackets and parentheses required, labeled with the pud_title value (or "PUD development text" if there is no pud_title) and pointing at the pud_text_url value copied verbatim, never truncated or wrapped. Do not print that URL anywhere except inside the parentheses. The link label must be the PUD's name — NEVER an ordinance number, and never the phrase "Rezoning Ordinance". No sentence may follow this line.]
 [ZONING MAP]
 [IMPORTANT: output the line "[ZONING MAP]" EXACTLY as those two words in square brackets on its own line — the page replaces it with the zoning map image, a dot marking the property, and a link to the full Hilliard Zoning Map. Do NOT add any sentence describing the map or repeating the zoning-map URL; the caption under the image already covers it.]
 Current Use (Franklin County Auditor classification): [property_class][, subdivision if present]
@@ -2209,14 +1445,6 @@ ${kb}`;
 }
 
 /* ---------------- helpers ---------------- */
-function allowOriginFor(request, env) {
-  const list = String(env.ALLOWED_ORIGIN || '*').split(',').map(x => x.trim().replace(/\/$/, '')).filter(Boolean);
-  if (list.length < 2) return env;
-  const origin = (request.headers.get('Origin') || '').replace(/\/$/, '');
-  const pick = list.includes(origin) ? origin : list[0];
-  // A derived object: bindings (KV, secrets) still resolve through the prototype.
-  return Object.assign(Object.create(env), { ALLOWED_ORIGIN: pick });
-}
 function corsHeaders(env) {
   return {
     'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*',
@@ -2265,21 +1493,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
-    // ALLOWED_ORIGIN may list several origins separated by commas (GitHub Pages plus the
-    // Rec & Parks WordPress site). Echo back the one that matches this request; a request
-    // from anywhere else gets the first entry, which the browser will then refuse.
-    env = allowOriginFor(request, env);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(env) });
 
     try {
-      if (path === '/api/row-permits' && request.method === 'GET') {
-        // Public feed for the Right of Way permit map (no account numbers or personal data
-        // beyond the applicant name that OpenGov already shows on the public portal).
-        const d = await env.KV.get('row:data');
-        if (!d) return new Response(JSON.stringify({ error: 'not built yet', permits: [] }), { status: 503, headers: { 'content-type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
-        return new Response(d, { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=600', 'Access-Control-Allow-Origin': '*' } });
-      }
       if (path === '/api/config' && request.method === 'GET') {
         const cfg = await getConfig(env);
         return json({ topics: cfg.topics }, 200, env);
@@ -2388,11 +1605,9 @@ export default {
         // here on every request. The page's staff-mode checkbox lives in the visitor's
         // own browser and is not evidence of anything.
         const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
-        const baseTools = TOOLS.concat([PROGRAMS_TOOL, RECPARKS_TOOL, MEETINGS_TOOL, PERMIT_TYPE_TOOL, ZONING_CODE_TOOL, CW_SEARCH_TOOL, PUD_TOOL]);
-        // Reading whole PDFs (read_civicweb_document) is slow and costs an API call per document,
-        // so the full read-and-confirm history research is for verified staff only.
-        const tools = isStaff ? baseTools.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL, CREATE_GW_TOOL, INFA_TOOL, CW_READ_TOOL]) : baseTools;
-        let maxTokens = isStaff ? 8000 : MAX_TOKENS;
+        const baseTools = TOOLS.concat([PROGRAMS_TOOL, MEETINGS_TOOL, OBC_TOOL]);
+        const tools = isStaff ? baseTools.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL, CREATE_GW_TOOL, INFA_TOOL]) : baseTools;
+        const maxTokens = isStaff ? 8000 : MAX_TOKENS;
 
         const cfg = await getConfig(env);
         const news = await getNews(env);
@@ -2401,65 +1616,9 @@ export default {
         // Multi-hop loop: the Worker handles lookup_permits itself (it holds the
         // OpenGov key); lookup_zoning is delegated to the browser (keyless GIS),
         // so any response containing a lookup_zoning call is returned as-is.
-        // One dispatcher for every server-side tool (also used below to fill in results the page
-        // could not run itself).
-        const runServerTool = async (b) => {
-          let out;
-          if (b.name === 'lookup_permits') out = await lookupPermitsOpenGov(env, b.input && b.input.address);
-          else if (b.name === 'search_projects') out = await searchProjects(env, b.input && b.input.query);
-          else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query, b.input);
-          else if (b.name === 'lookup_rec_parks_info') out = await lookupRecParksInfo(env, b.input && b.input.query);
-          else if (b.name === 'lookup_meeting_agenda') out = await lookupMeetingAgenda(env, b.input || {});
-          else if (b.name === 'find_permit_type') out = await findPermitType(env, b.input || {});
-          else if (b.name === 'search_zoning_code') out = await searchZoningCode(env, b.input || {});
-          else if (b.name === 'find_pud_text') out = await findPudText(env, b.input || {});
-          else if (b.name === 'search_civicweb_documents') out = await searchCivicwebDocuments(env, b.input || {});
-          else if (b.name === 'read_civicweb_document') out = isStaff
-            ? await readCivicwebDocument(env, b.input || {}, apiKey, cfg.model)
-            : { error: 'not authorized' };
-          // Re-check isStaff here, not just at tool-list assembly: a tool name in the
-          // conversation history must never be enough to reach the drafting library.
-          else if (b.name === 'draft_legislation') out = isStaff
-            ? await findLegislationModels(env, b.input && b.input.subject)
-            : { error: 'not authorized' };
-          else if (b.name === 'lookup_sos_entity') out = isStaff
-            ? await lookupSosEntity(b.input && b.input.owner_name)
-            : { error: 'not authorized' };
-          else if (b.name === 'create_grass_weed_complaint') out = isStaff
-            ? await createGrassWeedComplaint(env, b.input || {})
-            : { error: 'not authorized' };
-          else if (b.name === 'search_infrastructure_records') out = isStaff
-            ? await searchInfrastructureRecords(env, b.input || {})
-            : { error: 'not authorized' };
-          else out = { error: 'unknown tool' };
-          return out;
-        };
-        // When a turn mixed a browser tool (lookup_zoning) with server tools (find_permit_type,
-        // search_zoning_code…), the page runs only its own and answers the rest with
-        // "handled server-side". Run those here before the model sees them.
-        try {
-          const lastMsg = messages[messages.length - 1], prevMsg = messages[messages.length - 2];
-          if (lastMsg && lastMsg.role === 'user' && Array.isArray(lastMsg.content) && prevMsg && prevMsg.role === 'assistant' && Array.isArray(prevMsg.content)) {
-            const uses = {};
-            prevMsg.content.filter(b => b && b.type === 'tool_use').forEach(b => { uses[b.id] = b; });
-            for (const tr of lastMsg.content) {
-              // Zoning results from the page: attach the PUD/HCD development texts.
-              if (tr && tr.type === 'tool_result' && uses[tr.tool_use_id] && uses[tr.tool_use_id].name === 'lookup_zoning' && typeof tr.content === 'string') {
-                tr.content = await enrichZoningResult(env, tr.content);
-                continue;
-              }
-              if (tr && tr.type === 'tool_result' && uses[tr.tool_use_id] && /handled server-side|not available on the/i.test(String(tr.content || ''))) {
-                const u = uses[tr.tool_use_id];
-                if (u.name === 'lookup_zoning' || u.name === 'lookup_owner_for_notice') continue;
-                const out = await runServerTool(u);
-                if (!(out && out.error === 'unknown tool')) tr.content = JSON.stringify(out);
-              }
-            }
-          }
-        } catch (e) { console.log('prefill server tools failed', e.message); }
         let convo = messages;
         let last = null;
-        for (let hop = 0; hop < 7; hop++) {
+        for (let hop = 0; hop < 4; hop++) {
           const r = await callAnthropic(apiKey, cfg.model, system, convo, tools, maxTokens);
           if (!r.ok) {
             // Surface enough of the upstream failure to diagnose it without leaking the key.
@@ -2482,26 +1641,34 @@ export default {
           if (toolBlocks.some(b => b.name === 'lookup_zoning' || b.name === 'lookup_owner_for_notice')) return json(r.data, 200, env);
           // Otherwise every tool call is server-side (lookup_permits) — run and continue.
           convo = convo.concat([{ role: 'assistant', content: r.data.content }]);
-          // A history answer is a long dated list; give it room so it isn't cut off.
-          if (toolBlocks.some(b => b.name === 'search_civicweb_documents' || b.name === 'read_civicweb_document')) maxTokens = Math.max(maxTokens, 6000);
-          // Run the turn's tool calls at the same time (several searches, several PDF reads).
-          const outs = await Promise.all(toolBlocks.map(b => runServerTool(b).catch(e => ({ error: (e && e.message) || 'tool failed' }))));
-          const results = toolBlocks.map((b, i) => ({ type: 'tool_result', tool_use_id: b.id, content: JSON.stringify(outs[i]) }));
+          const results = [];
+          for (const b of toolBlocks) {
+            let out;
+            if (b.name === 'lookup_permits') out = await lookupPermitsOpenGov(env, b.input && b.input.address);
+            else if (b.name === 'search_projects') out = await searchProjects(env, b.input && b.input.query);
+            else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query);
+            else if (b.name === 'lookup_meeting_agenda') out = await lookupMeetingAgenda(env, b.input || {});
+            else if (b.name === 'lookup_building_code') out = await lookupBuildingCode(env, b.input || {});
+            // Re-check isStaff here, not just at tool-list assembly: a tool name in the
+            // conversation history must never be enough to reach the drafting library.
+            else if (b.name === 'draft_legislation') out = isStaff
+              ? await findLegislationModels(env, b.input && b.input.subject)
+              : { error: 'not authorized' };
+            else if (b.name === 'lookup_sos_entity') out = isStaff
+              ? await lookupSosEntity(b.input && b.input.owner_name)
+              : { error: 'not authorized' };
+            else if (b.name === 'create_grass_weed_complaint') out = isStaff
+              ? await createGrassWeedComplaint(env, b.input || {})
+              : { error: 'not authorized' };
+            else if (b.name === 'search_infrastructure_records') out = isStaff
+              ? await searchInfrastructureRecords(env, b.input || {})
+              : { error: 'not authorized' };
+            else out = { error: 'unknown tool' };
+            results.push({ type: 'tool_result', tool_use_id: b.id, content: JSON.stringify(out) });
+          }
           convo = convo.concat([{ role: 'user', content: results }]);
         }
         return json(last, 200, env);
-      }
-
-      if (path === '/api/programs' && request.method === 'GET') {
-        // Public, read-only copy of the recreation catalog (the same data search_programs
-        // uses) so the Rec & Parks WordPress site can build program pages from it.
-        try {
-          const cat = await getPrograms(env);
-          let last = null; try { last = JSON.parse((await env.KV.get('programs:lastCrawl')) || 'null'); } catch (e) {}
-          return new Response(JSON.stringify(Object.assign({}, cat, { last_crawl: last })), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=900', ...corsHeaders(env) } });
-        } catch (e) {
-          return json({ unavailable: true, reason: (e && e.message) || 'error' }, 503, env);
-        }
       }
 
       if (path === '/api/log' && request.method === 'POST') {
@@ -2648,52 +1815,26 @@ export default {
           return json(out, 200, env);
         }
         if (a === 'crawl_programs') {
-          // Rebuild the recreation catalog straight from WebTrac and keep it in KV
-          // (the same routine the daily Cron Trigger runs).
-          return json(await refreshProgramCatalog(env, 'admin'), 200, env);
-        }
-        if (a === 'crawl_recparks') {
-          // One batch of the Rec & Parks website into KV (the Cron Trigger does the same daily).
-          return json(await refreshRecParksSite(env, 'admin'), 200, env);
-        }
-        if (a === 'recparks_status') {
-          return json({ last_crawl: JSON.parse((await env.KV.get('recparks:lastCrawl')) || 'null'), pages: Object.keys(await getRecParksPages(env)).length }, 200, env);
-        }
-        if (a === 'crawl_status') {
-          // When the catalog was last rebuilt, by whom, and whether it worked.
-          return json({ last_crawl: JSON.parse((await env.KV.get('programs:lastCrawl')) || 'null') }, 200, env);
-        }
-        if (a === 'refresh_row_permits') {
-          return json(await refreshRowPermits(env, 'admin'), 200, env);
-        }
-        if (a === 'row_status') {
-          let last = null; try { last = JSON.parse(await env.KV.get('row:last') || 'null'); } catch (e) {}
-          return json({ last }, 200, env);
+          // Rebuild the recreation catalog straight from WebTrac and keep it in KV.
+          const t0 = Date.now();
+          try {
+            const data = await crawlWebtracLive();
+            await env.KV.put('programs:data', JSON.stringify(data));
+            await env.KV.delete('programs:cache');
+            return json({ ok: true, ms: Date.now() - t0, programs: data.programs.length, sections: data.programs.reduce((n, p) => n + p.sections.length, 0), pages_read: data.pages_read, generated: data.generated }, 200, env);
+          } catch (e) {
+            return json({ ok: false, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'WebTrac could not be crawled from the Worker; the published programs.json remains in use.' }, 200, env);
+          }
         }
         if (a === 'refresh_caches') {
           // Drop cached copies of the published data files so a freshly uploaded
           // programs.json / legislation-index.json / meetings.json is used immediately.
-          for (const k of ['programs:cache', 'legis:cache', 'projects:cache', 'meetings:live', 'portal:cache', 'pud:cache']) { try { await env.KV.delete(k); } catch (e) {} }
+          for (const k of ['programs:cache', 'legis:cache', 'projects:cache', 'meetings:live']) { try { await env.KV.delete(k); } catch (e) {} }
           let programs = null; try { const c = await getPrograms(env); programs = { count: (c.programs || []).length, generated: c.generated }; } catch (e) { programs = { error: e.message }; }
           return json({ ok: true, programs }, 200, env);
         }
-        if (a === 'test_permit_type') {
-          // Can the Worker read the OpenGov public portal API? Shows live vs snapshot.
-          if (body.fresh) { try { await env.KV.delete('portal:cache'); } catch (e) {} }
-          const out = await findPermitType(env, { project: String(body.query || 'build a deck'), record_type_id: body.record_type_id });
-          return json(out, 200, env);
-        }
-        if (a === 'test_zoning_code') {
-          const out = await searchZoningCode(env, { query: String(body.query || 'shed setback'), section: body.section, district: body.district });
-          return json(out, 200, env);
-        }
-        if (a === 'test_civicweb_search') {
-          const out = await searchCivicwebDocuments(env, { query: String(body.query || 'Homestead Metro Park'), sort: body.sort, types: body.types });
-          return json(out, 200, env);
-        }
-        if (a === 'test_civicweb_read') {
-          const key = await env.KV.get('config:apikey'); const cfg = await getConfig(env);
-          const out = await readCivicwebDocument(env, { document_id: Number(body.document_id || 185189), question: String(body.question || 'what does this approve?') }, key, cfg.model);
+        if (a === 'test_obc') {
+          const out = await lookupBuildingCode(env, { query: String(body.query || 'exit signs') });
           return json(out, 200, env);
         }
         if (a === 'test_meetings') {
@@ -2758,132 +1899,8 @@ export default {
       console.log('Worker error', err.stack || err.message);
       return json({ error: { message: 'Server error' } }, 500, env);
     }
-  },
-
-  // Cron Trigger (schedule in wrangler.jsonc "triggers.crons"): rebuilds the recreation
-  // program catalog from WebTrac so availability, new sessions and cancelled classes are
-  // picked up without anyone pressing the /admin button. waitUntil keeps the crawl alive
-  // past the handler's return; the crawl itself takes ~8 s.
-  async scheduled(event, env, ctx) {
-    const cron = (event && event.cron) || '';
-    // "0 9 * * *" rebuilds the WebTrac catalog; the other triggers each crawl one batch of
-    // the Rec & Parks website (about 70 pages, 40 per batch, so two runs cover the site).
-    if (cron === '0 9 * * *') ctx.waitUntil(refreshProgramCatalog(env, 'cron ' + cron));
-    else if (cron === '15 9 * * *') ctx.waitUntil(refreshRowPermits(env, 'cron ' + cron));
-    else ctx.waitUntil(refreshRecParksSite(env, 'cron ' + cron));
   }
 };
-
-/* ---------------- Right of Way permit map feed ----------------
-   Nightly (cron "15 9 * * *") and from the /admin button: pull every enabled ACTIVE
-   Right Of Way Permit (record type 6342) from the OpenGov API together with its primary
-   location (address point, GPS point, or road segment with both endpoints), the
-   applicant, and -- once OpenGov enables the Forms API for hilliardoh -- the application
-   form fields (company, dates, roads, description). The result is stored in KV as
-   row:data and served, publicly, at GET /api/row-permits for the map page at
-   hilliardohio.github.io. A failed run keeps the previous data in place. */
-const ROW_RECORD_TYPE_ID = 6342;
-const ROW_FORM_LABELS = {
-  company: /^Company$/i, owner: /^Owner of infrastructure/i, start: /^Start Date/i, end: /^Completion Date/i,
-  desc: /^Description of project/i, type: /^Type of Construction/i, roads: /^Road segments and intersections/i,
-  cut: /^Will you be cutting or opening/i, city: /^Is this job for the City of Hilliard/i
-};
-// Pull "label => value" pairs out of whatever shape the Forms API returns (it is not
-// documented yet); tolerant of nested sections and of value/entry/fieldValue naming.
-function rowFormExtract(form) {
-  const out = {};
-  (function walk(o, d) {
-    if (!o || typeof o !== 'object' || d > 14) return;
-    if (Array.isArray(o)) { o.forEach(x => walk(x, d + 1)); return; }
-    const label = o.label || o.fieldLabel || o.name;
-    let v = o.value; if (v == null && o.entry && typeof o.entry === 'object') v = o.entry.value;
-    if (v == null) v = o.fieldValue;
-    if (label && v != null && v !== '' && typeof v !== 'object') {
-      for (const k in ROW_FORM_LABELS) if (!out[k] && ROW_FORM_LABELS[k].test(String(label).trim())) out[k] = String(v).slice(0, 300);
-    }
-    for (const k in o) if (typeof o[k] === 'object') walk(o[k], d + 1);
-  })(form, 0);
-  return out;
-}
-async function refreshRowPermits(env, trigger) {
-  const t0 = Date.now();
-  let result;
-  try {
-    if (!env.OPENGOV_API_KEY) throw new Error('OPENGOV_API_KEY not set');
-    const H = { Authorization: 'Token ' + env.OPENGOV_API_KEY, Accept: 'application/vnd.api+json' };
-    const get = async (p) => { const r = await fetch(PLCE_BASE + '/' + p, { headers: H }); return { status: r.status, body: r.ok ? await r.json() : null }; };
-    // 1) every ACTIVE record of the ROW type (archived ones come back isEnabled:false)
-    const recs = [];
-    for (let page = 1; page <= 20; page++) {
-      const r = await get('records?' + new URLSearchParams({ 'filter[recordTypeID]': String(ROW_RECORD_TYPE_ID), 'filter[status]': 'ACTIVE', 'page[size]': '100', 'page[number]': String(page) }));
-      if (r.status !== 200) throw new Error('records page ' + page + ' HTTP ' + r.status);
-      const rows = (r.body.data || []);
-      rows.forEach(x => { if ((x.attributes || {}).isEnabled) recs.push(x); });
-      const meta = r.body.meta || {};
-      if (!rows.length || (meta.totalPages && page >= meta.totalPages)) break;
-    }
-    if (!recs.length) throw new Error('no active ROW records returned -- kept the previous data');
-    // 2) probe the Forms API once; it returns 501 until OpenGov enables it for hilliardoh
-    const probe = await get('records/' + recs[0].id + '/form');
-    const formsOn = probe.status === 200;
-    // 3) location + applicant (+ form) for each record, 6 at a time
-    const out = []; let locErrors = 0;
-    const work = recs.slice();
-    async function one(rec) {
-      const a = rec.attributes || {};
-      const row = { id: Number(rec.id), no: a.number || '', sub: (a.submittedAt || '').slice(0, 10), exp: (a.expiresAt || '').slice(0, 10), applicant: '', company: '', owner: '', addr: '', lt: 0, lat: null, lon: null, lat2: null, lon2: null, label: '', start: '', end: '', desc: '', type: '', roads: '', cut: '' };
-      try {
-        const l = await get('records/' + rec.id + '/primary-location');
-        const la = ((l.body || {}).data || {}).attributes || {};
-        row.lt = { POINT: 2, SEGMENT: 3 }[la.locationType] || 1;   // 1 = address/parcel
-        row.lat = la.latitude != null ? Number(la.latitude) : null; row.lon = la.longitude != null ? Number(la.longitude) : null;
-        row.lat2 = la.secondaryLatitude != null ? Number(la.secondaryLatitude) : null; row.lon2 = la.secondaryLongitude != null ? Number(la.secondaryLongitude) : null;
-        const tidy = (x) => String(x || '').replace(/\s+/g, ' ').trim();
-        const addr = [tidy(la.streetNo), tidy(la.streetName)].filter(Boolean).join(' ');
-        row.addr = addr ? addr + (la.city ? ', ' + la.city : '') + (la.state ? ', ' + la.state : '') + (la.postalCode ? ' ' + la.postalCode : '') : '';
-        row.label = la.segmentLabel || row.addr || (row.lat != null ? row.lat + ', ' + row.lon : '');
-        if (row.lat == null) locErrors++;
-      } catch (e) { locErrors++; }
-      try {
-        const ap = await get('records/' + rec.id + '/applicant');
-        const d = (ap.body || {}).data; const aa = (Array.isArray(d) ? d[0] : d || {}).attributes || {};
-        row.applicant = [aa.firstName, aa.lastName].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
-      } catch (e) {}
-      if (formsOn) { try { const f = await get('records/' + rec.id + '/form'); if (f.body) Object.assign(row, rowFormExtract(f.body)); } catch (e) {} }
-      out.push(row);
-    }
-    await Promise.all(Array.from({ length: 6 }, async () => { while (work.length) await one(work.shift()); }));
-    out.sort((x, y) => (y.sub || '').localeCompare(x.sub || '') || (y.id - x.id));
-    const data = { generated: new Date().toISOString(), count: out.length, forms_api: formsOn, location_errors: locErrors, permits: out.filter(r => r.lat != null) };
-    await env.KV.put('row:data', JSON.stringify(data));
-    result = { ok: true, trigger, ms: Date.now() - t0, count: out.length, mapped: data.permits.length, forms_api: formsOn, location_errors: locErrors, generated: data.generated };
-  } catch (e) {
-    result = { ok: false, trigger, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'The previous ROW permit data remains in use.' };
-  }
-  try { await env.KV.put('row:last', JSON.stringify(Object.assign({ at: new Date().toISOString() }, result))); } catch (e) {}
-  console.log('row permits refresh', JSON.stringify(result));
-  return result;
-}
-
-/* Shared by the /admin button and the Cron Trigger: crawl WebTrac, store the catalog in
-   KV, drop the 15-minute cache, and record the outcome so /admin can show it. A failed
-   crawl leaves the previous catalog in place — residents never see an empty catalog. */
-async function refreshProgramCatalog(env, trigger) {
-  const t0 = Date.now();
-  let result;
-  try {
-    const data = await crawlWebtracLive();
-    if (!data.programs || !data.programs.length) throw new Error('crawl returned no programs — kept the previous catalog');
-    await env.KV.put('programs:data', JSON.stringify(data));
-    await env.KV.delete('programs:cache');
-    result = { ok: true, trigger, ms: Date.now() - t0, programs: data.programs.length, sections: data.programs.reduce((n, p) => n + p.sections.length, 0), pages_read: data.pages_read, generated: data.generated };
-  } catch (e) {
-    result = { ok: false, trigger, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'WebTrac could not be crawled from the Worker; the previous catalog (or programs.json) remains in use.' };
-  }
-  try { await env.KV.put('programs:lastCrawl', JSON.stringify(Object.assign({ at: new Date().toISOString() }, result))); } catch (e) {}
-  console.log('program catalog refresh', JSON.stringify(result));
-  return result;
-}
 
 /* ---------------- admin page ---------------- */
 const ADMIN_HTML = `<!DOCTYPE html>
@@ -2989,8 +2006,6 @@ td.ans{max-width:320px}
       <button class="btn ghost" onclick="refreshProjects()">Refresh &amp; test</button>
       <button class="btn ghost" onclick="refreshCaches()">Reload all data files</button>
       <button class="btn ghost" onclick="crawlPrograms()">Refresh rec programs from WebTrac</button>
-      <button class="btn ghost" onclick="crawlRecParks()">Refresh Rec &amp; Parks site pages</button>
-      <button class="btn ghost" onclick="refreshRow()">Refresh ROW permit map data</button>
       <span id="cachesMsg" class="stat"></span>
     </div>
     <div class="stat" id="projectsStatus"></div>
@@ -3084,16 +2099,6 @@ async function crawlPrograms(){
   document.getElementById('cachesMsg').textContent = 'Crawling WebTrac (about a minute)…';
   const d = await api('crawl_programs');
   document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.programs + ' programs / ' + d.sections + ' sections crawled (' + Math.round(d.ms/1000) + 's).</span>' : '<span class="err">' + (d.error || 'failed') + '</span>';
-}
-async function refreshRow(){
-  document.getElementById('cachesMsg').textContent = 'Pulling active Right of Way permits from OpenGov (about a minute)…';
-  const d = await api('refresh_row_permits');
-  document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.count + ' active ROW permits (' + d.mapped + ' mapped' + (d.forms_api ? ', form fields on' : ', form fields not yet available from OpenGov') + ', ' + Math.round(d.ms/1000) + 's). Feed: /api/row-permits</span>' : '<span class="err">' + (d.error || 'failed') + '</span>';
-}
-async function crawlRecParks(){
-  document.getElementById('cachesMsg').textContent = 'Crawling recandparks.hilliardohio.gov (one batch of 40 pages)…';
-  const d = await api('crawl_recparks');
-  document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.fetched + ' pages fetched (' + d.stored + ' of ' + d.total_pages + ' stored' + (d.complete ? ', site complete' : ', click again for the rest') + ').</span>' : '<span class="err">' + d.error + '</span>';
 }
 async function refreshCaches(){
   document.getElementById('cachesMsg').textContent = 'Reloading…';
