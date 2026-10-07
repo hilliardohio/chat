@@ -1445,12 +1445,22 @@ ${kb}`;
 }
 
 /* ---------------- helpers ---------------- */
+// ALLOWED_ORIGIN may be a comma-separated list (e.g. the GitHub Pages site plus a city
+// site that embeds the chat). Browsers accept only ONE origin in the header, so we echo
+// the requesting origin when it is on the list (resolved once per request in fetch()).
+function pickCorsOrigin(request, env) {
+  const list = String(env.ALLOWED_ORIGIN || '*').split(',').map(s => s.trim()).filter(Boolean);
+  if (!list.length || list.includes('*')) return '*';
+  const reqOrigin = request.headers.get('Origin') || '';
+  return list.includes(reqOrigin) ? reqOrigin : list[0];
+}
 function corsHeaders(env) {
   return {
-    'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*',
+    'Access-Control-Allow-Origin': env._corsOrigin || String(env.ALLOWED_ORIGIN || '*').split(',')[0].trim() || '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'content-type',
-    'Access-Control-Max-Age': '86400'
+    'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin'
   };
 }
 function json(data, status, env) {
@@ -1493,6 +1503,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
+    // Per-request copy of env carrying the resolved CORS origin (see pickCorsOrigin).
+    env = { ...env, _corsOrigin: pickCorsOrigin(request, env) };
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(env) });
 
