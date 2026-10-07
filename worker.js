@@ -145,11 +145,58 @@ function parseWebtracPage(html, code) {
       const tds = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(c => c[1]);
       if (tds.length < 10) continue;
       const fm = (row[1].match(/iteminfo\.html\?[^"']*FMID=(\d+)/i) || [])[1];
-      sections.push({ section: wtCell(tds[1], 'Activity #'), title: wtCell(tds[2], 'Description'), dates: wtCell(tds[3], 'Dates'), times: wtCell(tds[4], 'Times'), days: wtCell(tds[5], 'Days'), location: wtCell(tds[6], 'Location'), ages: wtCell(tds[7], 'Ages'), cost: wtCell(tds[8], 'Cost'), availability: wtCell(tds[9], 'Availability'), section_url: fm ? WEBTRAC + 'iteminfo.html?Module=AR&FMID=' + fm : undefined });
+      sections.push({ section: wtCell(tds[1], 'Activity #'), title: wtCell(tds[2], 'Description'), dates: wtCell(tds[3], 'Dates'), times: wtCell(tds[4], 'Times'), days: wtCell(tds[5], 'Days'), location: wtCell(tds[6], 'Location'), ages: wtCell(tds[7], 'Ages'), cost: wtCell(tds[8], 'Cost'), availability: wtCell(tds[9], 'Availability'), section_url: fm ? WEBTRAC + 'iteminfo.html?Module=AR&FMID=' + fm : undefined, wishlist_url: fm ? WEBTRAC + 'wishlist.html?Module=AR&FMID=' + fm : undefined });
     }
     out.push({ category: WT_CATS[code], name, activity_number: actNo, description: desc, category_url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail', sections });
   }
   return out;
+}
+/* Adult sports leagues live in WebTrac's separate League Search (module=LS), not in the
+   activity categories, so a category-only crawl never sees "Volleyball Co-Rec Fall".
+   Each league is one block with a single row: Description, Category (e.g. "Co-Rec
+   Volleyball"), Dates, Max Teams, Current Teams, Games, Price Res/Non-Res, Details link. */
+const LEAGUE_CATEGORY = 'Adult Sports Leagues';
+const LEAGUE_URL = WEBTRAC + 'search.html?module=LS&display=detail';
+function parseWebtracLeagues(html) {
+  const out = [];
+  const blocks = html.split(/<div[^>]*class="[^"]*result-content[^"]*"/i).slice(1);
+  for (const blk of blocks) {
+    const h2 = (blk.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i) || [])[1]; if (!h2) continue;
+    const name = htmlText(h2).replace(/\s+/g, ' ').replace(/\s*-\s*\d{4,}\s*$/, '').trim();
+    const desc = htmlText((blk.match(/result-header__description[^>]*>([\s\S]*?)<\/div>/i) || [])[1] || '').replace(/\s+/g, ' ').trim();
+    const sections = [];
+    for (const row of blk.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)) {
+      const tds = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(c => c[1]);
+      if (tds.length < 9) continue;
+      const fm = (row[1].match(/iteminfo\.html\?[^"']*FMID=(\d+)/i) || [])[1];
+      const maxTeams = parseInt(wtCell(tds[4], 'Max Teams'), 10), curTeams = parseInt(wtCell(tds[5], 'Current Teams'), 10);
+      const teams = isNaN(maxTeams) ? '' : (isNaN(curTeams) ? maxTeams + ' teams' : curTeams + ' of ' + maxTeams + ' teams registered');
+      const availability = (!isNaN(maxTeams) && !isNaN(curTeams)) ? (curTeams >= maxTeams ? 'Full' : 'Available') : 'Check availability';
+      const games = wtCell(tds[6], 'Games');
+      sections.push({ section: wtCell(tds[1], 'Description'), title: wtCell(tds[2], 'Category') + (teams ? ' — ' + teams : ''), dates: wtCell(tds[3], 'Dates'), times: '', days: games ? games + ' games' : '', location: '', ages: 'Adult 18+', cost: wtCell(tds[7], 'Price Res/Non-Res') + ' per team', availability, teams_max: isNaN(maxTeams) ? undefined : maxTeams, teams_registered: isNaN(curTeams) ? undefined : curTeams, section_url: fm ? WEBTRAC + 'iteminfo.html?Module=LS&FMID=' + fm : LEAGUE_URL, wishlist_url: fm ? WEBTRAC + 'wishlist.html?Module=LS&FMID=' + fm : undefined });
+    }
+    const sport = (sections[0] && sections[0].title.split(' — ')[0]) || '';
+    out.push({ category: LEAGUE_CATEGORY, name, activity_number: '', description: (desc || ('Adult sports league: ' + (sport || name) + '.')) + ' Team registration (the price is per team) through the WebTrac League Search; schedules and standings are posted there once play starts.', category_url: LEAGUE_URL, league: true, sections });
+  }
+  return out;
+}
+async function crawlWebtracLeagues(programs, pagesRead) {
+  const seen = new Set();
+  for (let page = 1; page <= 10; page++) {
+    const r = await fetch(LEAGUE_URL + '&page=' + page, { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
+    if (!r.ok) throw new Error('WebTrac HTTP ' + r.status + ' on League Search page ' + page);
+    const html = await r.text();
+    if (page === 1 && !/result-content/.test(html)) {
+      if (/League Search|Search Results|lswebsearch/i.test(html)) { pagesRead.LEAGUES = '0 results'; return; }
+      throw new Error('WebTrac returned no results markup for the League Search (' + html.length + ' bytes)');
+    }
+    const got = parseWebtracLeagues(html).filter(p => !seen.has(p.name));
+    if (!got.length) break;
+    got.forEach(p => { seen.add(p.name); programs.push(p); });
+    const sh = html.match(/Showing results (\d+)-(\d+) of (\d+)/);
+    pagesRead.LEAGUES = page + (sh ? ' (' + sh[3] + ' results)' : '');
+    if (sh && +sh[2] >= +sh[3]) break;
+  }
 }
 async function crawlWebtracLive() {
   const programs = []; const pagesRead = {};
@@ -173,13 +220,15 @@ async function crawlWebtracLive() {
       if (sh && +sh[2] >= +sh[3]) break;
     }
   }
+  // Leagues are a bonus: a League Search hiccup must not sink the activity catalog.
+  try { await crawlWebtracLeagues(programs, pagesRead); } catch (e) { pagesRead.LEAGUES = 'error: ' + (e && e.message); }
   return {
     generated: new Date().toISOString().slice(0, 10),
     source: 'City of Hilliard Recreation & Parks online registration (RecTrac/WebTrac), crawled live by the assistant',
     note: 'Availability and waitlists change daily — always send people to the section_url or category_url for current status and to register. Cost is resident/non-resident.',
     registration_home: WEBTRAC + 'splash.html',
     keyword_search_url_pattern: WEBTRAC + 'search.html?module=AR&keyword={KEYWORD}&display=detail',
-    categories: Object.entries(WT_CATS).map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail' })),
+    categories: Object.entries(WT_CATS).map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&category=' + code + '&display=detail' })).concat([{ code: 'LS', name: LEAGUE_CATEGORY, url: LEAGUE_URL }]),
     age_groups: [['ADULT', 'Adult 18+'], ['ALL', 'All Ages'], ['FAMILY', 'Family'], ['PRE', 'Preschool Under 5'], ['SR', 'Senior 55+'], ['TEEN', 'Teen 13-17'], ['YOUTH', 'Youth 6-12']].map(([code, name]) => ({ code, name, url: WEBTRAC + 'search.html?module=AR&type=' + code + '&display=detail' })),
     programs, pages_read: pagesRead
   };
@@ -187,7 +236,7 @@ async function crawlWebtracLive() {
 const PROGRAM_STOP = new Set(['the','a','an','and','or','for','of','to','in','on','at','is','are','be','class','classes','program','programs','register','registration','sign','up','well','hilliard','any','there','what','when','does','do','have','offer','offers','me','my','i','year','years','old','age','ages','yo','son','daughter']);
 // Synonyms only broaden to a category word, never to a sibling activity — "pickleball"
 // must not surface volleyball just because both are sports.
-const PROGRAM_SYNONYMS = { swim: 'aquatics', swimming: 'aquatics', pool: 'aquatics', lessons: 'aquatics', senior: 'senior', seniors: 'senior', older: 'senior', '55': 'senior', kid: 'youth', kids: 'youth', child: 'youth', children: 'youth', toddler: 'preschool', workout: 'fitness', exercise: 'fitness', gym: 'fitness', league: 'sports', craft: 'enrichment', crafts: 'enrichment', paint: 'enrichment', painting: 'enrichment', pottery: 'enrichment', music: 'enrichment', dance: 'enrichment', summer: 'camp' };
+const PROGRAM_SYNONYMS = { swim: 'aquatics', swimming: 'aquatics', pool: 'aquatics', lessons: 'aquatics', senior: 'senior', seniors: 'senior', older: 'senior', '55': 'senior', kid: 'youth', kids: 'youth', child: 'youth', children: 'youth', toddler: 'preschool', workout: 'fitness', exercise: 'fitness', gym: 'fitness', league: 'leagues', leagues: 'leagues', team: 'leagues', teams: 'leagues', corec: 'co-rec', coed: 'co-rec', craft: 'enrichment', crafts: 'enrichment', paint: 'enrichment', painting: 'enrichment', pottery: 'enrichment', music: 'enrichment', dance: 'enrichment', summer: 'camp' };
 function programTerms(q) {
   const raw = String(q || '').toLowerCase().replace(/(\d+)\s*(?:-|to)\s*(\d+)/g, '$1 $2').split(/[^a-z0-9+]+/).filter(w => w.length > 1 && !PROGRAM_STOP.has(w));
   const literal = raw.filter(w => !/^\d+$/.test(w));
@@ -205,7 +254,18 @@ function sectionFitsAge(s, age) {
   if (plus) return age >= Number(plus[1]);
   return null;
 }
-async function searchPrograms(env, query) {
+/* Availability as WebTrac labels it: Available, Waitlist, Check Availability, Full,
+   Unavailable (registration not open or closed). By default only sections a resident can
+   act on today are returned; the full/unavailable ones are counted so the answer can say
+   they exist without listing them. */
+function sectionOpen(sec) {
+  const a = String((sec && sec.availability) || '').trim().toLowerCase();
+  if (!a) return true;                       // unknown -> let the register link decide
+  if (a === 'full' || a.startsWith('unavail') || a.startsWith('closed') || a.startsWith('cancel')) return false;
+  return true;                               // available, waitlist, check availability
+}
+async function searchPrograms(env, query, opts) {
+  const includeFull = !!(opts && opts.include_full);
   try {
     const cat = await getPrograms(env);
     const { literal, broad, age } = programTerms(query);
@@ -233,7 +293,21 @@ async function searchPrograms(env, query) {
       }
       return s;
     };
-    const ranked = (cat.programs || []).map(p => ({ p, s: scoreOf(p) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 10);
+    // Score on the whole program (a full class is still the right program), then keep
+    // only the sections the resident can register for unless they asked for everything.
+    let hiddenSections = 0, hiddenPrograms = 0;
+    const visible = (cat.programs || []).map(p => {
+      if (includeFull) return p;
+      const secs = p.sections || [];
+      // Leagues stay listed even when every team slot is taken: residents ask what
+      // leagues exist and when the next season is, and the row says "Full" plainly.
+      const open = p.league ? secs : secs.filter(sectionOpen);
+      hiddenSections += secs.length - open.length;
+      return Object.assign({}, p, { sections: open, all_sections: secs.length });
+    });
+    const scored = visible.map(p => ({ p, s: scoreOf(p) })).filter(x => x.s > 0);
+    if (!includeFull) hiddenPrograms = scored.filter(x => !(x.p.sections || []).length && x.p.all_sections).length;
+    const ranked = scored.filter(x => includeFull || (x.p.sections || []).length).sort((a, b) => b.s - a.s).slice(0, 10);
     const terms = literal.concat(broad);
     const catHit = (cat.categories || []).find(c => terms.some(t => c.name.toLowerCase().includes(t)));
     const ageHit = (cat.age_groups || []).find(a => terms.some(t => a.name.toLowerCase().includes(t)));
@@ -247,7 +321,7 @@ async function searchPrograms(env, query) {
         description: (x.p.description || '').slice(0, 300),
         category_url: x.p.category_url,
         // Age-appropriate sections first when the question named an age.
-        sections: (x.p.sections || []).slice().sort((a, b) => (sectionFitsAge(b, age) === true) - (sectionFitsAge(a, age) === true)).slice(0, 6).map(s => ({ section: s.section, title: s.title, dates: s.dates, times: s.times, days: s.days, location: s.location, ages: s.ages, fits_stated_age: age != null ? sectionFitsAge(s, age) : undefined, cost_resident_nonresident: s.cost, availability_as_of_snapshot: s.availability, register_url: s.section_url })),
+        sections: (x.p.sections || []).slice().sort((a, b) => (sectionFitsAge(b, age) === true) - (sectionFitsAge(a, age) === true)).slice(0, 6).map(s => ({ section: s.section, title: s.title, dates: s.dates, times: s.times, days: s.days, location: s.location, ages: s.ages, fits_stated_age: age != null ? sectionFitsAge(s, age) : undefined, cost_resident_nonresident: s.cost, availability_as_of_snapshot: s.availability, register_url: s.section_url, add_to_wishlist_url: s.wishlist_url })),
         more_sections: Math.max(0, (x.p.sections || []).length - 6)
       })),
       browse_category_url: catHit ? catHit.url : undefined,
@@ -255,16 +329,135 @@ async function searchPrograms(env, query) {
       keyword_search_url: (cat.keyword_search_url_pattern || '').replace('{KEYWORD}', encodeURIComponent(String(query || '').trim())),
       registration_home: cat.registration_home,
       categories: (cat.categories || []).map(c => c.name + ' — ' + c.url),
-      note: 'Availability shown is from the catalog snapshot dated ' + cat.generated + '; the register_url shows live status. Costs are resident / non-resident.'
+      only_open_sections: !includeFull,
+      hidden_full_or_unavailable_sections: includeFull ? 0 : hiddenSections,
+      matching_programs_with_no_open_sections: includeFull ? 0 : hiddenPrograms,
+      note: 'Availability shown is from the catalog snapshot dated ' + cat.generated + '; the register_url shows live status. Costs are resident / non-resident.' + (includeFull ? '' : ' Full and Unavailable sections were left out; call again with include_full=true if the resident wants them.')
     };
   } catch (e) {
     return { unavailable: true, reason: (e && e.message) || 'error', staff_note: 'This is a publishing problem with the catalog file, not a WebTrac outage — see reason.', registration_home: 'https://webtrac.hilliardohio.gov/webtrac/web/splash.html' };
   }
 }
+
+/* ---------------- Recreation & Parks website (recandparks.hilliardohio.gov) ----------------
+   The Well's membership rates, daily passes, hours, policies, rentals, facilities, camps and
+   parks live on the Rec & Parks WordPress site, not in WebTrac. Its page sitemap lists ~70
+   pages; the Cron Trigger crawls them into KV (recparks:pages) a batch at a time, keeping
+   under the Worker's per-invocation subrequest budget, and lookup_rec_parks_info searches
+   that text. Tables are kept as "cell | cell" rows so rate tables survive intact. */
+const RECPARKS = 'https://recandparks.hilliardohio.gov';
+const RECPARKS_BATCH = 40;
+const RECPARKS_PRIORITY = [/\/the-well\/memberships/, /\/the-well\/daily-passes/, /\/the-well\/hours/, /\/the-well\//, /membership/, /daily-pass/, /rentals/, /camps?/, /outdoor-aquatics/, /sports-fitness/, /programs/, /parks/, /faq|policies|contact/];
+function recparksHtmlToText(html) {
+  let h = String(html || '');
+  h = h.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ').replace(/<svg[\s\S]*?<\/svg>/gi, ' ');
+  h = h.replace(/<(nav|header|footer)[\s\S]*?<\/\1>/gi, ' ');
+  // Tables first: one line per row, cells joined with " | " even when a cell wraps its text in <p>/<div>.
+  h = h.replace(/<table[\s\S]*?<\/table>/gi, tbl => '\n' + [...tbl.matchAll(/<tr[\s\S]*?<\/tr>/gi)].map(r => [...r[0].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(c => c[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()).join(' | ')).join('\n') + '\n');
+  h = h.replace(/<\/(tr|p|div|li|h\d|section|article)>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
+  h = h.replace(/<(h[1-4])[^>]*>/gi, '\n## ');
+  h = h.replace(/<[^>]+>/g, ' ');
+  h = h.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;|&rsquo;|&lsquo;/g, "'").replace(/&ndash;|&mdash;/g, '-').replace(/&#8217;/g, "'").replace(/&#82\d\d;/g, '"');
+  return h.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').replace(/\n{2,}/g, '\n').replace(/^Skip to content\n/i, '').trim();
+}
+async function recparksPageList() {
+  const r = await fetch(RECPARKS + '/page-sitemap1.xml', { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
+  if (!r.ok) throw new Error('Rec & Parks sitemap HTTP ' + r.status);
+  const xml = await r.text();
+  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim()).filter(u => u.startsWith(RECPARKS));
+  const rank = u => { const i = RECPARKS_PRIORITY.findIndex(re => re.test(u)); return i < 0 ? 99 : i; };
+  return [...new Set(urls)].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+}
+async function refreshRecParksSite(env, trigger) {
+  const t0 = Date.now();
+  let result;
+  try {
+    const urls = await recparksPageList();
+    let pages = {}; try { pages = JSON.parse((await env.KV.get('recparks:pages')) || '{}'); } catch (e) {}
+    let cursor = parseInt((await env.KV.get('recparks:cursor')) || '0', 10) || 0;
+    if (cursor >= urls.length) cursor = 0;
+    const slice = urls.slice(cursor, cursor + RECPARKS_BATCH);
+    let ok = 0, failed = 0;
+    for (const u of slice) {
+      try {
+        const r = await fetch(u, { headers: WT_HEADERS, cf: { cacheTtl: 0 } });
+        if (!r.ok) { failed++; continue; }
+        const html = await r.text();
+        const title = htmlText((html.match(/<title>([\s\S]*?)<\/title>/i) || [])[1] || '').replace(/\s*[-|–].*$/, '').trim() || u;
+        const text = recparksHtmlToText(html).slice(0, 9000);
+        if (text.length < 80) { failed++; continue; }
+        pages[u] = { title, text, at: new Date().toISOString() };
+        ok++;
+      } catch (e) { failed++; }
+    }
+    // Drop pages that left the sitemap.
+    for (const k of Object.keys(pages)) if (!urls.includes(k)) delete pages[k];
+    const next = cursor + slice.length >= urls.length ? 0 : cursor + slice.length;
+    await env.KV.put('recparks:pages', JSON.stringify(pages));
+    await env.KV.put('recparks:cursor', String(next));
+    result = { ok: true, trigger, ms: Date.now() - t0, fetched: ok, failed, batch_from: cursor, total_pages: urls.length, stored: Object.keys(pages).length, next_cursor: next, complete: next === 0 };
+  } catch (e) {
+    result = { ok: false, trigger, ms: Date.now() - t0, error: (e && e.message) || 'error' };
+  }
+  try { await env.KV.put('recparks:lastCrawl', JSON.stringify(Object.assign({ at: new Date().toISOString() }, result))); } catch (e) {}
+  console.log('rec & parks site refresh', JSON.stringify(result));
+  return result;
+}
+async function getRecParksPages(env) {
+  try { return JSON.parse((await env.KV.get('recparks:pages')) || '{}'); } catch (e) { return {}; }
+}
+const RECPARKS_SYNONYMS = { price: 'rate', prices: 'rate', cost: 'rate', costs: 'rate', fee: 'rate', fees: 'rate', rates: 'rate', join: 'membership', member: 'membership', members: 'membership', memberships: 'membership', pass: 'daily', passes: 'daily', open: 'hours', close: 'hours', closes: 'hours', closed: 'hours', time: 'hours', times: 'hours', rent: 'rental', renting: 'rental', rentals: 'rental', party: 'rental', birthday: 'rental', shelter: 'rental', pool: 'aquatic', pools: 'aquatic', swim: 'aquatic', gym: 'gymnasium', kitchen: 'teaching', senior: 'hsc', seniors: 'hsc', '55': 'hsc' };
+async function lookupRecParksInfo(env, query) {
+  const pages = await getRecParksPages(env);
+  const keys = Object.keys(pages);
+  if (!keys.length) return { unavailable: true, reason: 'The Rec & Parks site has not been crawled yet (run "Refresh Rec & Parks site pages" on /admin or wait for the daily crawl).', site: RECPARKS + '/the-well/memberships' };
+  const stop = new Set(['the', 'a', 'an', 'and', 'or', 'of', 'to', 'in', 'on', 'at', 'is', 'are', 'for', 'what', 'how', 'much', 'does', 'do', 'i', 'my', 'me', 'well', 'hilliard', 'it', 'can', 'with', 'about', 'there', 'any', 'get', 'have']);
+  const raw = String(query || '').toLowerCase().split(/[^a-z0-9+]+/).filter(w => w.length > 1 && !stop.has(w));
+  const terms = [...new Set(raw.concat(raw.map(w => RECPARKS_SYNONYMS[w]).filter(Boolean)))];
+  const same = (a, b) => a === b || (Math.min(a.length, b.length) >= 4 && (a.startsWith(b) || b.startsWith(a)));
+  const scored = keys.map(u => {
+    const p = pages[u];
+    const tw = p.title.toLowerCase().split(/[^a-z0-9]+/), uw = u.toLowerCase().split(/[^a-z0-9]+/);
+    const body = p.text.toLowerCase();
+    let s = 0;
+    for (const t of terms) {
+      if (tw.some(w => same(w, t))) s += 6;
+      if (uw.some(w => same(w, t))) s += 4;
+      const n = (body.match(new RegExp('\\b' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
+      s += Math.min(6, n);
+    }
+    return { u, s };
+  }).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 3);
+  const excerpt = (text, max) => {
+    const paras = text.split('\n');
+    const hits = paras.map((line, i) => ({ i, line, hit: terms.some(t => line.toLowerCase().includes(t)) }));
+    // Keep headings and table rows near hits so rate tables come through whole.
+    const keep = new Set();
+    hits.forEach(h => { if (h.hit) { for (let k = Math.max(0, h.i - 2); k <= Math.min(paras.length - 1, h.i + 8); k++) keep.add(k); } });
+    let out = '';
+    for (let i = 0; i < paras.length && out.length < max; i++) { if (keep.has(i) || paras[i].startsWith('## ')) out += paras[i] + '\n'; }
+    return (out.trim() || text.slice(0, max)).slice(0, max);
+  };
+  return {
+    query,
+    source: 'City of Hilliard Recreation & Parks website, crawled ' + (pages[keys[0]] && pages[keys[0]].at || '').slice(0, 10),
+    results: scored.map(x => ({ title: pages[x.u].title, url: x.u, excerpt: excerpt(pages[x.u].text, 2200), crawled: pages[x.u].at })),
+    note: 'Quote rates and hours exactly as written (tables are "item | resident | non-resident"). Link the page URL so the resident can confirm current details.'
+  };
+}
+const RECPARKS_TOOL = {
+  name: 'lookup_rec_parks_info',
+  description: 'Look up information from the City of Hilliard Recreation & Parks website (recandparks.hilliardohio.gov): The Well membership rates and what a membership includes, daily passes, hours, policies, facility details (fitness floor, pools, gyms, track, teaching kitchen, HSC 55+ social center, Depot, café), rentals and parties, outdoor pools, camps, parks and amenities, volunteering, contact info. Use for any question about joining The Well, prices, hours, rentals or facilities; use search_programs instead for specific classes, lessons and leagues.',
+  input_schema: { type: 'object', properties: { query: { type: 'string', description: 'What they want to know, e.g. "family membership cost", "daily pass price", "pool hours", "birthday party rental"' } }, required: ['query'] }
+};
+
 const PROGRAMS_TOOL = {
   name: 'search_programs',
-  description: 'Search the City of Hilliard Recreation & Parks program catalog (classes, swim lessons, camps, fitness, sports leagues, senior programs at The Well and parks) and return matching programs with dates, times, ages, cost and a direct registration link on the WebTrac registration site. Use for any question about classes, lessons, camps, leagues, programs, or how to register.',
-  input_schema: { type: 'object', properties: { query: { type: 'string', description: 'What they are looking for, e.g. "swim lessons for a 4 year old", "yoga", "youth basketball", "senior programs"' } }, required: ['query'] }
+  description: 'Search the City of Hilliard Recreation & Parks program catalog (classes, swim lessons, camps, fitness, adult sports leagues such as volleyball/basketball/softball, senior programs at The Well and parks) and return matching programs with dates, times, ages, cost and a direct registration link on the WebTrac registration site. Use for any question about classes, lessons, camps, leagues, programs, or how to register.',
+  input_schema: { type: 'object', properties: {
+    query: { type: 'string', description: 'What they are looking for, e.g. "swim lessons for a 4 year old", "yoga", "youth basketball", "senior programs"' },
+    include_full: { type: 'boolean', description: 'Default false: sections that are Full or Unavailable (registration closed / not open) are left out and only counted. Set true only when the resident explicitly asks to see full, closed or waitlisted-only classes.' }
+  }, required: ['query'] }
 };
 
 /* ---------------- Meeting agendas & minutes (iCompass / CivicWeb Portal) ----------------
@@ -1405,7 +1598,8 @@ RULES:
 - PLANNING & ZONING PROJECTS: when a resident asks about a named project or development, wants a list of applications of a given type (e.g. "list the PUDs in Hilliard", "what conditional-use applications were approved", "rezonings on Cemetery Rd"), or uses a project/case keyword that is not a street address, use the search_projects tool with concise keywords. Present results as a clean list: project name — application type — zoning — location — approval date, followed by the record/case number. IMPORTANT: when a result has a "url", render its record number as a Markdown link using exactly this syntax, including the literal square brackets and parentheses: "[PZ-26-14](THE_URL)" — replacing the label with the result's "record" value and THE_URL with its "url" value copied verbatim. If a result has no "url", write its record number (or case number) as plain text with no link. Never invent a URL for a record. If the result notes more matches than shown, say so and offer to narrow the search. Cite the source as the City's Planning & Zoning application master list and note the official record is on the OpenGov portal / Planning Division. For a specific ADDRESS, still use lookup_zoning; you may use both when a resident asks about a property AND its planning history.
 - OHIO BUILDING AND RESIDENTIAL CODES: for questions about construction code requirements (egress, exits, stairs, handrails, guards, decks, foundations, framing, insulation, smoke/CO alarms, occupancy, fire protection, sprinklers, accessibility, structural, mechanical, fuel gas, plumbing, plan review, inspections, certificate of occupancy, when a permit or plan review is required) call lookup_building_code with the section number or topic. FIRST decide which code applies and pass it as code: "rco" (2019 Residential Code of Ohio, based on the 2018 IRC) for detached one-, two- and three-family houses and townhouses and their decks, sheds, garages, basements and additions; "obc" (2024 Ohio Building Code, based on the 2021 IBC) for commercial, industrial, institutional, mixed-use and apartment buildings. If the question doesn't say which kind of building, ask — or, when the topic is clearly a house topic (deck, egress window, basement finish, stair in a home), use "rco" and say so. Section numbers in the RCO carry a letter prefix (R311.7, M1305, G2415, P2603, N1102); cite them that way. Answer in plain language in two to five sentences: what the section requires, cite it as e.g. "OBC Section 1010.1.1" or "RCO Section R311.7.5", render it as a Markdown link to its url (literal brackets and parentheses), and include the official OAC chapter link once, copying oac_chapter_url EXACTLY as returned (it must keep the "chapter-" prefix, e.g. https://codes.ohio.gov/ohio-administrative-code/chapter-4101:1-10 for the OBC or …/chapter-4101:8-3 for the RCO — a shortened form returns Number Not Found). Summarise — never reproduce more than a short phrase of code text verbatim. Say Ohio's amendments and local conditions matter, and that the City's Building Standards Division ((614) 876-7361, Building@hilliardohio.gov) makes the official determination and reviews plans. If text_read is false, give the section title and links and say the text couldn't be retrieved automatically. If found is false, don't guess at a section — point to the code viewer and Building Standards.
 - MEETINGS, AGENDAS & MINUTES: for any question about a public meeting — what's on an agenda ("tonight", "next week", a date), when a board meets, a case number like BZA-26-31, or what was decided — call lookup_meeting_agenda with the resident's words. Present the meeting as a heading (body — date — time — location), then the substantive agenda items as a list. Skip procedural items (Call to Order, Pledge, Roll Call, Adjournment) unless asked. For each case give the case number, address and a one-line summary of the request from details, and render its staff-report attachment as a Markdown link labeled with the case number (literal brackets and parentheses, URL verbatim). Always link the full agenda (agenda_url) and, if present, the packet and minutes. If source is a snapshot, say the agenda was current as of that date. If a meeting has no agenda published yet, say so and give the meeting link. Never invent an agenda item, case, date or outcome; minutes are the only source for what was decided, and if minutes_url is absent say the minutes aren't posted yet.
-- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Always say availability changes daily and the link shows current status. If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
+- THE WELL, MEMBERSHIPS & REC PARKS FACILITIES: for questions about joining The Well, membership rates (annual, monthly, senior, family, resident vs non-resident), what a membership includes, daily passes, hours, policies, rentals and parties, the pools, gyms, track, fitness floor, teaching kitchen, HSC 55+ social center, outdoor pools, camps in general, parks and shelters, call lookup_rec_parks_info with the resident's words. Quote prices and hours exactly as the tool returns them, say whether a figure is resident or non-resident, and end with the page link (Markdown link labeled with the page title, URL verbatim). If the resident asks about both a membership and a class, call both tools.
+- RECREATION PROGRAMS & CLASSES: for any question about classes, lessons, camps, leagues, fitness or wellness programs, senior (HSC 55+) programs, aquatics, or how to register at The Well or the parks, call search_programs with the resident's words. List EVERY matching program the tool returns (up to the ten it gives you), one per line: program name — dates — days/times — ages — cost (say "resident / non-resident") — availability — then the section's register_url as a Markdown link labeled "Register" (literal square brackets and parentheses, URL copied verbatim). Don't collapse distinct classes into one line; a resident asking about Italian cooking wants to see Classic Italian Sauces, Tortellini en Brodo and Autumn in Italy as separate choices. If a program has several sections, show up to three and link the category_url for the rest. Adult sports leagues (category "Adult Sports Leagues", e.g. Volleyball Co-Rec Fall) come from the same tool: for those the cost is PER TEAM, the section title shows how many teams are registered of the maximum, and the Register link goes to the league page on WebTrac where a team captain registers the team — say so. Always say availability changes daily and the link shows current status. By default the tool leaves out Full and Unavailable sections; if hidden_full_or_unavailable_sections or matching_programs_with_no_open_sections is greater than zero, add one sentence such as "3 other sections are full or not open for registration" and offer to list them (call again with include_full=true if they ask). If weak_match is true, say plainly that no program by that name is currently listed, then offer the closest category (browse_category_url) — don't present loosely related classes as if they were what was asked for. If nothing matches, give the keyword_search_url and the registration_home link rather than guessing that a program exists. Registration requires a free WebTrac account; residency (for the resident rate) is explained under "Am I a resident?" on the WebTrac site. Never invent a class, date, price or availability that the tool did not return.
 - ADDRESS NOT IN CITY LAYER: if a lookup_zoning result's found_via says the address was found in Franklin County Auditor records (not the City parcel layer), tell the resident the address was located in Franklin County Auditor records, state the matched address, give the auditor_link (their parcel page on the Auditor site), and — if tax_district is not CITY OF HILLIARD — explain the property is outside Hilliard's zoning jurisdiction. Always include the auditor_link when a resident asks about property records or when a property isn't in the City layer.
 - ADDRESS NOT FOUND (CRITICAL): if lookup_zoning returns an error with address_not_found, the address does not exist in City or County records. Say so plainly, repeat the address you were given, and — if street_on_file is present — tell the resident the street exists but its addresses run from street_on_file.low to street_on_file.high, so the house number should be re-checked. NEVER produce a zoning letter, a zoning classification, a parcel ID, an owner, a map, or a permit list for a different property, and never call lookup_permits. Do not silently correct the address to a nearby or similar one. Ask the resident to confirm the correct address instead.
 - ZONING CLASSIFICATION SOURCE: the district code, its full name, and the code_url come from the lookup_zoning result. Never state, imply, or guess which ordinance created or rezoned a property's district — that information is not returned by any tool. If a resident asks about the rezoning history of a property, tell them the Planning Division ((614) 876-7361, Planning1@hilliardohio.gov) has the rezoning record, and offer to search the Planning & Zoning application master list with search_projects.
@@ -1628,7 +1822,7 @@ export default {
         // here on every request. The page's staff-mode checkbox lives in the visitor's
         // own browser and is not evidence of anything.
         const isStaff = !!(env.STAFF_PASSWORD && body.staffToken && safeEq(String(body.staffToken), env.STAFF_PASSWORD));
-        const baseTools = TOOLS.concat([PROGRAMS_TOOL, MEETINGS_TOOL, OBC_TOOL]);
+        const baseTools = TOOLS.concat([PROGRAMS_TOOL, RECPARKS_TOOL, MEETINGS_TOOL, OBC_TOOL]);
         const tools = isStaff ? baseTools.concat([DRAFT_TOOL, CODE_LETTER_TOOL, SOS_TOOL, CREATE_GW_TOOL, INFA_TOOL]) : baseTools;
         const maxTokens = isStaff ? 8000 : MAX_TOKENS;
 
@@ -1669,7 +1863,8 @@ export default {
             let out;
             if (b.name === 'lookup_permits') out = await lookupPermitsOpenGov(env, b.input && b.input.address);
             else if (b.name === 'search_projects') out = await searchProjects(env, b.input && b.input.query);
-            else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query);
+            else if (b.name === 'search_programs') out = await searchPrograms(env, b.input && b.input.query, b.input);
+            else if (b.name === 'lookup_rec_parks_info') out = await lookupRecParksInfo(env, b.input && b.input.query);
             else if (b.name === 'lookup_meeting_agenda') out = await lookupMeetingAgenda(env, b.input || {});
             else if (b.name === 'lookup_building_code') out = await lookupBuildingCode(env, b.input || {});
             // Re-check isStaff here, not just at tool-list assembly: a tool name in the
@@ -1692,6 +1887,18 @@ export default {
           convo = convo.concat([{ role: 'user', content: results }]);
         }
         return json(last, 200, env);
+      }
+
+      if (path === '/api/programs' && request.method === 'GET') {
+        // Public, read-only copy of the recreation catalog (the same data search_programs
+        // uses) so the Rec & Parks WordPress site can build program pages from it.
+        try {
+          const cat = await getPrograms(env);
+          let last = null; try { last = JSON.parse((await env.KV.get('programs:lastCrawl')) || 'null'); } catch (e) {}
+          return new Response(JSON.stringify(Object.assign({}, cat, { last_crawl: last })), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=900', ...corsHeaders(env) } });
+        } catch (e) {
+          return json({ unavailable: true, reason: (e && e.message) || 'error' }, 503, env);
+        }
       }
 
       if (path === '/api/log' && request.method === 'POST') {
@@ -1838,16 +2045,20 @@ export default {
           return json(out, 200, env);
         }
         if (a === 'crawl_programs') {
-          // Rebuild the recreation catalog straight from WebTrac and keep it in KV.
-          const t0 = Date.now();
-          try {
-            const data = await crawlWebtracLive();
-            await env.KV.put('programs:data', JSON.stringify(data));
-            await env.KV.delete('programs:cache');
-            return json({ ok: true, ms: Date.now() - t0, programs: data.programs.length, sections: data.programs.reduce((n, p) => n + p.sections.length, 0), pages_read: data.pages_read, generated: data.generated }, 200, env);
-          } catch (e) {
-            return json({ ok: false, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'WebTrac could not be crawled from the Worker; the published programs.json remains in use.' }, 200, env);
-          }
+          // Rebuild the recreation catalog straight from WebTrac and keep it in KV
+          // (the same routine the daily Cron Trigger runs).
+          return json(await refreshProgramCatalog(env, 'admin'), 200, env);
+        }
+        if (a === 'crawl_recparks') {
+          // One batch of the Rec & Parks website into KV (the Cron Trigger does the same daily).
+          return json(await refreshRecParksSite(env, 'admin'), 200, env);
+        }
+        if (a === 'recparks_status') {
+          return json({ last_crawl: JSON.parse((await env.KV.get('recparks:lastCrawl')) || 'null'), pages: Object.keys(await getRecParksPages(env)).length }, 200, env);
+        }
+        if (a === 'crawl_status') {
+          // When the catalog was last rebuilt, by whom, and whether it worked.
+          return json({ last_crawl: JSON.parse((await env.KV.get('programs:lastCrawl')) || 'null') }, 200, env);
         }
         if (a === 'refresh_caches') {
           // Drop cached copies of the published data files so a freshly uploaded
@@ -1922,8 +2133,41 @@ export default {
       console.log('Worker error', err.stack || err.message);
       return json({ error: { message: 'Server error' } }, 500, env);
     }
+  },
+
+  // Cron Trigger (schedule in wrangler.jsonc "triggers.crons"): rebuilds the recreation
+  // program catalog from WebTrac so availability, new sessions and cancelled classes are
+  // picked up without anyone pressing the /admin button. waitUntil keeps the crawl alive
+  // past the handler's return; the crawl itself takes ~8 s.
+  async scheduled(event, env, ctx) {
+    const cron = (event && event.cron) || '';
+    // "0 9 * * *" rebuilds the WebTrac catalog; the other triggers each crawl one batch of
+    // the Rec & Parks website (about 70 pages, 40 per batch, so two runs cover the site).
+    if (cron === '0 9 * * *') ctx.waitUntil(refreshProgramCatalog(env, 'cron ' + cron));
+    else if (cron === '30 9 * * *' || cron === '0 10 * * *') ctx.waitUntil(refreshRecParksSite(env, 'cron ' + cron));
+    else console.log('scheduled: no job bound to cron "' + cron + '"');
   }
 };
+
+/* Shared by the /admin button and the Cron Trigger: crawl WebTrac, store the catalog in
+   KV, drop the 15-minute cache, and record the outcome so /admin can show it. A failed
+   crawl leaves the previous catalog in place — residents never see an empty catalog. */
+async function refreshProgramCatalog(env, trigger) {
+  const t0 = Date.now();
+  let result;
+  try {
+    const data = await crawlWebtracLive();
+    if (!data.programs || !data.programs.length) throw new Error('crawl returned no programs — kept the previous catalog');
+    await env.KV.put('programs:data', JSON.stringify(data));
+    await env.KV.delete('programs:cache');
+    result = { ok: true, trigger, ms: Date.now() - t0, programs: data.programs.length, sections: data.programs.reduce((n, p) => n + p.sections.length, 0), pages_read: data.pages_read, generated: data.generated };
+  } catch (e) {
+    result = { ok: false, trigger, ms: Date.now() - t0, error: (e && e.message) || 'error', note: 'WebTrac could not be crawled from the Worker; the previous catalog (or programs.json) remains in use.' };
+  }
+  try { await env.KV.put('programs:lastCrawl', JSON.stringify(Object.assign({ at: new Date().toISOString() }, result))); } catch (e) {}
+  console.log('program catalog refresh', JSON.stringify(result));
+  return result;
+}
 
 /* ---------------- admin page ---------------- */
 const ADMIN_HTML = `<!DOCTYPE html>
@@ -2029,6 +2273,7 @@ td.ans{max-width:320px}
       <button class="btn ghost" onclick="refreshProjects()">Refresh &amp; test</button>
       <button class="btn ghost" onclick="refreshCaches()">Reload all data files</button>
       <button class="btn ghost" onclick="crawlPrograms()">Refresh rec programs from WebTrac</button>
+      <button class="btn ghost" onclick="crawlRecParks()">Refresh Rec &amp; Parks site pages</button>
       <span id="cachesMsg" class="stat"></span>
     </div>
     <div class="stat" id="projectsStatus"></div>
@@ -2122,6 +2367,11 @@ async function crawlPrograms(){
   document.getElementById('cachesMsg').textContent = 'Crawling WebTrac (about a minute)…';
   const d = await api('crawl_programs');
   document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.programs + ' programs / ' + d.sections + ' sections crawled (' + Math.round(d.ms/1000) + 's).</span>' : '<span class="err">' + (d.error || 'failed') + '</span>';
+}
+async function crawlRecParks(){
+  document.getElementById('cachesMsg').textContent = 'Crawling recandparks.hilliardohio.gov (one batch of 40 pages)…';
+  const d = await api('crawl_recparks');
+  document.getElementById('cachesMsg').innerHTML = d.ok ? '<span class="ok">✓ ' + d.fetched + ' pages fetched (' + d.stored + ' of ' + d.total_pages + ' stored' + (d.complete ? ', site complete' : ', click again for the rest') + ').</span>' : '<span class="err">' + d.error + '</span>';
 }
 async function refreshCaches(){
   document.getElementById('cachesMsg').textContent = 'Reloading…';
