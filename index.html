@@ -27,6 +27,9 @@
   .msg.user{background:var(--navy);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
   .msg.bot{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
   .msg.bot a{color:var(--navy);font-weight:600}
+  .msg.bot a.dl{display:inline-block;background:var(--navy);color:#fff;border-radius:14px;padding:3px 11px;font-size:12.5px;text-decoration:none;margin:2px 0}
+  .msg.bot a.dl:hover{opacity:.9}
+  .msg.bot a.dl::before{content:'\2913\00a0'}
   .msg .tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--green);margin-bottom:5px}
   .disclaimer{text-align:center;font-size:11.5px;color:var(--muted);padding:6px 0 2px}
   #inputRow{display:flex;gap:8px;padding-top:10px}
@@ -72,6 +75,7 @@
       <button onclick="askFor('permits')">Permit history</button>
       <button onclick="askFor('letter')">Zoning letter</button>
       <button onclick="askFor('research')">Zoning research</button>
+      <button onclick="askFor('records')">Public records</button>
       <button id="chipDraft" style="display:none" onclick="askFor('draft')">Draft legislation</button>
       <button id="chipCodeLetter" style="display:none" onclick="askFor('codeletter')">Code enforcement letter</button>
     </div>
@@ -854,6 +858,10 @@ function linkify(text){
     frag.appendChild(autolink(text.slice(last, m.index)));
     const a = document.createElement('a');
     a.href = recordHref(m[2]); a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener';
+    // "Download: <title>" links to the Worker's /api/doc proxy become download buttons.
+    if(/^download:/i.test(m[1]) && m[2].indexOf(BACKEND + '/api/doc') === 0){
+      a.className = 'dl'; a.textContent = m[1].replace(/^download:\s*/i, ''); a.setAttribute('download', '');
+    }
     frag.appendChild(a);
     last = m.index + m[0].length;
   }
@@ -901,6 +909,8 @@ const CHIP_PROMPTS = {
               build: a => 'Can I get a zoning letter for ' + a + '?' },
   research: { prompt: 'What would you like to research? I can look up a specific address (zoning district, map, property details, permit history), or search the City\'s Planning & Zoning application list by project name, application type or keyword — for example "PUDs in Hilliard" or "Hill Farm".',
               build: a => 'Zoning research: ' + a },
+  records:  { prompt: 'What public record are you looking for? Give me a subject, an ordinance or resolution number, a PUD or project name, a permit or case number (like PZ-24-12), or a property address. I\'ll find where it\'s published — hilliardohio.gov, the Council document library, the zoning PUD texts or the OpenGov permit portal — and link you to it. Add "send me a copy" if you want a download.',
+              build: a => 'Public records request: ' + a },
   draft:    { prompt: 'What legislation do you need drafted? Tell me what it should do and any key facts you have — contractor or developer name, project number, dollar amount, parcel numbers, dates. I\'ll find a comparable adopted ordinance or resolution to model from, and flag anything missing in brackets rather than inventing it.',
               build: a => 'Draft legislation: ' + a },
   codeletter:{ prompt: 'Which Hilliard address needs a weed and grass notice? You can give me several at once, one per line. Also tell me who performed the inspection — Kristie Shaffer or Forrest Runnels — so the notice and the OpenGov record carry the right signature. I\'ll look up the owner of record, parcel number and owner mailing address from Franklin County Auditor records, create the Grass/weed complaint record in OpenGov, and attach the Chapter 917 notice to it. Inspection date will be today unless you say otherwise.',
