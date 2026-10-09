@@ -885,6 +885,8 @@ function autolink(text){
     const a = document.createElement('a');
     a.href = recordHref(raw.startsWith('http') ? raw : 'https://' + raw);
     a.textContent = raw; a.target = '_blank'; a.rel = 'noopener';
+    // A bare /api/doc link (the model skipped the Markdown form) still becomes a download button.
+    if(raw.indexOf(BACKEND + '/api/doc') === 0){ a.className = 'dl'; a.textContent = 'Download'; a.setAttribute('download', ''); }
     frag.appendChild(a);
     if(trail) frag.appendChild(document.createTextNode(trail));
     last = m.index + m[1].length;
